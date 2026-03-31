@@ -21,8 +21,8 @@ public class ReviewService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void createReview(ReviewCreateRequest request) {
-        Doctor doctor = doctorRepository.findById(request.getDoctorId())
+    public void createReview(Long doctorId, ReviewCreateRequest request) {
+        Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new BusinessException("의사를 찾을 수 없습니다."));
 
         User user = userRepository.findById(request.getUserId())
