@@ -44,4 +44,22 @@ public class HospitalRequest extends BaseEntity {
     private String rejectionReason;
 
     private LocalDateTime approvedAt;
+    
+    
+    public void approve(Long hospitalId) {
+        this.status = HospitalRequestStatus.APPROVED;
+        this.approvedHospitalId = hospitalId;
+        this.approvedAt = LocalDateTime.now();
+    }
+
+    // 거절 처리 메서드
+    public void reject(String reason) {
+        this.status = HospitalRequestStatus.REJECTED;
+        this.rejectionReason = reason;
+    }
+
+	public void updateStatus(HospitalRequestStatus approved) {
+		// TODO Auto-generated method stub
+		
+	}
 }
