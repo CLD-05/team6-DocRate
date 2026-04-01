@@ -106,7 +106,7 @@ CREATE TABLE reviews (
     bedside_manner TINYINT NOT NULL,
     explanation TINYINT NOT NULL,
     wait_time TINYINT NOT NULL,
-    revisit_intention TINYINT NOT NULL,
+    revisit_intention BOOLEAN NOT NULL,
     content TEXT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -126,8 +126,7 @@ CREATE TABLE reviews (
     CONSTRAINT chk_reviews_rating CHECK (rating BETWEEN 1 AND 5),
     CONSTRAINT chk_reviews_bedside_manner CHECK (bedside_manner BETWEEN 1 AND 5),
     CONSTRAINT chk_reviews_explanation CHECK (explanation BETWEEN 1 AND 5),
-    CONSTRAINT chk_reviews_wait_time CHECK (wait_time BETWEEN 1 AND 5),
-    CONSTRAINT chk_reviews_revisit_intention CHECK (revisit_intention BETWEEN 1 AND 5)
+    CONSTRAINT chk_reviews_wait_time CHECK (wait_time BETWEEN 1 AND 5)
 );
 
 -- --------------------------------------------------
