@@ -1,0 +1,132 @@
+/* [기본 스타일 및 레퍼런스 컬러 반영] */
+:root {
+    --primary-color: #000000; /* 블랙 버튼 */
+    --bg-color: #F6F6F6; /* 로그인 페이지 배경색 */
+    --card-color: #FFFFFF;
+    --border-color: #EEEEEE;
+    --text-main: #000000;
+    --text-sub: #888888;
+}
+
+body {
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+}
+
+/* [헤더 스타일 - 와이어프레임 반영] */
+.main-header {
+    background-color: var(--card-color);
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.header-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.logo { margin: 0; font-size: 1.5rem; font-weight: 800; }
+
+.header-menu { display: flex; gap: 15px; }
+.menu-item { text-decoration: none; color: var(--text-main); font-size: 0.9rem; }
+.menu-item.logout { color: var(--text-sub); }
+
+/* [메인 컨테이너 - 로그인 카드 스타일] */
+.container {
+    max-width: 700px;
+    margin: 40px auto;
+    background-color: var(--card-color);
+    padding: 40px;
+    border-radius: 20px; /* 라운드드 코너 */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.page-header h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 5px; }
+.header-divider { border: 0; border-top: 2px solid var(--primary-color); width: 60px; margin: 15px 0; }
+
+/* [의사 정보 바] */
+.doctor-info-bar {
+    background-color: #FBFBFB;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 1rem;
+    color: var(--text-sub);
+    margin-bottom: 30px;
+}
+.info-label { font-weight: 600; color: var(--text-main); margin-right: 5px; }
+.info-separator { margin: 0 10px; color: #DDD; }
+
+/* [폼 요소 스타일] */
+.form-group { margin-bottom: 25px; }
+.form-group label { display: block; font-weight: 600; font-size: 1rem; margin-bottom: 10px; }
+
+.section-divider { border: 0; border-top: 1px solid var(--border-color); margin: 30px 0; }
+
+/* 종합 평점 라디오 버튼 */
+.rating-options { display: flex; gap: 10px; }
+.rating-options input[type="radio"] { display: none; }
+.rating-options label {
+    display: flex; justify-content: center; align-items: center;
+    width: 45px; height: 45px;
+    border: 1px solid var(--border-color); border-radius: 10px;
+    cursor: pointer; font-weight: 700; color: var(--text-sub);
+    transition: all 0.2s;
+}
+.rating-options input[type="radio"]:checked + label {
+    background-color: var(--primary-color); color: #FFF; border-color: var(--primary-color);
+}
+
+/* 세부 항목 Grid */
+.detail-ratings-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+input[type="number"], textarea {
+    width: 100%; padding: 15px;
+    border: 1px solid var(--border-color); border-radius: 12px; /* 로그인 인풋 스타일 */
+    box-sizing: border-box; font-size: 1rem;
+}
+textarea { height: 180px; resize: vertical; line-height: 1.5; }
+
+/* 재방문 의사 - 세련된 라디오 버튼 */
+.radio-group-modern { display: flex; gap: 10px; }
+.radio-group-modern input[type="radio"] { display: none; }
+.radio-btn-label {
+    padding: 12px 25px; border: 1px solid var(--border-color); border-radius: 30px;
+    cursor: pointer; font-weight: 600; color: var(--text-sub); transition: all 0.2s;
+}
+.radio-group-modern input[type="radio"]:checked + label {
+    background-color: #F0F0F0; color: var(--text-main); border-color: #E0E0E0;
+}
+
+/* [하단 버튼 - 레퍼런스 스타일 반영] */
+.button-group-modern { display: flex; justify-content: flex-end; gap: 15px; margin-top: 40px; }
+
+.btn-save {
+    padding: 15px 40px;
+    background-color: var(--primary-color); /* 블랙 버튼 */
+    color: #FFFFFF;
+    border: none;
+    border-radius: 30px; /* 완전 라운드 */
+    font-size: 1rem; font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-save:hover { background-color: #333333; }
+
+.btn-cancel {
+    padding: 15px 40px;
+    background-color: var(--card-color);
+    color: var(--text-sub);
+    text-decoration: none;
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+    font-size: 1rem; font-weight: 600;
+    display: inline-block;
+    transition: all 0.2s;
+}
+.btn-cancel:hover { background-color: #F9F9F9; color: var(--text-main); }

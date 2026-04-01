@@ -16,7 +16,7 @@ public class ReviewCreateRequest {
 
     @Min(1)
     @Max(5)
-    private Integer rating;
+    private Double rating;
 
     @Min(1)
     @Max(5)
@@ -30,9 +30,7 @@ public class ReviewCreateRequest {
     @Max(5)
     private Integer waitTime;
 
-    @Min(1)
-    @Max(5)
-    private Integer revisitIntention;
+    private Boolean revisitIntention;
 
     @NotBlank
     private String content;

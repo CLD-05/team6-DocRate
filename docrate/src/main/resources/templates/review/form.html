@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>리뷰 작성 - DocRate</title>
+    <link rel="stylesheet" th:href="@{/css/form.css}">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <h1 class="logo">DocRate</h1>
+            <div class="header-menu">
+                <a th:href="@{/mypage}" class="menu-item">마이페이지</a>
+                <a th:href="@{/logout}" class="menu-item logout">로그아웃</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="page-header">
+            <h2>리뷰 작성</h2>
+            <hr class="header-divider">
+            <div class="doctor-info-bar">
+                <span class="info-label">의사명:</span>
+                <span class="info-value" th:text="${doctor.name}">김의사</span>
+                <span class="info-separator">/</span>
+                <span class="info-value" th:text="${doctor.hospital.name}">서울튼튼내과</span>
+            </div>
+        </section>
+
+        <form th:action="@{/doctors/{doctorId}/reviews(doctorId=${doctor.id})}" method="post">
+            
+            <input type="hidden" name="userId" value="1">
+            
+            <input type="hidden" name="doctorId" th:value="${doctor.id}">
+            
+            <div class="form-group rating-section">
+                <label>종합 평점</label>
+                <div class="rating-options">
+                    <input type="radio" name="rating" id="rate5" value="5.0" checked><label for="rate5">5</label>
+                    <input type="radio" name="rating" id="rate4" value="4.0"><label for="rate4">4</label>
+                    <input type="radio" name="rating" id="rate3" value="3.0"><label for="rate3">3</label>
+                    <input type="radio" name="rating" id="rate2" value="2.0"><label for="rate2">2</label>
+                    <input type="radio" name="rating" id="rate1" value="1.0"><label for="rate1">1</label>
+                </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <div class="detail-ratings-grid">
+                <div class="form-group">
+                    <label>친절도 (1~5)</label>
+                    <input type="number" name="bedsideManner" min="1" max="5" value="5" required>
+                </div>
+                <div class="form-group">
+                    <label>설명력 (1~5)</label>
+                    <input type="number" name="explanation" min="1" max="5" value="5" required>
+                </div>
+                <div class="form-group">
+                    <label>대기 만족도 (1~5)</label>
+                    <input type="number" name="waitTime" min="1" max="5" value="5" required>
+                </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <div class="form-group inline revisit-section">
+                <label>재방문 의사</label>
+                <div class="radio-group-modern">
+                    <input type="radio" id="revisit-true" name="revisitIntention" value="true" checked>
+                    <label for="revisit-true" class="radio-btn-label">예</label>
+                    <input type="radio" id="revisit-false" name="revisitIntention" value="false">
+                    <label for="revisit-false" class="radio-btn-label">아니오</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>리뷰 내용</label>
+                <textarea name="content" placeholder="솔직한 후기를 입력해주세요 (진료 과정, 태도 등)" required th:text="${review != null ? review.content : ''}"></textarea>
+            </div>
+
+            <div class="button-group-modern">
+                <button type="submit" class="btn-save">저장</button>
+                <a th:href="@{/doctor/detail/{id}(id=${doctor.id})}" class="btn-cancel">취소</a>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

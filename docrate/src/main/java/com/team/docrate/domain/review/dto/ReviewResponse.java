@@ -13,12 +13,12 @@ public class ReviewResponse {
     private Long id;
     private String userName;
     private String doctorName;
-    private Integer rating;
+    private Double rating;
 //    상세 점수 추가
     private Integer bedsideManner;
     private Integer explanation;
     private Integer waitTime;
-    private Integer revisitIntention;
+    private Boolean revisitIntention;
     
     private String content;
     private LocalDateTime createdAt;
