@@ -111,9 +111,18 @@ def preprocess(csv_path):
     def map_status(x):
         if pd.isna(x):
             return "ACTIVE"
+
         s = str(x).strip()
-        if "폐업" in s or "취소" in s or "말소" in s:
+
+        inactive_keywords = [
+            "폐업", "취소", "말소", "만료",
+            "정지", "중지", "휴업",
+            "삭제", "전출", "제외"
+        ]
+
+        if any(keyword in s for keyword in inactive_keywords):
             return "INACTIVE"
+
         return "ACTIVE"
 
     df["status"] = df["status_raw"].apply(map_status)
