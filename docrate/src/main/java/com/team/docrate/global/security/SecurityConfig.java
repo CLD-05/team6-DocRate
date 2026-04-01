@@ -35,14 +35,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(Customizer.withDefaults())
+		        .csrf(csrf -> csrf
+		                .ignoringRequestMatchers("/token/reissue")
+		        )
                 .sessionManagement(session -> session
                 		// 세션 없이 JWT만 사용
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
                 		// 누구나 접근 가능한 페이지
-                        .requestMatchers("/", "/signup", "/login", "/hospitals/**", "/doctors/**", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/", "/signup", "/login", "/hospitals/**", "/doctors/**","/token/reissue","/css/**", "/js/**", "/images/**").permitAll()
                         // 관리자 권한 필요
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         // 나머지 로그인 필요
