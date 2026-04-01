@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입 | DocRate</title>
+
+    <!-- CSS 연결 -->
+    <link rel="stylesheet" th:href="@{/css/signup.css}">
+</head>
+
+<body>
+<div class="page">
+    <div class="signup-shell">
+
+        <!-- 상단 -->
+        <header class="topbar">
+            <div class="brand">DocRate</div>
+            <a th:href="@{/login}" class="login-link">로그인</a>
+        </header>
+
+        <!-- 콘텐츠 -->
+        <main class="content">
+            <div class="form-wrap">
+
+                <h1 class="title">Register with your e-mail</h1>
+
+                <!-- 서버 에러 -->
+                <div class="signup-error"
+                     th:if="${signupError}"
+                     th:text="${signupError}">
+                </div>
+
+                <form th:action="@{/signup}" th:object="${signupRequestDto}" method="post">
+
+                    <!-- 닉네임 -->
+                    <div class="form-group">
+                        <label class="form-label">Nickname</label>
+                        <input type="text" class="form-input"
+                               th:field="*{nickname}"
+                               placeholder="Nickname">
+                        <div class="field-error"
+                             th:if="${#fields.hasErrors('nickname')}"
+                             th:errors="*{nickname}">
+                        </div>
+                    </div>
+
+                    <!-- 이메일 -->
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input"
+                               th:field="*{email}"
+                               placeholder="E-mail">
+                        <div class="field-error"
+                             th:if="${#fields.hasErrors('email')}"
+                             th:errors="*{email}">
+                        </div>
+                    </div>
+
+                    <!-- 비밀번호 -->
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input"
+                               th:field="*{password}"
+                               placeholder="Password">
+                        <div class="field-error"
+                             th:if="${#fields.hasErrors('password')}"
+                             th:errors="*{password}">
+                        </div>
+                    </div>
+
+                    <!-- 비밀번호 확인 -->
+                    <div class="form-group">
+                        <label class="form-label">Repeat Password</label>
+                        <input type="password" class="form-input"
+                               th:field="*{passwordConfirm}"
+                               placeholder="Repeat Password">
+                        <div class="field-error"
+                             th:if="${#fields.hasErrors('passwordConfirm')}"
+                             th:errors="*{passwordConfirm}">
+                        </div>
+                    </div>
+
+                    <!-- 버튼 -->
+                    <div class="submit-wrap">
+                        <button type="submit" class="submit-btn">
+                            Create Account
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

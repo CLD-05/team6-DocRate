@@ -1,0 +1,221 @@
+@charset "EUC-KR";
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+    background-color: #f6f6f4;
+    color: #111111;
+}
+
+.page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 24px;
+}
+
+.login-shell {
+    width: 100%;
+    max-width: 1100px;
+    background: #ffffff;
+    border: 1px solid #e7e7e2;
+    border-radius: 28px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 36px;
+    border-bottom: 1px solid #efefea;
+}
+
+.brand {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+.signup-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    border: 1px solid #d8d8d2;
+    border-radius: 999px;
+    text-decoration: none;
+    color: #111111;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    background: #ffffff;
+}
+
+.signup-link:hover {
+    background: #111111;
+    color: #ffffff;
+    border-color: #111111;
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+    padding: 72px 24px 80px;
+}
+
+.form-wrap {
+    width: 100%;
+    max-width: 620px;
+}
+
+.title {
+    text-align: center;
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin: 0 0 48px;
+    line-height: 1.15;
+}
+
+.login-error {
+    margin-bottom: 24px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: #fff2f2;
+    border: 1px solid #ffd7d7;
+    color: #c62828;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.form-group {
+    margin-bottom: 26px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #222222;
+}
+
+.form-input {
+    width: 100%;
+    height: 60px;
+    padding: 0 20px;
+    border: 1px solid #dcdcd6;
+    border-radius: 18px;
+    background: #ffffff;
+    font-size: 16px;
+    color: #111111;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input::placeholder {
+    color: #a0a09a;
+}
+
+.form-input:focus {
+    border-color: #111111;
+    box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.05);
+}
+
+.submit-wrap {
+    margin-top: 36px;
+    display: flex;
+    justify-content: center;
+}
+
+.submit-btn {
+    min-width: 240px;
+    height: 58px;
+    padding: 0 28px;
+    border: none;
+    border-radius: 999px;
+    background: #111111;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 10px 24px rgba(17, 17, 17, 0.16);
+}
+
+.submit-btn:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+.bottom-text {
+    margin-top: 28px;
+    text-align: center;
+    font-size: 15px;
+    color: #666666;
+}
+
+.bottom-link {
+    margin-left: 6px;
+    color: #111111;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.bottom-link:hover {
+    opacity: 0.8;
+    border-color: #111111;
+}
+
+@media (max-width: 768px) {
+    .login-shell {
+        border-radius: 20px;
+    }
+
+    .topbar {
+        padding: 22px 20px;
+    }
+
+    .brand {
+        font-size: 24px;
+    }
+
+    .content {
+        padding: 48px 20px 56px;
+    }
+
+    .title {
+        font-size: 30px;
+        margin-bottom: 36px;
+    }
+
+    .form-input {
+        height: 54px;
+        border-radius: 14px;
+    }
+
+    .submit-btn {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .bottom-text {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+}
