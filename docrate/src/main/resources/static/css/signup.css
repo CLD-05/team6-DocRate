@@ -1,0 +1,164 @@
+@charset "EUC-KR";
+
+/* 기본 초기화 */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+    background-color: #f6f6f4;
+    color: #111111;
+}
+
+/* 전체 페이지 중앙 정렬 */
+.page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 24px;
+}
+
+/* 카드 컨테이너 */
+.signup-shell {
+    width: 100%;
+    max-width: 1100px;
+    background: #ffffff;
+    border: 1px solid #e7e7e2;
+    border-radius: 28px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+
+/* 상단 */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 36px;
+    border-bottom: 1px solid #efefea;
+}
+
+.brand {
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.login-link {
+    padding: 12px 20px;
+    border: 1px solid #d8d8d2;
+    border-radius: 999px;
+    text-decoration: none;
+    color: #111;
+    font-size: 14px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.login-link:hover {
+    background: #111;
+    color: #fff;
+}
+
+/* 콘텐츠 */
+.content {
+    display: flex;
+    justify-content: center;
+    padding: 72px 24px 80px;
+}
+
+.form-wrap {
+    width: 100%;
+    max-width: 620px;
+}
+
+/* 제목 */
+.title {
+    text-align: center;
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 48px;
+}
+
+/* 서버 에러 */
+.signup-error {
+    margin-bottom: 24px;
+    padding: 16px;
+    border-radius: 16px;
+    background: #fff2f2;
+    border: 1px solid #ffd7d7;
+    color: #c62828;
+}
+
+/* 입력 그룹 */
+.form-group {
+    margin-bottom: 26px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* 입력창 */
+.form-input {
+    width: 100%;
+    height: 60px;
+    padding: 0 20px;
+    border: 1px solid #dcdcd6;
+    border-radius: 18px;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+.form-input:focus {
+    border-color: #111;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(17,17,17,0.05);
+}
+
+/* 에러 */
+.field-error {
+    margin-top: 8px;
+    color: #d32f2f;
+    font-size: 13px;
+}
+
+/* 버튼 */
+.submit-wrap {
+    margin-top: 36px;
+    text-align: center;
+}
+
+.submit-btn {
+    min-width: 240px;
+    height: 58px;
+    border-radius: 999px;
+    border: none;
+    background: #111;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.submit-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .title {
+        font-size: 30px;
+    }
+
+    .submit-btn {
+        width: 100%;
+    }
+}

@@ -1,10 +1,7 @@
 package com.team.docrate.domain.user.controller;
 
-import com.team.docrate.domain.user.dto.LoginRequestDto;
-import com.team.docrate.domain.user.dto.LoginResponseDto;
+import com.team.docrate.domain.user.dto.SignupRequestDto;
 import com.team.docrate.domain.user.service.UserService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -19,38 +16,31 @@ public class UserController {
 
     private final UserService userService;
 
-
-    @GetMapping("/login")
-    public String loginForm(Model model) {
-        if (!model.containsAttribute("loginRequestDto")) {
-            model.addAttribute("loginRequestDto", new LoginRequestDto());
+	// GET /signup → 회원가입 화면 보여주기
+    @GetMapping("/signup")
+    public String signupForm(Model model) {
+	    // 폼과 바인딩할 DTO가 없으면 새로 생성
+        if (!model.containsAttribute("signupRequestDto")) {
+            model.addAttribute("signupRequestDto", new SignupRequestDto());
         }
-        return "users/login";
+        return "users/signup";
     }
 
-    @PostMapping("/login")
-    public String login(
-            @Valid LoginRequestDto loginRequestDto,
-            BindingResult bindingResult,
-            HttpServletResponse response
+	// POST /signup → 회원가입 처리
+    @PostMapping("/signup")
+    public String signup(
+            @Valid SignupRequestDto signupRequestDto,
+            BindingResult bindingResult
     ) {
+	    // DTO 유효성 검증 실패 시 다시 회원가입 화면으로
         if (bindingResult.hasErrors()) {
-            return "users/login";
+            return "users/signup";
         }
-
-        LoginResponseDto loginResponse = userService.login(loginRequestDto);
-
-        response.addCookie(createCookie("accessToken", loginResponse.getAccessToken(), 60 * 30));
-        response.addCookie(createCookie("refreshToken", loginResponse.getRefreshToken(), 60 * 60 * 24 * 7));
-
-        return "redirect:/";
-    }
-
-    private Cookie createCookie(String name, String value, int maxAge) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(maxAge);
-        return cookie;
+        
+		// 회원가입 처리
+        userService.signup(signupRequestDto);
+        
+        // 성공 시 로그인 페이지로 이동
+        return "redirect:/login";
     }
 }

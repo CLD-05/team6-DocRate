@@ -1,11 +1,14 @@
 package com.team.docrate.domain.user.service;
 
-import com.team.docrate.domain.user.dto.LoginRequestDto;
-import com.team.docrate.domain.user.dto.LoginResponseDto;
+
+import com.team.docrate.domain.user.dto.SignupRequestDto;
+import com.team.docrate.domain.user.dto.SignupResponseDto;
 import com.team.docrate.domain.user.entity.User;
+import com.team.docrate.global.exception.DuplicateEmailException;
+import com.team.docrate.global.exception.DuplicateNicknameException;
+import com.team.docrate.global.exception.PasswordMismatchException;
 import com.team.docrate.domain.user.repository.UserRepository;
-import com.team.docrate.global.exception.InvalidLoginException;
-import com.team.docrate.global.security.jwt.JwtTokenProvider;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,20 +21,46 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public LoginResponseDto login(LoginRequestDto requestDto) {
-        User user = userRepository.findByEmail(requestDto.getEmail())
-                .orElseThrow(InvalidLoginException::new);
+    public SignupResponseDto signup(SignupRequestDto requestDto) {
+    	 // 1. 회원가입 요청값 검증
+        validateSignupRequest(requestDto);
 
-        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-            throw new InvalidLoginException();
+        // 2. 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
+
+     // 3. 회원 엔티티 생성
+        User user = User.createUser(
+                requestDto.getEmail(),
+                encodedPassword,
+                requestDto.getNickname()
+        );
+        
+        // 4. DB 저장
+        User savedUser = userRepository.save(user);
+        
+        // 5. 응답 DTO 반환
+        return SignupResponseDto.from(savedUser);
+    }
+
+    
+    
+    private void validateSignupRequest(SignupRequestDto requestDto) {
+    	// 비밀번호와 비밀번호 확인 불일치
+        if (!requestDto.isPasswordMatched()) {
+            throw new PasswordMismatchException();
+        }
+        
+        // 이메일 중복 검사
+        if (userRepository.existsByEmail(requestDto.getEmail())) {
+            throw new DuplicateEmailException();
         }
 
-        String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getRole());
-        String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
+        // 닉네임 중복 검사
+        if (userRepository.existsByNickname(requestDto.getNickname())) {
+            throw new DuplicateNicknameException();
+        }
 
-        return LoginResponseDto.of(user, accessToken, refreshToken);
     }
 }
