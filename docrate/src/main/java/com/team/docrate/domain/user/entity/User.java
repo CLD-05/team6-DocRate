@@ -29,4 +29,9 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
+
+	public void promoteToDoctor() {
+		// TODO Auto-generated method stub
+		
+	}
 }
