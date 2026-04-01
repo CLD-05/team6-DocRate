@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocRate</title>
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+</head>
+<body>
+<div class="page-wrap">
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <a th:href="@{/}">DocRate</a>
+            </div>
+
+            <div class="header-right">
+                <div th:if="${!isLoggedIn}" class="guest-menu">
+                    <a th:href="@{/login}" class="header-link">로그인</a>
+                    <a th:href="@{/signup}" class="header-btn">회원가입</a>
+                </div>
+
+                <div th:if="${isLoggedIn}" class="user-menu">
+                    <span class="welcome-text" th:text="${nickname} + '님'">사용자님</span>
+                    <a th:href="@{/mypage}" class="header-link">마이페이지</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="hero-center">
+                <h1 class="main-title">DOCRATE</h1>
+                <p class="sub-title">의사 리뷰를 쉽게 찾아보세요</p>
+
+                <section class="search-section">
+                    <form id="searchForm" class="search-form">
+                        <label for="keyword" class="input-label">
+                            <span id="searchLabel">HOSPITAL SEARCH</span>
+                        </label>
+
+                        <div class="search-row">
+                            <input
+                                    type="text"
+                                    id="keyword"
+                                    class="search-input"
+                                    placeholder="병원명을 입력하세요"
+                            >
+                            <button type="submit" class="search-btn">검색</button>
+                        </div>
+
+                        <button type="button" id="toggleSearchMode" class="search-toggle-btn">
+                            의사이름으로 찾을래요
+                        </button>
+                    </form>
+                </section>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    const searchForm = document.getElementById('searchForm');
+    const keywordInput = document.getElementById('keyword');
+    const searchLabel = document.getElementById('searchLabel');
+    const toggleSearchMode = document.getElementById('toggleSearchMode');
+
+    let searchMode = 'hospital';
+
+    toggleSearchMode.addEventListener('click', () => {
+        if (searchMode === 'hospital') {
+            searchMode = 'doctor';
+            searchLabel.textContent = 'DOCTOR SEARCH';
+            keywordInput.placeholder = '의사이름을 입력하세요';
+            toggleSearchMode.textContent = '병원명으로 찾을래요';
+        } else {
+            searchMode = 'hospital';
+            searchLabel.textContent = 'HOSPITAL SEARCH';
+            keywordInput.placeholder = '병원명을 입력하세요';
+            toggleSearchMode.textContent = '의사이름으로 찾을래요';
+        }
+    });
+
+    searchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const keyword = keywordInput.value.trim();
+        if (!keyword) {
+            keywordInput.focus();
+            return;
+        }
+
+        const encodedKeyword = encodeURIComponent(keyword);
+
+        if (searchMode === 'hospital') {
+            window.location.href = `/hospitals?search=${encodedKeyword}`;
+        } else {
+            window.location.href = `/doctors?search=${encodedKeyword}`;
+        }
+    });
+</script>
+</body>
+</html>

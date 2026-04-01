@@ -12,6 +12,9 @@ import com.team.docrate.global.exception.InvalidLoginException;
 import com.team.docrate.global.exception.PasswordMismatchException;
 import com.team.docrate.global.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,4 +86,9 @@ public class UserService {
             throw new DuplicateNicknameException();
         }
     }
+    
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+    
 }
