@@ -3,6 +3,7 @@ import pandas as pd
 import pymysql
 import re
 
+# docker 서팅
 # DB_HOST = os.getenv("DB_HOST")
 # DB_PORT = int(os.getenv("DB_PORT"))
 # DB_NAME = os.getenv("DB_NAME")
@@ -11,11 +12,12 @@ import re
 #
 # CSV_PATH = os.getenv("CSV_PATH")
 
+# 로컬 세팅
 DB_HOST = "localhost"
 DB_PORT = 3306
 DB_NAME = "app"
 DB_USER = "root"
-DB_PASSWORD = "Dudgus369##*"
+DB_PASSWORD = ""
 
 CSV_PATH = os.getenv("CSV_PATH", "./건강_병원.csv")
 
