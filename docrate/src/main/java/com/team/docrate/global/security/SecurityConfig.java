@@ -42,7 +42,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                 		// 누구나 접근 가능한 페이지
-                        .requestMatchers("/", "/signup", "/login", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/", "/signup", "/login", "/hospitals/**", "/doctors/**", "/css/**", "/js/**", "/images/**").permitAll()
                         // 관리자 권한 필요
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         // 나머지 로그인 필요
