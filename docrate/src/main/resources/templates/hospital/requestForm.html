@@ -15,7 +15,7 @@
                 <p class="form-description">등록되어 있지 않은 병원이 있다면 요청해 주세요.<br>관리자 확인 후 등록됩니다.</p>
             </div>
 
-            <form th:action="@{/hospital-requests}" method="post">
+            <form th:action="@{/hospitals/request}" method="post">
                 <div class="form-group">
                     <label class="form-label" for="name">병원명</label>
                     <input type="text" id="name" name="name" class="form-input" placeholder="병원 이름을 입력하세요" required>

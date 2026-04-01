@@ -56,11 +56,10 @@ public class HospitalService {
         return getHospitalList(category, pageable);
     }
 
-    // 상세 조회, 검색 등 필요한 다른 서비스 메서드들은 추후 추가할 수 있습니다.
- // 상세 조회를 위한 메서드 추가
+ // 특정 병원 ID로 상세 정보 가져오기
     public HospitalResponse getHospitalById(Long id) {
         Hospital hospital = hospitalRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 병원을 찾을 수 없습니다. ID: " + id));
+                .orElseThrow(() -> new RuntimeException("병원을 찾을 수 없습니다. ID: " + id));
         return HospitalResponse.from(hospital);
     }
 }

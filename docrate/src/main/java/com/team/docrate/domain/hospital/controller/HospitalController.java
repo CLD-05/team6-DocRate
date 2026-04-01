@@ -7,64 +7,74 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.team.docrate.domain.hospital.dto.HospitalResponse;
 import com.team.docrate.domain.hospital.service.HospitalService;
+import com.team.docrate.domain.request.hospitalrequest.dto.HospitalRequestDto;
+import com.team.docrate.domain.request.hospitalrequest.service.HospitalRequestService;
 
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/hospitals") // Base path for hospital related endpoints
+@RequestMapping("/hospitals")
 @RequiredArgsConstructor
 public class HospitalController {
-
     private final HospitalService hospitalService;
+    private final HospitalRequestService hospitalRequestService;
 
-    // 병원 목록 조회 - GET /hospitals
-    // 카테고리 필터링, 페이징, 기본 정렬 설정 (@PageableDefault 사용)
+    // 1. 병원 목록 조회
     @GetMapping
-    public String getHospitalList(
-            Model model,
-            @RequestParam(required = false, name = "category") String category,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
-    ) {
+    public String list(
+        @RequestParam(value = "category", required = false) String category, 
+        @PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable, 
+        Model model) {
+        
         Page<HospitalResponse> hospitalPage = hospitalService.getHospitalList(category, pageable);
-
+        
         model.addAttribute("hospitals", hospitalPage.getContent());
-        model.addAttribute("pageInfo", hospitalPage);
-
-        // 🔥 [추가] HTML에서 요구하는 빈 리스트들을 일단 넣어줍니다.
-        model.addAttribute("categories", new java.util.ArrayList<>()); 
-        model.addAttribute("regions", new java.util.ArrayList<>());
-
-        if (category != null && !category.isEmpty()) {
-            model.addAttribute("selectedCategory", category);
-        }
-
+        model.addAttribute("page", hospitalPage); 
+        
+        int nowPage = hospitalPage.getPageable().getPageNumber() + 1;
+        int startPage = Math.max(nowPage - 4, 1);
+        int endPage = Math.min(nowPage + 5, hospitalPage.getTotalPages());
+        
+        model.addAttribute("nowPage", nowPage);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        
         return "hospital/hospitals"; 
     }
 
-    // GET /hospitals/{hospitalId} endpoint for detail view will be implemented here later.
-    
- // 병원 상세 조회 - GET /hospitals/{hospitalId}
- // 병원 상세 조회
-    @GetMapping("/{hospitalId}")
-    public String getHospitalDetail(@PathVariable Long hospitalId, Model model) {
-        HospitalResponse hospital = hospitalService.getHospitalById(hospitalId);
+    // 2. 병원 상세 페이지
+    @GetMapping("/{id}")
+    public String detail(@PathVariable("id") Long id, Model model) {
+        HospitalResponse hospital = hospitalService.getHospitalById(id);
         model.addAttribute("hospital", hospital);
-        
-        // 의사 기능은 아직 구현 전일 테니 빈 리스트로 에러 방지
-        model.addAttribute("doctors", new java.util.ArrayList<>()); 
+        model.addAttribute("doctors", new java.util.ArrayList<>());
         return "hospital/hospitalDetail";
     }
 
-    // 등록 요청 폼 화면으로 이동
+    // 3. 병원 등록 요청 폼 띄우기 (주소: /hospitals/request)
     @GetMapping("/request")
     public String showRequestForm() {
-        return "hospital/requestForm";
+        // templates/hospital/requestForm.html 경로와 일치
+        return "hospital/requestForm"; 
+    }
+
+    // 4. 병원 등록 요청 처리 (POST 주소: /hospitals/request)
+    @PostMapping("/request")
+    public String createRequest(@ModelAttribute("hospitalRequestDto") HospitalRequestDto requestDto) {
+        // [참고] 아직 로그인 유저 연동 전이라면, DB에 있는 유저 ID 1번 등을 임시로 사용해야 할 수도 있습니다.
+        // User loginUser = ... (현재 로그인 유저 가져오는 로직)
+        // hospitalRequestService.saveRequest(requestDto, loginUser);
+        
+        hospitalRequestService.saveRequest(requestDto, null); // 일단 구조만 맞춤
+        return "redirect:/hospitals";
     }
     
 }

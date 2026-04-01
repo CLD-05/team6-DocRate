@@ -21,7 +21,7 @@
                     <p><strong>전화:</strong> <span th:text="${hospital.phone}">02-1234-5678</span></p>
                     <p><strong>카테고리:</strong> <span th:text="${hospital.department}">내과</span></p>
                     <!-- 상태는 Enum 또는 String으로 가정하며, display name 등을 사용합니다. -->
-                    <p><strong>상태:</strong> <span th:text="${hospital.status.displayName}">운영중</span></p>
+                    <p><strong>상태:</strong> <span th:text="${hospital.status}">운영중</span></p>
                 </div>
 
                 <div class="doctor-list-section">
