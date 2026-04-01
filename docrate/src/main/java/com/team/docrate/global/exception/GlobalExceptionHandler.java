@@ -33,11 +33,17 @@ public class GlobalExceptionHandler {
         return "error/error";
     }
     
-    // 로그인 실패 시, 다시 로그인 페이지로 이동
+    
     @ExceptionHandler(InvalidLoginException.class)
     public String handleLoginException(InvalidLoginException e, Model model) {
         model.addAttribute("loginError", e.getMessage());
         model.addAttribute("loginRequestDto", new LoginRequestDto());
         return "users/login";
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public String handleInvalidTokenException(InvalidTokenException e, Model model) {
+        model.addAttribute("errorMessage", e.getMessage());
+        return "error/error";
     }
 }
