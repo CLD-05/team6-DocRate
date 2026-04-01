@@ -1,64 +1,116 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>의사 검색</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>의사 검색 | DocRate</title>
     <link rel="stylesheet" href="/css/doctors.css">
 </head>
 <body>
 
-<header class="header">
-    <div class="logo">DOC RATE</div>
-    <div class="menu">
-        <a href="/mypage">마이페이지</a>
-        <a href="/logout">로그아웃</a>
+<header class="topbar">
+    <div class="brand">
+        <a href="/" class="brand-link">DOC RATE</a>
     </div>
+
+    <nav class="topnav">
+        <a href="/doctors" class="topnav-link active">Doctors</a>
+        <a href="/mypage" class="topnav-link">마이페이지</a>
+        <a href="/logout" class="topnav-link">로그아웃</a>
+    </nav>
 </header>
 
-<div class="container">
+<main class="page">
+    <section class="hero">
+        <p class="hero-label">Doctor Directory</p>
+        <h1 class="hero-title">Find the right doctor.</h1>
+        <p class="hero-desc">
+            병원명으로 의사를 검색하고, 진료과와 기본 정보를 한눈에 확인해보세요.
+        </p>
+    </section>
 
-    <h2>검색된 <span th:text="${totalCount}">0</span> 결과</h2>
+    <section class="search-section">
+        <div class="search-top">
+            <h2 class="search-result-title">
+                검색된 <span th:text="${totalCount}">0</span> 결과
+            </h2>
+        </div>
 
-    <!-- 검색 -->
-    <form method="get" action="/doctors" class="search-box">
-        <input type="text" name="keyword" th:value="${keyword}" placeholder="병원 이름으로 찾을게요">
-        <button type="submit">검색</button>
-    </form>
+        <form method="get" action="/doctors" class="search-form">
+            <div class="search-input-wrap">
+                <input
+                    type="text"
+                    name="keyword"
+                    th:value="${keyword}"
+                    class="search-input"
+                    placeholder="병원 이름으로 찾을게요"
+                >
+                <button type="submit" class="search-button">검색</button>
+            </div>
+        </form>
+    </section>
 
-    <!-- 의사 리스트 -->
-    <div class="doctor-list">
-        <div class="doctor-card" th:each="doctor : ${doctors}">
-            <p><strong>의사명:</strong> <span th:text="${doctor.doctorName}"></span></p>
-            <p><strong>병원명:</strong> <span th:text="${doctor.hospitalName}"></span></p>
-            <p><strong>진료과:</strong> <span th:text="${doctor.departmentName}"></span></p>
+    <section class="doctor-section">
+        <div class="doctor-grid" th:if="${not #lists.isEmpty(doctors)}">
+            <article class="doctor-card" th:each="doctor : ${doctors}">
+                <div class="doctor-card-top">
+                    <span class="doctor-badge">DOCTOR</span>
+                </div>
 
-            <a th:href="@{/doctors/{id}(id=${doctor.doctorId})}" class="detail-btn">
-                상세보기
+                <div class="doctor-content">
+                    <h3 class="doctor-name" th:text="${doctor.doctorName}">김의사</h3>
+
+                    <div class="doctor-meta">
+                        <div class="meta-row">
+                            <span class="meta-label">병원</span>
+                            <span class="meta-value" th:text="${doctor.hospitalName}">서울튼튼내과</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">진료과</span>
+                            <span class="meta-value" th:text="${doctor.departmentName}">내과</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="doctor-card-bottom">
+                    <a th:href="@{/doctors/{id}(id=${doctor.doctorId})}" class="detail-link">
+                        상세보기
+                    </a>
+                </div>
+            </article>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(doctors)}">
+            <p class="empty-title">검색 결과가 없어요</p>
+            <p class="empty-desc">다른 병원 이름으로 다시 검색해보세요.</p>
+        </div>
+    </section>
+
+    <section class="pagination-section">
+        <div class="pagination" th:if="${totalPages > 0}">
+            <a th:if="${currentPage > 0}"
+               th:href="@{/doctors(page=${currentPage - 1}, keyword=${keyword})}"
+               class="page-btn">
+                이전
+            </a>
+
+            <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                <a th:href="@{/doctors(page=${i}, keyword=${keyword})}"
+                   th:text="${i + 1}"
+                   th:classappend="${i == currentPage} ? ' current' : ''"
+                   class="page-number">
+                    1
+                </a>
+            </span>
+
+            <a th:if="${currentPage < totalPages - 1}"
+               th:href="@{/doctors(page=${currentPage + 1}, keyword=${keyword})}"
+               class="page-btn">
+                다음
             </a>
         </div>
-    </div>
-
-    <!-- 페이지네이션 -->
-    <div class="pagination">
-        <a th:if="${currentPage > 0}"
-           th:href="@{/doctors(page=${currentPage - 1}, keyword=${keyword})}">
-            이전
-        </a>
-
-        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-            <a th:href="@{/doctors(page=${i}, keyword=${keyword})}"
-               th:text="${i + 1}"
-               th:classappend="${i == currentPage} ? 'active'">
-            </a>
-        </span>
-
-        <a th:if="${currentPage < totalPages - 1}"
-           th:href="@{/doctors(page=${currentPage + 1}, keyword=${keyword})}">
-            다음
-        </a>
-    </div>
-
-</div>
+    </section>
+</main>
 
 </body>
 </html>
