@@ -11,10 +11,9 @@ import com.team.docrate.global.exception.DuplicateNicknameException;
 import com.team.docrate.global.exception.InvalidLoginException;
 import com.team.docrate.global.exception.PasswordMismatchException;
 import com.team.docrate.global.security.jwt.JwtTokenProvider;
-import lombok.RequiredArgsConstructor;
-
+import com.team.docrate.infra.redis.RefreshTokenRedisService;
 import java.util.Optional;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,22 +26,23 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenRedisService refreshTokenRedisService;
 
     @Transactional
     public SignupResponseDto signup(SignupRequestDto requestDto) {
-    	 // 1. 회원가입 요청값 검증
+    	// 1. 회원가입 요청값 검증
         validateSignupRequest(requestDto);
 
         // 2. 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
-     // 3. 회원 엔티티 생성
+        // 3. 회원 엔티티 생성
         User user = User.createUser(
                 requestDto.getEmail(),
                 encodedPassword,
                 requestDto.getNickname()
         );
-        
+
         // 4. DB 저장
         User savedUser = userRepository.save(user);
         
@@ -50,32 +50,37 @@ public class UserService {
         return SignupResponseDto.from(savedUser);
     }
 
-    
     public LoginResponseDto login(LoginRequestDto requestDto) {
     	// 1. 이메일로 사용자 조회
         User user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(InvalidLoginException::new);
-
+        
         // 2. 비밀번호 검증 (평문 vs 암호화된 비밀번호 비교)
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new InvalidLoginException();
         }
-        
+
         // 3. 로그인 성공 시 JWT 발급
         String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
 
-        // 4. 사용자 정보 + 토큰을 DTO로 반환
+        // 4. Redis에 Refresh Token 저장
+        refreshTokenRedisService.saveRefreshToken(user.getEmail(), refreshToken);
+
+        // 5. 사용자 정보 + 토큰을 DTO로 반환
         return LoginResponseDto.of(user, accessToken, refreshToken);
     }
-    
-    
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     private void validateSignupRequest(SignupRequestDto requestDto) {
     	// 비밀번호와 비밀번호 확인 불일치
         if (!requestDto.isPasswordMatched()) {
             throw new PasswordMismatchException();
         }
-        
+
         // 이메일 중복 검사
         if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new DuplicateEmailException();
@@ -86,9 +91,4 @@ public class UserService {
             throw new DuplicateNicknameException();
         }
     }
-    
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-    
 }
