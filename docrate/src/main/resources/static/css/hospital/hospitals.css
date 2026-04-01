@@ -1,0 +1,174 @@
+/* General styles for a clean, modern dashboard look */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background-color: #f4f7f6; /* Light background */
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+h1 {
+    color: #2c3e50; /* Darker heading color */
+    margin-bottom: 30px;
+    font-weight: 600;
+    text-align: center; /* Center align page title */
+}
+
+/* Header and Navigation - Assumed to be in layout.html */
+/* If not, basic structure could be added here */
+
+.filters {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 15px; /* Space between filter elements */
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    align-items: center; /* Vertically align items */
+    justify-content: center; /* Center filters horizontally */
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-group label {
+    font-weight: 500;
+    color: #555;
+}
+
+.filter-group select,
+.filters .btn-search {
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    background-color: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.filter-group select:focus,
+.filters .btn-search:focus {
+    outline: none;
+    border-color: #007bff; /* Highlight color */
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.filters .btn-search {
+    background-color: #007bff; /* Primary button color */
+    color: white;
+    border: none;
+    font-weight: 500;
+    margin-left: 10px; /* Space before search button */
+}
+
+.filters .btn-search:hover {
+    background-color: #0056b3;
+}
+
+/* Hospital List Display */
+.hospital-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.hospital-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Push details button to the bottom */
+}
+
+.hospital-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.hospital-card h3 {
+    margin-top: 0;
+    color: #0056b3; /* Hospital name color */
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.hospital-card p {
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.hospital-card p strong {
+    color: #555;
+    margin-right: 5px;
+}
+
+.hospital-card .btn-details {
+    display: inline-block;
+    margin-top: 15px; /* Space from text */
+    padding: 10px 15px;
+    background-color: #28a745; /* Green for details */
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out;
+    align-self: flex-start; /* Align button to the left */
+}
+
+.hospital-card .btn-details:hover {
+    background-color: #218838;
+}
+
+.no-results {
+    grid-column: 1 / -1; /* Span across all columns */
+    text-align: center;
+    padding: 50px 20px;
+    color: #777;
+    font-size: 1.1rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Pagination styles */
+.pagination ul {
+    margin-top: 30px;
+}
+
+/* Assuming Bootstrap pagination classes are available or will be styled */
+.pagination .page-item .page-link {
+    color: #007bff;
+    border: 1px solid #dee2e6;
+    background-color: #fff;
+    margin: 0 2px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: #e9ecef;
+    color: #0056b3;
+}

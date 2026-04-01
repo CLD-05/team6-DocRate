@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>병원 등록 요청</title>
+    <link rel="stylesheet" th:href="@{/css/hospital/hospitalRequestForm.css}">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-card">
+            <div class="form-header">
+                <h1 class="form-title">병원 등록 요청</h1>
+                <p class="form-description">등록되어 있지 않은 병원이 있다면 요청해 주세요.<br>관리자 확인 후 등록됩니다.</p>
+            </div>
+
+            <form th:action="@{/hospital-requests}" method="post">
+                <div class="form-group">
+                    <label class="form-label" for="name">병원명</label>
+                    <input type="text" id="name" name="name" class="form-input" placeholder="병원 이름을 입력하세요" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="category">카테고리</label>
+                    <select id="category" name="category" class="form-select" required>
+                        <option value="" disabled selected>카테고리 선택</option>
+                        <option value="내과">내과</option>
+                        <option value="안과">안과</option>
+                        <option value="치과">치과</option>
+                        <option value="피부과">피부과</option>
+                        <option value="정형외과">정형외과</option>
+                        <option value="이비인후과">이비인후과</option>
+                        <option value="산부인과">산부인과</option>
+                        <option value="소아과">소아과</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="address">주소</label>
+                    <input type="text" id="address" name="address" class="form-input" placeholder="상세 주소를 입력하세요" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="phone">전화번호 (선택)</label>
+                    <input type="tel" id="phone" name="phone" class="form-input" placeholder="예: 02-1234-5678">
+                </div>
+
+                <button type="submit" class="submit-btn">요청하기</button>
+                <a href="/hospitals" class="cancel-btn">취소</a>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
