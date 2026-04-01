@@ -1,14 +1,16 @@
 package com.team.docrate.domain.user.service;
 
-
+import com.team.docrate.domain.user.dto.LoginRequestDto;
+import com.team.docrate.domain.user.dto.LoginResponseDto;
 import com.team.docrate.domain.user.dto.SignupRequestDto;
 import com.team.docrate.domain.user.dto.SignupResponseDto;
 import com.team.docrate.domain.user.entity.User;
+import com.team.docrate.domain.user.repository.UserRepository;
 import com.team.docrate.global.exception.DuplicateEmailException;
 import com.team.docrate.global.exception.DuplicateNicknameException;
+import com.team.docrate.global.exception.InvalidLoginException;
 import com.team.docrate.global.exception.PasswordMismatchException;
-import com.team.docrate.domain.user.repository.UserRepository;
-
+import com.team.docrate.global.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
     public SignupResponseDto signup(SignupRequestDto requestDto) {
@@ -45,6 +48,24 @@ public class UserService {
     }
 
     
+    public LoginResponseDto login(LoginRequestDto requestDto) {
+    	// 1. 이메일로 사용자 조회
+        User user = userRepository.findByEmail(requestDto.getEmail())
+                .orElseThrow(InvalidLoginException::new);
+
+        // 2. 비밀번호 검증 (평문 vs 암호화된 비밀번호 비교)
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new InvalidLoginException();
+        }
+        
+        // 3. 로그인 성공 시 JWT 발급
+        String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getRole());
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
+
+        // 4. 사용자 정보 + 토큰을 DTO로 반환
+        return LoginResponseDto.of(user, accessToken, refreshToken);
+    }
+    
     
     private void validateSignupRequest(SignupRequestDto requestDto) {
     	// 비밀번호와 비밀번호 확인 불일치
@@ -61,6 +82,5 @@ public class UserService {
         if (userRepository.existsByNickname(requestDto.getNickname())) {
             throw new DuplicateNicknameException();
         }
-
     }
 }

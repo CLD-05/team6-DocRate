@@ -31,6 +31,10 @@
                 </div>
 
                 <form th:action="@{/signup}" th:object="${signupRequestDto}" method="post">
+                <input type="hidden"
+		           th:if="${_csrf != null}"
+		           th:name="${_csrf.parameterName}"
+		           th:value="${_csrf.token}" />
 
                     <!-- 닉네임 -->
                     <div class="form-group">

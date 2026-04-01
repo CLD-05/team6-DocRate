@@ -7,24 +7,17 @@ import com.team.docrate.domain.user.dto.LoginRequestDto;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-	
+
 	// 회원가입 관련 예외는 회원가입 페이지로 다시 이동
-	@ExceptionHandler({
-
-	DuplicateEmailException.class,
-
-	DuplicateNicknameException.class,
-
-	PasswordMismatchException.class
-
-	})
-
-
+    @ExceptionHandler({
+            DuplicateEmailException.class,
+            DuplicateNicknameException.class,
+            PasswordMismatchException.class
+    })
     public String handleSignupException(RuntimeException e, Model model) {
         model.addAttribute("signupError", e.getMessage());
         return "users/signup";
     }
-
 
     // 비즈니스 예외는 공통 에러 페이지로 이동
     @ExceptionHandler(BusinessException.class)
@@ -38,5 +31,13 @@ public class GlobalExceptionHandler {
     public String handleException(Exception e, Model model) {
         model.addAttribute("errorMessage", "서버 오류가 발생했습니다.");
         return "error/error";
+    }
+    
+    // 로그인 실패 시, 다시 로그인 페이지로 이동
+    @ExceptionHandler(InvalidLoginException.class)
+    public String handleLoginException(InvalidLoginException e, Model model) {
+        model.addAttribute("loginError", e.getMessage());
+        model.addAttribute("loginRequestDto", new LoginRequestDto());
+        return "users/login";
     }
 }

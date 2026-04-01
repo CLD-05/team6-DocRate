@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+// JWT 생성 및 검증 담당 클래스
 @Component
 public class JwtTokenProvider {
 
@@ -36,6 +37,7 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
+    // access token 생성
     public String createAccessToken(String email, UserRole role) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + accessTokenExpiration);
@@ -50,6 +52,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    // refresh token 생성
     public String createRefreshToken(String email) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + refreshTokenExpiration);
@@ -63,6 +66,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    // 토큰 유효성 검사
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
@@ -75,6 +79,7 @@ public class JwtTokenProvider {
         }
     }
 
+    // 토큰에서 인증 객체 생성
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
 

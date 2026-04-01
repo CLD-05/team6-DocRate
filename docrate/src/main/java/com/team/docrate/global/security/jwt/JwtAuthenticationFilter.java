@@ -28,8 +28,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+    	// 요청에서 JWT 추출
         String token = resolveToken(request);
 
+        // 유효한 access token이면 인증 처리
         if (StringUtils.hasText(token)
                 && jwtTokenProvider.validateToken(token)
                 && "access".equals(jwtTokenProvider.getTokenType(token))) {
@@ -41,6 +43,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    
+    // 요청의 쿠키/헤더에서 토큰 추출하는 메서드
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
