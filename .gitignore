@@ -1,6 +1,47 @@
 # Created by https://www.toptal.com/developers/gitignore/api/eclipse,windows,macos,maven,gradle,java,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=eclipse,windows,macos,maven,gradle,java,visualstudiocode
 
+# Database dump files
+*.sql
+*.dump
+*.tar
+*.sql.gz
+
+# Database local files
+*.db
+*.sqlite
+*.sqlite3
+*.mdb
+*.ldb
+
+# Configuration files (sensitive)
+config.php
+db.php
+.env
+settings.json
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+
+# Visual Studio / SQL Server Management Studio
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+bin/
+obj/
+Debug/
+Release/
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
 ### Eclipse ###
 .metadata
 bin/
