@@ -62,6 +62,24 @@
                 </div>
             </div>
         </section>
+        
+        <div class="pagination" th:if="${totalPages > 0}">
+   		 <ul>
+        	<li th:classappend="${currentPage == 0} ? 'disabled'">
+           	  <a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${currentPage - 1})}">&laquo;</a>
+        	</li>
+
+        	<li th:each="pageIdx : ${#numbers.sequence(0, totalPages - 1)}"
+           		 th:classappend="${pageIdx == currentPage} ? 'active'">
+           	  <a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${pageIdx})}" 
+               th:text="${pageIdx + 1}">1</a>
+        	</li>
+
+        	<li th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+            	<a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${currentPage + 1})}">&raquo;</a>
+        	</li>
+    	 </ul>
+		</div>
 
         <footer class="list-footer">
             <a th:href="@{/doctor/detail/{id}(id=${doctor.id})}" class="btn-secondary">[의사 상세로]</a>

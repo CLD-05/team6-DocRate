@@ -1,13 +1,20 @@
 package com.team.docrate.domain.review.repository;
 
-import com.team.docrate.domain.review.entity.Review;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.team.docrate.domain.review.entity.Review;
+
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    List<Review> findByDoctorId(Long doctorId);
     
- // 의사 ID로 모든 리뷰를 찾아서 생성일 내림차순(최신순)으로 정렬해 가져오는 메서드
-    List<Review> findAllByDoctorIdOrderByCreatedAtDesc(Long doctorId);
+	List<Review> findByDoctorId(Long doctorId);
+    
+ // 페이징 처리
+    Page<Review> findPageByDoctorId(Long doctorId, Pageable pageable);
+    
+ // 전체리스트(평균 계산)
+    List<Review> findAllByDoctorId(Long doctorId);
 }

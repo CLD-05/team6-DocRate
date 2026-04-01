@@ -1,7 +1,6 @@
 package com.team.docrate.domain.review.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -9,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.team.docrate.domain.doctor.entity.Doctor;
 import com.team.docrate.domain.review.dto.ReviewCreateRequest;
@@ -24,22 +24,20 @@ public class ReviewController {
 
     private final ReviewService reviewService;
     
+    // 리뷰 작성 폼
     @GetMapping("/doctors/{doctorId}/reviews/new")
-    public String showReviewForm(@PathVariable Long doctorId, Model model) {
-    	// 1. ReviewService를 통해 의사 정보를 가져옵니다.
+    public String renderReviewForm(@PathVariable Long doctorId, Model model) {
     	Doctor doctor = reviewService.getDoctorById(doctorId);
-    	
-    	// 2. 모델에 담기
-        // 폼에서 사용할 빈 객체를 넘겨주어야 타임리프(Thymeleaf) 에러가 나지 않습니다.
     	model.addAttribute("doctor", doctor);
         model.addAttribute("reviewCreateRequest", new ReviewCreateRequest());
         model.addAttribute("doctorId", doctorId);
         
         return "review/form";
     }
-
+    
+    // 리뷰 작성 처리
     @PostMapping("/doctors/{doctorId}/reviews")
-    public String createReview(
+    public String registerReview(
     		@PathVariable Long doctorId,
     		@Valid @ModelAttribute("reviewCreateRequest") ReviewCreateRequest request,
     		BindingResult bindingResult,
@@ -51,25 +49,30 @@ public class ReviewController {
             return "review/form";
         }
 
-        reviewService.createReview(doctorId, request);
+        reviewService.registerReview(doctorId, request);
         return "redirect:/doctors/" + doctorId + "/reviews";
     }
     
- // 리뷰 목록을 보여주는 GET 메서드가 반드시 있어야 리다이렉트가 성공합니다.
+    // 리뷰 목록
     @GetMapping("/doctors/{doctorId}/reviews")
-    public String listByDoctor(@PathVariable Long doctorId, Model model) {
+    public String renderReviewList(
+    		@PathVariable Long doctorId,
+    		@RequestParam(value = "page", defaultValue = "0") int page,
+    		Model model) {
     	// 1. 의사 기본 정보 가져오기
         Doctor doctor = reviewService.getDoctorById(doctorId);
         
-        // 2. 해당 의사의 실제 리뷰 리스트 가져오기 (추가된 부분)
-        List<Review> reviews = reviewService.findAllByDoctorId(doctorId);
+        // 2. 해당 의사의 실제 리뷰 리스트 가져오기
+        Page<Review> reviewPage = reviewService.getReviewPageByDoctor(doctorId, page);
         
-        // 3. 평균 평점 계산해서 가져오기 (추가된 부분)
+        // 3. 평균 평점 계산해서 가져오기
         Double averageRating = reviewService.calculateAverageRating(doctorId);
 
         // 4. 모델에 전부 담아서 HTML로 보내기
         model.addAttribute("doctor", doctor);
-        model.addAttribute("reviews", reviews); // HTML의 th:each="review : ${reviews}"에 쓰임
+        model.addAttribute("reviews", reviewPage.getContent()); // 실제 리뷰 리스트
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", reviewPage.getTotalPages());
         model.addAttribute("averageRating", averageRating);
         
         return "review/list"; 

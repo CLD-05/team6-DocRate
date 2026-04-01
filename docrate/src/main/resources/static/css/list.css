@@ -72,6 +72,35 @@ body {
     font-size: 13px;
 }
 
+/* 페이지 번호 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+.pagination ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+}
+.pagination li { margin: 0 5px; }
+.pagination a {
+    text-decoration: none;
+    color: #333;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.pagination li.active a {
+    background-color: var(--primary-color, #000);
+    color: #fff;
+    border-color: var(--primary-color, #000);
+}
+.pagination li.disabled a {
+    color: #ccc;
+    pointer-events: none;
+}
+
 /* 하단 버튼 */
 .list-footer {
     display: flex;
