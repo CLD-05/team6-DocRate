@@ -37,7 +37,7 @@ public class HospitalService {
             hospitalPage = hospitalRepository.findActiveAndProcessedCategory(HospitalStatus.ACTIVE, processedCategory, pageable);
         } else {
             // 필터가 없는 경우: 전체 ACTIVE 상태인 병원 페이징 조회
-            hospitalPage = hospitalRepository.findByStatus(HospitalStatus.ACTIVE, pageable);
+        	hospitalPage = hospitalRepository.findAll(pageable);
         }
 
         // Page<Hospital>을 Page<HospitalResponse>로 변환
