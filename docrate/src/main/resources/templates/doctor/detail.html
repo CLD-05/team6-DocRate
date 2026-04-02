@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>의사 상세</title>
+    <link rel="stylesheet" href="/css/doctors.css">
+</head>
+<body>
+<div class="app-shell">
+    <div class="content-card">
+        <header class="app-header">
+            <div class="brand">
+                <a href="/">DocRate</a>
+            </div>
+            <div class="header-actions">
+                <a class="header-link" href="/mypage">마이페이지</a>
+                <a class="header-link" href="/logout">로그아웃</a>
+            </div>
+        </header>
+
+        <main class="page-body">
+            <section class="page-title-section">
+                <h1 class="page-title">의사 상세</h1>
+            </section>
+
+            <section class="detail-section">
+                <div class="detail-row">
+                    <span class="label">의사명:</span>
+                    <span th:text="${doctor.doctorName}">김의사</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">병원명:</span>
+                    <span th:text="${doctor.hospitalName != null and doctor.hospitalName != '' ? doctor.hospitalName : '정보 없음'}">서울튼튼내과</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">진료과:</span>
+                    <span th:text="${doctor.departmentName != null and doctor.departmentName != '' ? doctor.departmentName : '정보 없음'}">내과</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">평균 평점:</span>
+                    <span><span th:text="${doctor.averageRating}">4.6</span> / 5.0</span>
+                </div>
+            </section>
+
+            <section class="info-block">
+                <h2 class="section-title">소개</h2>
+                <div class="description-box">
+                    <span th:text="${doctor.intro != null and doctor.intro != '' ? doctor.intro : '소개가 아직 등록되지 않았습니다.'}">
+                        친절하고 꼼꼼하게 진료합니다.
+                    </span>
+                </div>
+            </section>
+
+            <section class="info-block">
+                <h2 class="section-title">평점 요약</h2>
+                <div class="rating-list">
+                    <div class="rating-item">친절도: <span th:text="${doctor.kindnessRating}">4.8</span></div>
+                    <div class="rating-item">설명력: <span th:text="${doctor.explanationRating}">4.7</span></div>
+                    <div class="rating-item">대기 만족도: <span th:text="${doctor.waitingRating}">4.1</span></div>
+                    <div class="rating-item">재방문 의사: <span th:text="${doctor.revisitRating}">4.5</span></div>
+                </div>
+            </section>
+
+            <section class="detail-actions">
+                <a class="main-button secondary"
+                   th:href="@{/doctors/{doctorId}/reviews(doctorId=${doctor.doctorId})}">
+                    리뷰 전체보기
+                </a>
+                <a class="main-button"
+                   th:href="@{/doctors/{doctorId}/reviews/new(doctorId=${doctor.doctorId})}">
+                    리뷰 작성
+                </a>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>
