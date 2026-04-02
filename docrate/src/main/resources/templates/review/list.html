@@ -9,7 +9,10 @@
 
     <header class="main-header">
         <div class="header-container">
-            <h1 class="logo">DocRate</h1>
+            <h1 class="logo">
+    			<a th:href="@{/}">DOCRATE</a>
+			</h1>
+            
             <div class="header-menu">
                 <a th:href="@{/mypage}" class="menu-item">마이페이지</a>
                 <a th:href="@{/logout}" class="menu-item">로그아웃</a>
@@ -59,27 +62,40 @@
 
                 <div class="review-date">
                     <span th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd')}">2026-03-30</span>
+                    
+                    <div th:if="${loginUser != null && review.user.id == loginUser.id}" class="review-actions" style="margin-top: 10px; text-align: right;">
+        
+        				<a th:href="@{/reviews/{id}/edit(id=${review.id})}" 
+           					style="font-size: 0.85rem; color: #007bff; text-decoration: none; margin-right: 10px;">[수정]</a>
+        	
+        				<form th:action="@{/reviews/{id}/delete(id=${review.id})}" 
+              					method="post" style="display: inline;">
+           				<button type="submit" 
+                    			style="background: none; border: none; color: #dc3545; cursor: pointer; font-size: 0.85rem; padding: 0;"
+                    			onclick="return confirm('정말 삭제하시겠습니까?')">[삭제]</button>
+        				</form>
+    			  </div>
                 </div>
             </div>
         </section>
         
-        <div class="pagination" th:if="${totalPages > 0}">
-   		 <ul>
-        	<li th:classappend="${currentPage == 0} ? 'disabled'">
-           	  <a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${currentPage - 1})}">&laquo;</a>
-        	</li>
+      <div class="pagination" th:if="${totalPages > 1}">
+    <ul>
+        <li th:classappend="${currentPage <= 1} ? 'disabled'">
+            <a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${currentPage > 1 ? currentPage - 1 : 1})}">&laquo;</a>
+        </li>
 
-        	<li th:each="pageIdx : ${#numbers.sequence(0, totalPages - 1)}"
-           		 th:classappend="${pageIdx == currentPage} ? 'active'">
-           	  <a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${pageIdx})}" 
-               th:text="${pageIdx + 1}">1</a>
-        	</li>
+        <li th:each="pageIdx : ${#numbers.sequence(1, totalPages)}"
+            th:classappend="${pageIdx == currentPage} ? 'active'">
+            <a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${pageIdx})}" 
+               th:text="${pageIdx}">1</a>
+        </li>
 
-        	<li th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-            	<a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${currentPage + 1})}">&raquo;</a>
-        	</li>
-    	 </ul>
-		</div>
+        <li th:classappend="${currentPage >= totalPages} ? 'disabled'">
+            <a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${currentPage < totalPages ? currentPage + 1 : totalPages})}">&raquo;</a>
+        </li>
+    </ul>
+</div>
 
         <footer class="list-footer">
             <a th:href="@{/doctor/detail/{id}(id=${doctor.id})}" class="btn-secondary">[의사 상세로]</a>
