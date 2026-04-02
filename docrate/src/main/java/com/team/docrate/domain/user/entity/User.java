@@ -13,25 +13,35 @@ import lombok.*;
 @Builder
 public class User extends BaseEntity {
 
+	// 회원 고유 번호
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    // 이메일은 필수 + 중복 불가
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(nullable = false)
+    // 암호화된 비밀번호 저장
+    @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(nullable = false, unique = true)
+    // 닉네임은 필수 + 중복 불가
+    @Column(nullable = false, unique = true, length = 50)
     private String nickname;
 
+    // USER / ADMIN 권한 저장
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private UserRole role;
-
-	public void promoteToDoctor() {
-		// TODO Auto-generated method stub
-		
-	}
+    
+    // 회원가입 시 일반 사용자 계정 생성
+    public static User createUser(String email, String encodedPassword, String nickname) {
+        return User.builder()
+                .email(email)
+                .password(encodedPassword)
+                .nickname(nickname)
+                .role(UserRole.USER)
+                .build();
+    }
 }
