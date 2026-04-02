@@ -16,9 +16,9 @@ public class RefreshTokenRedisRepository {
     public void save(String email, String refreshToken, long expirationMillis) {
         String key = generateKey(email);
         //확인용 
-        System.out.println("Redis 저장 key = " + key);
-        System.out.println("Redis 저장 refreshToken = " + refreshToken);
-        System.out.println("Redis TTL = " + expirationMillis);
+//        System.out.println("Redis 저장 key = " + key);
+//        System.out.println("Redis 저장 refreshToken = " + refreshToken);
+//        System.out.println("Redis TTL = " + expirationMillis);
         
         redisTemplate.opsForValue().set(key, refreshToken, Duration.ofMillis(expirationMillis));
     }

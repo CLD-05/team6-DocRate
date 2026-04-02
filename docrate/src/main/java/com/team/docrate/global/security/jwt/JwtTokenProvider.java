@@ -120,4 +120,17 @@ public class JwtTokenProvider {
                 .parseSignedClaims(token)	// JWT 파싱
                 .getPayload();				// claims 추출
     }
+    
+ // 만료된 토큰에서도 claims를 추출하기 위한 메서드
+    public Claims parseClaimsAllowExpired(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
+    }
 }

@@ -77,8 +77,8 @@ public class UserService {
     @Transactional
     public TokenReissueResponseDto reissueToken(String refreshToken) {
     	//확인용
-    	System.out.println("=== reissueToken 시작 ===");
-        System.out.println("입력 refreshToken = " + refreshToken);
+//    	System.out.println("=== reissueToken 시작 ===");
+//        System.out.println("입력 refreshToken = " + refreshToken);
     	
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new InvalidRefreshTokenException("Refresh Token이 존재하지 않습니다.");
@@ -91,7 +91,7 @@ public class UserService {
         // 2. refresh token 타입 검증
         String tokenType = jwtTokenProvider.getTokenType(refreshToken);
      // 확인용 
-        System.out.println("tokenType = " + tokenType);
+//        System.out.println("tokenType = " + tokenType);
         if (!"refresh".equals(tokenType)) {
             throw new InvalidRefreshTokenException("Refresh Token이 아닙니다.");
         }
@@ -99,12 +99,12 @@ public class UserService {
         // 3. 토큰에서 사용자 이메일 추출
         String email = jwtTokenProvider.getEmail(refreshToken);
         // 확인용 
-        System.out.println("email = " + email);
+//        System.out.println("email = " + email);
         
         // 4. Redis 저장된 refresh token 조회
         String savedRefreshToken = refreshTokenRedisService.getRefreshToken(email);
         // 확인용
-        System.out.println("Redis savedRefreshToken = " + savedRefreshToken);
+//        System.out.println("Redis savedRefreshToken = " + savedRefreshToken);
         
         if (savedRefreshToken == null) {
             throw new InvalidRefreshTokenException("저장된 Refresh Token이 없습니다.");
@@ -126,8 +126,8 @@ public class UserService {
         String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
         
         // 확인용
-        System.out.println("newAccessToken = " + newAccessToken);
-        System.out.println("newRefreshToken = " + newRefreshToken);
+//        System.out.println("newAccessToken = " + newAccessToken);
+//        System.out.println("newRefreshToken = " + newRefreshToken);
 
         // 9. Redis refresh token 교체
         refreshTokenRedisService.saveRefreshToken(user.getEmail(), newRefreshToken);
