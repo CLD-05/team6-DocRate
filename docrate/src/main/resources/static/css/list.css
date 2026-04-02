@@ -1,0 +1,124 @@
+/* 공통 레이아웃 */
+body {
+    font-family: 'Pretendard', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+/* 헤더 스타일 */
+.main-header {
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    padding: 15px 20px;
+}
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.logo { font-size: 24px; color: #333; margin: 0; }
+.menu-item { text-decoration: none; color: #666; margin-left: 15px; font-size: 14px; }
+
+/* 리스트 상단 */
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 10px;
+}
+.title { font-size: 20px; margin: 0; }
+.average-rating { color: #666; }
+.rating-num { color: #e74c3c; font-weight: bold; }
+
+.divider { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
+
+/* 리뷰 카드 */
+.review-card {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.card-row { margin-bottom: 8px; font-size: 15px; }
+.label { font-weight: bold; margin-right: 10px; }
+.stars { color: #f1c40f; }
+
+.detail-scores {
+    font-size: 14px;
+    color: #555;
+}
+.detail-scores strong { color: #e74c3c; }
+
+.review-text {
+    margin: 15px 0;
+    font-style: italic;
+    color: #333;
+}
+
+.review-date {
+    text-align: right;
+    color: #999;
+    font-size: 13px;
+}
+
+/* 페이지 번호 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+.pagination ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+}
+.pagination li { margin: 0 5px; }
+.pagination a {
+    text-decoration: none;
+    color: #333;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.pagination li.active a {
+    background-color: var(--primary-color, #000);
+    color: #fff;
+    border-color: var(--primary-color, #000);
+}
+.pagination li.disabled a {
+    color: #ccc;
+    pointer-events: none;
+}
+
+/* 하단 버튼 */
+.list-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+.btn-primary, .btn-secondary {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    padding: 10px;
+}
+.btn-primary:hover, .btn-secondary:hover {
+    color: #4A90E2;
+}
+
+.no-data {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+}

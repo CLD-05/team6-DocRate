@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>리뷰 목록 - DocRate</title>
+    <link rel="stylesheet" th:href="@{/css/list.css}">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <h1 class="logo">DocRate</h1>
+            <div class="header-menu">
+                <a th:href="@{/mypage}" class="menu-item">마이페이지</a>
+                <a th:href="@{/logout}" class="menu-item">로그아웃</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="list-header">
+            <h2 class="title" th:text="'리뷰 목록 - ' + ${doctor.name}">리뷰 목록 - 김의사</h2>
+            <div class="average-rating">
+                <span>평균 평점: </span>
+                <span class="rating-num" th:text="${averageRating != null ? averageRating : '0.0'}">4.6</span>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <section class="review-container">
+            <div th:if="${#lists.isEmpty(reviews)}" class="no-data">
+                작성된 리뷰가 없습니다.
+            </div>
+
+            <div class="review-card" th:each="review : ${reviews}">
+                <div class="card-row">
+                    <span class="label">작성자:</span>
+                    <span class="value" th:text="${review.user.nickname}">user01</span>
+                </div>
+                
+                <div class="card-row">
+                    <span class="label">평점:</span>
+                    <span class="stars">
+                        <span th:text="${'★'.repeat(review.rating.intValue())}">★★★★★</span>
+                    </span>
+                </div>
+
+                <div class="card-row detail-scores">
+                    <span>친절도 <strong th:text="${review.bedsideManner}">5</strong></span> /
+                    <span>설명력 <strong th:text="${review.explanation}">5</strong></span> /
+                    <span>대기 <strong th:text="${review.waitTime}">4</strong></span> /
+                    <span>재방문 <strong th:text="${review.revisitIntention ? 'Y' : 'N'}">Y</strong></span>
+                </div>
+
+                <div class="review-text">
+                    <p th:text="${review.content}">"정말 친절하게 설명해주셨어요."</p>
+                </div>
+
+                <div class="review-date">
+                    <span th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd')}">2026-03-30</span>
+                </div>
+            </div>
+        </section>
+        
+        <div class="pagination" th:if="${totalPages > 0}">
+   		 <ul>
+        	<li th:classappend="${currentPage == 0} ? 'disabled'">
+           	  <a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${currentPage - 1})}">&laquo;</a>
+        	</li>
+
+        	<li th:each="pageIdx : ${#numbers.sequence(0, totalPages - 1)}"
+           		 th:classappend="${pageIdx == currentPage} ? 'active'">
+           	  <a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${pageIdx})}" 
+               th:text="${pageIdx + 1}">1</a>
+        	</li>
+
+        	<li th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+            	<a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${currentPage + 1})}">&raquo;</a>
+        	</li>
+    	 </ul>
+		</div>
+
+        <footer class="list-footer">
+            <a th:href="@{/doctor/detail/{id}(id=${doctor.id})}" class="btn-secondary">[의사 상세로]</a>
+            <a th:href="@{/doctors/{id}/reviews/new(id=${doctor.id})}" class="btn-primary">[리뷰 작성]</a>
+        </footer>
+    </main>
+</body>
+</html>

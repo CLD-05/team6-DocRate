@@ -1,0 +1,275 @@
+/* [기본 스타일 및 레퍼런스 컬러 반영] */
+:root {
+	--primary-color: #000000; /* 블랙 버튼 */
+	--bg-color: #F6F6F6; /* 로그인 페이지 배경색 */
+	--card-color: #FFFFFF;
+	--border-color: #EEEEEE;
+	--text-main: #000000;
+	--text-sub: #888888;
+}
+
+body {
+	font-family: 'Pretendard', -apple-system, sans-serif;
+	background-color: var(--bg-color);
+	color: var(--text-main);
+	margin: 0;
+	padding: 0;
+}
+
+/* [헤더 스타일 - 와이어프레임 반영] */
+.main-header {
+	background-color: var(--card-color);
+	padding: 15px 0;
+	border-bottom: 1px solid var(--border-color);
+}
+
+.header-container {
+	max-width: 1000px;
+	margin: 0 auto;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0 20px;
+}
+
+.logo {
+	margin: 0;
+	font-size: 1.5rem;
+	font-weight: 800;
+}
+
+.header-menu {
+	display: flex;
+	gap: 15px;
+}
+
+.menu-item {
+	text-decoration: none;
+	color: var(--text-main);
+	font-size: 0.9rem;
+}
+
+.menu-item.logout {
+	color: var(--text-sub);
+}
+
+/* [메인 컨테이너 - 로그인 카드 스타일] */
+.container {
+	max-width: 700px;
+	margin: 40px auto;
+	background-color: var(--card-color);
+	padding: 40px;
+	border-radius: 20px; /* 라운드드 코너 */
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.page-header h2 {
+	font-size: 1.8rem;
+	font-weight: 700;
+	margin-bottom: 5px;
+}
+
+.header-divider {
+	border: 0;
+	border-top: 2px solid var(--primary-color);
+	width: 60px;
+	margin: 15px 0;
+}
+
+/* [의사 정보 바] */
+.doctor-info-bar {
+	background-color: #FBFBFB;
+	padding: 15px;
+	border-radius: 10px;
+	font-size: 1rem;
+	color: var(--text-sub);
+	margin-bottom: 30px;
+}
+
+.info-label {
+	font-weight: 600;
+	color: var(--text-main);
+	margin-right: 5px;
+}
+
+.info-separator {
+	margin: 0 10px;
+	color: #DDD;
+}
+
+/* [폼 요소 스타일] */
+.form-group {
+	margin-bottom: 25px;
+}
+
+.form-group label {
+	display: block;
+	font-weight: 600;
+	font-size: 1rem;
+	margin-bottom: 10px;
+}
+
+.section-divider {
+	border: 0;
+	border-top: 1px solid var(--border-color);
+	margin: 30px 0;
+}
+
+/* 종합 평점 라디오 버튼 */
+.rating-options {
+	display: flex;
+	gap: 10px;
+}
+
+.rating-options input[type="radio"] {
+	display: none;
+}
+
+.rating-options label {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 45px;
+	height: 45px;
+	border: 1px solid var(--border-color);
+	border-radius: 10px;
+	cursor: pointer;
+	font-weight: 700;
+	color: var(--text-sub);
+	transition: all 0.2s;
+}
+
+.rating-options input[type="radio"]:checked+label {
+	background-color: var(--primary-color);
+	color: #FFF;
+	border-color: var(--primary-color);
+}
+
+/* 세부 항목 Grid - 세로 배치를 위해 grid 해제 및 flex 설정 */
+.detail-ratings-grid {
+    display: flex;
+    flex-direction: column; /* 항목들을 위아래(세로)로 나열 */
+    gap: 10px;
+}
+
+/* 각 세부 항목(친절도 등) 사이의 여백 */
+.detail-row {
+    margin-bottom: 20px;
+}
+
+/* 세부 항목 라디오 버튼 스타일 (종합 평점과 동일하게 유지) */
+.detail-selection {
+    display: flex;
+    gap: 10px;
+}
+
+.detail-selection label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 45px;
+    height: 45px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--text-sub);
+    transition: all 0.2s;
+}
+
+/* 체크 시 블랙 배경 적용 */
+.detail-selection input[type="radio"]:checked + label {
+    background-color: var(--primary-color);
+    color: #FFF;
+    border-color: var(--primary-color);
+}
+
+/* 재방문 의사 - 세련된 라디오 버튼 */
+.radio-group-modern {
+	display: flex;
+	gap: 10px;
+}
+
+.radio-group-modern input[type="radio"] {
+	display: none;
+}
+
+.radio-btn-label {
+	padding: 12px 25px;
+	border: 1px solid var(--border-color);
+	border-radius: 30px;
+	cursor: pointer;
+	font-weight: 600;
+	color: var(--text-sub);
+	transition: all 0.2s;
+}
+
+.radio-group-modern input[type="radio"]:checked+label {
+	background-color: #F0F0F0;
+	color: var(--text-main);
+	border-color: #E0E0E0;
+}
+
+/* [하단 버튼 - 레퍼런스 스타일 반영] */
+.button-group-modern {
+	display: flex;
+	justify-content: flex-end;
+	gap: 15px;
+	margin-top: 40px;
+}
+
+.btn-save {
+	padding: 15px 40px;
+	background-color: var(--primary-color); /* 블랙 버튼 */
+	color: #FFFFFF;
+	border: none;
+	border-radius: 30px; /* 완전 라운드 */
+	font-size: 1rem;
+	font-weight: 700;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+.btn-save:hover {
+	background-color: #333333;
+}
+
+.btn-cancel {
+	padding: 15px 40px;
+	background-color: var(--card-color);
+	color: var(--text-sub);
+	text-decoration: none;
+	border: 1px solid var(--border-color);
+	border-radius: 30px;
+	font-size: 1rem;
+	font-weight: 600;
+	display: inline-block;
+	transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+	background-color: #F9F9F9;
+	color: var(--text-main);
+}
+
+/* 공통 인풋 스타일: textarea에도 너비 100%가 적용되어야 합니다 */
+input[type="text"], 
+input[type="password"], 
+input[type="number"], 
+textarea {
+    width: 100% !important; /* 다른 스타일보다 우선적으로 100% 적용 */
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-sizing: border-box; /* 패딩이 너비에 포함되도록 설정 (매우 중요) */
+    font-size: 1rem;
+    display: block; /* 한 줄을 통째로 차지하게 함 */
+    margin-top: 8px;
+}
+
+/* textarea 전용 높이 설정 */
+textarea {
+    height: 180px;
+    resize: vertical; /* 사용자가 높이 조절 가능 */
+    line-height: 1.5;
+}
