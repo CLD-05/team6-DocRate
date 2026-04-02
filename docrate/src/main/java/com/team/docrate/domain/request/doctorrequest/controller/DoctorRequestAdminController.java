@@ -56,4 +56,5 @@ public class DoctorRequestAdminController {
     public static class RejectRequestDto {
         private String reason;
     }
+    
 }

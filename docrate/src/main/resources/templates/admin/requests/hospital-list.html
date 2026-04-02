@@ -15,6 +15,10 @@
     <div class="admin-container">
         <div class="header-section">
             <div class="logo" onclick="location.href='/'">DocRate <span>Admin Panel</span></div>
+            <button class="btn-black" onclick="location.href='/mypage'" 
+                style="background-color: var(--primary-black); color: white; border: none; padding: 6px 12px;">
+            MY PAGE
+        </button>
             <button class="btn-black" onclick="location.href='/admin/doctor-requests'" style="background:none; color:#888; border:1px solid #ddd;">의사 관리로 이동</button>
         </div>
 
@@ -22,10 +26,10 @@
 
         <div class="filter-bar">
             <select id="statusFilter" onchange="filterByStatus(this.value)">
-                <option value="" th:selected="${currentStatus == null || currentStatus == ''}">전체 상태보기</option>
-                <option value="PENDING" th:selected="${currentStatus == 'PENDING'}">대기 (PENDING)</option>
-                <option value="APPROVED" th:selected="${currentStatus == 'APPROVED'}">승인 (APPROVED)</option>
-                <option value="REJECTED" th:selected="${currentStatus == 'REJECTED'}">거절 (REJECTED)</option>
+                <option value="" th:selected="${currentStatus == null || currentStatus == ''}">전체 상태</option>
+                <option value="PENDING" th:selected="${currentStatus == 'PENDING'}">PENDING (대기)</option>
+                <option value="APPROVED" th:selected="${currentStatus == 'APPROVED'}">APPROVED (승인)</option>
+                <option value="REJECTED" th:selected="${currentStatus == 'REJECTED'}">REJECTED (거절)</option>
             </select>
         </div>
 

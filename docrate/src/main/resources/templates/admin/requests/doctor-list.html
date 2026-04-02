@@ -15,6 +15,10 @@
     <div class="admin-container">
         <div class="header-section">
             <div class="logo" onclick="location.href='/'">DocRate <span>Admin Panel</span></div>
+            <button class="btn-black" onclick="location.href='/mypage'" 
+                style="background-color: var(--primary-black); color: white; border: none; padding: 6px 12px;">
+            MY PAGE
+        </button>
             <button class="btn-black" onclick="location.href='/admin/hospital-requests'" style="background:none; color:#888; border:1px solid #ddd;">병원 관리로 이동</button>
         </div>
 
@@ -23,9 +27,9 @@
         <div class="filter-bar">
             <select id="statusFilter" onchange="location.href='/admin/doctor-requests?status=' + this.value">
                 <option value="" th:selected="${currentStatus == null || currentStatus == ''}">전체 상태</option>
-                <option value="PENDING" th:selected="${currentStatus == 'PENDING'}">대기</option>
-                <option value="APPROVED" th:selected="${currentStatus == 'APPROVED'}">승인됨</option>
-                <option value="REJECTED" th:selected="${currentStatus == 'REJECTED'}">반려됨</option>
+                <option value="PENDING" th:selected="${currentStatus == 'PENDING'}">PENDING (대기)</option>
+                <option value="APPROVED" th:selected="${currentStatus == 'APPROVED'}">APPROVED (승인)</option>
+                <option value="REJECTED" th:selected="${currentStatus == 'REJECTED'}">REJECTED (거절)</option>
             </select>
         </div>
 
@@ -88,32 +92,57 @@
     <script th:inline="javascript">
         async function approveRequest(id) {
             if (!confirm("승인하시겠습니까?")) return;
+            
             const token = document.querySelector('meta[name="_csrf"]').content;
             const header = document.querySelector('meta[name="_csrf_header"]').content;
+            
             try {
-                const response = await fetch(`/admin/doctor-requests/${id}/approve`, {
+                // ★ 경로에 /api 를 추가했습니다.
+                const response = await fetch(`/api/admin/doctor-requests/${id}/approve`, {
                     method: 'POST',
-                    headers: { [header]: token }
+                    headers: { 
+                        [header]: token 
+                    }
                 });
-                if (response.ok) { alert("승인 완료"); location.reload(); }
-                else { alert("처리 중 오류 발생"); }
-            } catch (e) { alert("통신 에러"); }
+                
+                if (response.ok) { 
+                    alert("승인 완료"); 
+                    location.reload(); 
+                } else { 
+                    alert("처리 중 오류 발생 (상태코드: " + response.status + ")"); 
+                }
+            } catch (e) { 
+                alert("통신 에러"); 
+            }
         }
 
         async function rejectRequest(id) {
             const reason = prompt("반려 사유:");
             if (!reason) return;
+            
             const token = document.querySelector('meta[name="_csrf"]').content;
             const header = document.querySelector('meta[name="_csrf_header"]').content;
+            
             try {
-                const response = await fetch(`/admin/doctor-requests/${id}/reject`, {
+                // ★ 경로에 /api 를 추가했습니다.
+                const response = await fetch(`/api/admin/doctor-requests/${id}/reject`, {
                     method: 'POST',
-                    headers: { [header]: token, 'Content-Type': 'application/json' },
+                    headers: { 
+                        [header]: token, 
+                        'Content-Type': 'application/json' 
+                    },
                     body: JSON.stringify({ reason: reason })
                 });
-                if (response.ok) { alert("반려 완료"); location.reload(); }
-                else { alert("처리 중 오류 발생"); }
-            } catch (e) { alert("통신 에러"); }
+                
+                if (response.ok) { 
+                    alert("반려 완료"); 
+                    location.reload(); 
+                } else { 
+                    alert("처리 중 오류 발생 (상태코드: " + response.status + ")"); 
+                }
+            } catch (e) { 
+                alert("통신 에러"); 
+            }
         }
     </script>
 </body>
