@@ -55,6 +55,11 @@ public class SecurityConfig {
                                 "/", "/signup", "/login", "/logout",
                                 "/css/**", "/js/**", "/images/**", "/favicon.ico"
                         ).permitAll()
+                        .requestMatchers(
+                                "/doctors",
+                                "/doctors/*",
+                                "/doctors/*/reviews"
+                            ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

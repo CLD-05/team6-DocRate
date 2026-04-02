@@ -20,11 +20,11 @@ public class LogoutController {
     @PostMapping("/logout")
     public String logout(
             HttpServletRequest request,
-            HttpServletResponse response
+            HttpServletResponse response,
+            @org.springframework.web.bind.annotation.RequestParam(value = "redirectUrl", required = false) String redirectUrl
     ) {
         String accessToken = resolveAccessToken(request);
         String refreshToken = resolveRefreshToken(request);
-
 
         userService.logout(accessToken, refreshToken);
 
@@ -33,6 +33,9 @@ public class LogoutController {
         deleteCookie(response, "accessToken");
         deleteCookie(response, "refreshToken");
 
+        if (StringUtils.hasText(redirectUrl) && redirectUrl.startsWith("/")) {
+            return "redirect:" + redirectUrl;
+        }
         return "redirect:/";
     }
 
