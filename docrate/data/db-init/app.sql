@@ -205,6 +205,3 @@ CREATE TABLE doctor_requests (
 );
 
 SHOW TABLES;
-USE app;
-SELECT COUNT(*) FROM hospitals;
-SELECT * FROM hospitals LIMIT 10;
