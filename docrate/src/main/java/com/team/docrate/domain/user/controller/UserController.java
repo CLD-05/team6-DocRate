@@ -1,18 +1,25 @@
 package com.team.docrate.domain.user.controller;
 
 
+import com.team.docrate.domain.user.dto.ChangePasswordRequestDto;
 import com.team.docrate.domain.user.dto.LoginRequestDto;
 import com.team.docrate.domain.user.dto.LoginResponseDto;
+import com.team.docrate.domain.user.dto.MyPageResponseDto;
 import com.team.docrate.domain.user.dto.SignupRequestDto;
+import com.team.docrate.domain.user.dto.UpdateUserInfoRequestDto;
 import com.team.docrate.domain.user.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -102,6 +109,34 @@ public class UserController {
         return "redirect:/";
     }
 
+    @GetMapping("/mypage")
+    @ResponseBody
+    public ResponseEntity<MyPageResponseDto> getMyPage(Principal principal) {
+        MyPageResponseDto response = userService.getMyPage(principal.getName());
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/mypage")
+    @ResponseBody
+    public ResponseEntity<MyPageResponseDto> updateMyInfo(
+            Principal principal,
+            @Valid @RequestBody UpdateUserInfoRequestDto requestDto
+    ) {
+        MyPageResponseDto response = userService.updateUserInfo(principal.getName(), requestDto);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/mypage/password")
+    @ResponseBody
+    public ResponseEntity<Void> changePassword(
+            Principal principal,
+            @Valid @RequestBody ChangePasswordRequestDto requestDto
+    ) {
+        userService.changePassword(principal.getName(), requestDto);
+        return ResponseEntity.ok().build();
+    }
+
+    
     
     // JWT 토콘을 저장할 쿠키 생성
     private Cookie createCookie(String name, String value, int maxAge) {

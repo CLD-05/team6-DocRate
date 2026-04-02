@@ -1,10 +1,13 @@
 package com.team.docrate.domain.user.service;
 
+import com.team.docrate.domain.user.dto.ChangePasswordRequestDto;
 import com.team.docrate.domain.user.dto.LoginRequestDto;
 import com.team.docrate.domain.user.dto.LoginResponseDto;
+import com.team.docrate.domain.user.dto.MyPageResponseDto;
 import com.team.docrate.domain.user.dto.SignupRequestDto;
 import com.team.docrate.domain.user.dto.SignupResponseDto;
 import com.team.docrate.domain.user.dto.TokenReissueResponseDto;
+import com.team.docrate.domain.user.dto.UpdateUserInfoRequestDto;
 import com.team.docrate.domain.user.entity.User;
 import com.team.docrate.domain.user.repository.UserRepository;
 import com.team.docrate.global.exception.DuplicateEmailException;
@@ -107,7 +110,6 @@ public class UserService {
     public void logout(String accessToken, String refreshToken) {
         String email = null;
 
-        // 1. Access Token이 정상적이면 블랙리스트 저장 + email 확보
         if (StringUtils.hasText(accessToken)) {
             try {
                 jwtTokenProvider.validateToken(accessToken);
@@ -126,7 +128,6 @@ public class UserService {
             }
         }
 
-        // 2. email이 없으면 Refresh Token 기준으로 email 확보
         if (!StringUtils.hasText(email) && StringUtils.hasText(refreshToken)) {
             try {
                 jwtTokenProvider.validateToken(refreshToken);
@@ -140,10 +141,50 @@ public class UserService {
             }
         }
 
-        // 3. email을 찾았으면 Redis RT 삭제
         if (StringUtils.hasText(email)) {
             refreshTokenRedisService.deleteRefreshToken(email);
         }
+    }
+
+    public MyPageResponseDto getMyPage(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        return MyPageResponseDto.from(user);
+    }
+
+    @Transactional
+    public MyPageResponseDto updateUserInfo(String email, UpdateUserInfoRequestDto requestDto) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        if (userRepository.existsByNicknameAndEmailNot(requestDto.getNickname(), email)) {
+            throw new DuplicateNicknameException();
+        }
+
+        user.changeNickname(requestDto.getNickname());
+
+        return MyPageResponseDto.from(user);
+    }
+
+    @Transactional
+    public void changePassword(String email, ChangePasswordRequestDto requestDto) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        if (!passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPassword())) {
+            throw new InvalidLoginException();
+        }
+
+        if (!requestDto.isNewPasswordMatched()) {
+            throw new PasswordMismatchException();
+        }
+
+        if (passwordEncoder.matches(requestDto.getNewPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("기존 비밀번호와 다른 비밀번호를 입력해주세요.");
+        }
+
+        user.changePassword(passwordEncoder.encode(requestDto.getNewPassword()));
     }
 
     public Optional<User> findByEmail(String email) {
