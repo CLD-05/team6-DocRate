@@ -1,5 +1,6 @@
 package com.team.docrate.domain.doctor.controller;
 
+import com.team.docrate.domain.doctor.dto.DoctorDetailDto;
 import com.team.docrate.domain.doctor.dto.DoctorListItemDto;
 import com.team.docrate.domain.doctor.service.DoctorService;
 import com.team.docrate.domain.user.service.UserService;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -43,4 +45,13 @@ public class DoctorController {
 
         return "doctors/list";
     }
+
+
+    @GetMapping("/doctors/{doctorId}")
+    public String getDoctorDetail(@PathVariable Long doctorId, Model model) {
+        DoctorDetailDto doctor = doctorService.getDoctorDetail(doctorId);
+        model.addAttribute("doctor", doctor);
+        return "doctors/detail";
+    }
+
 }

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>의사 상세</title>
+    <link rel="stylesheet" th:href="@{/css/doctor-detail.css}">
+</head>
+<body>
+<div class="page-wrap">
+    <div class="detail-shell">
+
+        <header class="topbar">
+            <div class="brand">
+                <a th:href="@{/doctors}">DOCRATE</a>
+            </div>
+
+			<div class="topbar-menu">
+			    <a th:if="${!isAuthenticated}"
+			       th:href="@{/login}"
+			       class="top-link-btn">
+			        로그인
+			    </a>
+
+			    <div th:if="${isAuthenticated}" class="user-menu">
+			        <span class="nickname" th:text="${loginName}">사용자</span>
+
+			        <a th:href="@{/mypage}" class="top-link-btn">
+			            마이페이지
+			        </a>
+
+			        <form th:action="@{/logout}" method="post" class="logout-form" style="display:inline;">
+			            <button type="submit" class="top-link-btn dark">
+			                로그아웃
+			            </button>
+			        </form>
+			    </div>
+			</div>
+        </header>
+
+        <main class="content">
+            <section class="hero-section">
+                <p class="eyebrow">DOCTOR DETAIL</p>
+                <h1 class="page-title">의사 상세</h1>
+                <p class="page-desc">의사의 상세 정보와 평점 요약을 확인해보세요.</p>
+            </section>
+
+            <section class="profile-card">
+                <div class="profile-top">
+                    <div class="profile-main">
+                        <div class="title-row">
+                            <h2 class="doctor-name" th:text="${doctor.name}">김민수</h2>
+                            <span class="department-badge" th:text="${doctor.departmentName}">신경과</span>
+                        </div>
+
+                        <p class="doctor-hospital">
+                            <span class="label">병원명</span>
+                            <span class="value" th:text="${doctor.hospitalName}">강북삼성병원</span>
+                        </p>
+                    </div>
+
+                    <div class="score-card">
+                        <p class="score-label">평균 평점</p>
+                        <p class="score-value" th:if="${doctor.reviewCount > 0}">
+                            <span th:text="${doctor.averageRating}">4.6</span>
+                            <span class="score-total">/ 5.0</span>
+                        </p>
+                        <p class="score-value no-review" th:unless="${doctor.reviewCount > 0}">
+                            리뷰 없음
+                        </p>
+                    </div>
+                </div>
+
+                <div class="section-block">
+                    <h3 class="section-title">소개</h3>
+                    <div class="info-box">
+                        <p th:text="${doctor.intro}">풍부한 임상 경험을 바탕으로 진료합니다.</p>
+                    </div>
+                </div>
+
+                <div class="section-block">
+                    <h3 class="section-title">평점 요약</h3>
+
+                    <div class="rating-grid" th:if="${doctor.reviewCount > 0}">
+                        <div class="rating-item">
+                            <span class="rating-name">친절도</span>
+                            <span class="rating-score" th:text="${doctor.kindnessRating}">4.8</span>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-name">설명력</span>
+                            <span class="rating-score" th:text="${doctor.explanationRating}">4.7</span>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-name">대기 만족도</span>
+                            <span class="rating-score" th:text="${doctor.waitingRating}">4.1</span>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-name">재방문 의사</span>
+                            <span class="rating-score" th:text="${doctor.revisitRating}">4.5</span>
+                        </div>
+                    </div>
+
+                    <div class="empty-review-box" th:unless="${doctor.reviewCount > 0}">
+                        아직 등록된 리뷰가 없습니다.
+                    </div>
+                </div>
+
+                <div class="action-row">
+                    <a class="action-btn light" th:href="@{/doctors}">
+                        목록으로
+                    </a>
+
+                    <div class="action-group">
+                        <a class="action-btn light"
+                           th:href="@{/doctors/{doctorId}/reviews(doctorId=${doctor.id})}">
+                            리뷰 전체보기
+                        </a>
+
+                        <a class="action-btn dark"
+                           th:href="@{/doctors/{doctorId}/reviews/new(doctorId=${doctor.id})}">
+                            리뷰 작성
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>

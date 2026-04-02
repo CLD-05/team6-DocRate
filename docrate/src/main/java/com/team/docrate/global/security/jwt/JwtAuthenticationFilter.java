@@ -12,13 +12,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -54,14 +55,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String accessToken = resolveAccessToken(request);
 
+        System.out.println("요청 URI = " + request.getRequestURI());
+        System.out.println("accessToken = " + accessToken);
+
+        // 토큰이 없으면 그냥 통과
         if (!StringUtils.hasText(accessToken)) {
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
+            // 블랙리스트 토큰 처리
             if (accessTokenBlacklistService.isBlacklisted(accessToken)) {
-                // 공개 페이지에서는 비로그인 상태로 통과
                 if (isPublicPage(request)) {
                     SecurityContextHolder.clearContext();
                     filterChain.doFilter(request, response);
@@ -72,8 +77,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
+            // 토큰 유효성 검증
             jwtTokenProvider.validateToken(accessToken);
 
+            // access token 타입 확인
             String tokenType = jwtTokenProvider.getTokenType(accessToken);
             if (!"access".equals(tokenType)) {
                 if (isPublicPage(request)) {
@@ -86,19 +93,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            var authentication = jwtTokenProvider.getAuthentication(accessToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            // 정상 인증 처리
+            SecurityContextHolder.getContext().setAuthentication(
+                    jwtTokenProvider.getAuthentication(accessToken)
+            );
+
+            System.out.println("인증 완료 = "
+                    + SecurityContextHolder.getContext().getAuthentication().getName());
 
             filterChain.doFilter(request, response);
 
         } catch (InvalidTokenException e) {
-            // 공개 페이지면 인증 없이 그냥 진행
+            // 공개 페이지는 인증 없이 통과
             if (isPublicPage(request)) {
                 SecurityContextHolder.clearContext();
                 filterChain.doFilter(request, response);
                 return;
             }
 
+            // access token 만료면 자동 재발급 시도
             if (jwtTokenProvider.isExpiredToken(accessToken)) {
                 try {
                     handleAutoReissue(request, response, accessToken);
@@ -181,8 +194,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Math.toIntExact(refreshTokenExpiration / 1000)
         );
 
-        var authentication = jwtTokenProvider.getAuthentication(newAccessToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        SecurityContextHolder.getContext().setAuthentication(
+                jwtTokenProvider.getAuthentication(newAccessToken)
+        );
     }
 
     private String resolveAccessToken(HttpServletRequest request) {

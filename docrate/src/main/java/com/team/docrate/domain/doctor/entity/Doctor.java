@@ -43,6 +43,21 @@ public class Doctor extends BaseEntity {
     @Column(nullable = false)
     private DoctorStatus status;
 
+    @Column(name = "average_rating")
+    private Double averageRating;
+
+    @Column(name = "bedside_manner_avg")
+    private Double bedsideMannerAvg;
+
+    @Column(name = "explanation_avg")
+    private Double explanationAvg;
+
+    @Column(name = "wait_time_avg")
+    private Double waitTimeAvg;
+
+    @Column(name = "revisit_rating_avg")
+    private Double revisitRatingAvg;
+    
     public static Doctor from(DoctorRequest doctorRequest) {
         return Doctor.builder()
                 .hospital(doctorRequest.getHospital())
@@ -52,4 +67,5 @@ public class Doctor extends BaseEntity {
                 .status(DoctorStatus.ACTIVE)
                 .build();
     }
+
 }
