@@ -44,4 +44,18 @@ public class HospitalRequest extends BaseEntity {
     private String rejectionReason;
 
     private LocalDateTime approvedAt;
+    
+    
+    public void approve() {
+        this.status = HospitalRequestStatus.APPROVED; // 필드에 값을 넣어야 함
+    }
+
+    public void reject() {
+        this.status = HospitalRequestStatus.REJECTED; // 필드에 값을 넣어야 함
+    }
+
+	public void updateStatus(HospitalRequestStatus approved) {
+		// TODO Auto-generated method stub
+		
+	}
 }

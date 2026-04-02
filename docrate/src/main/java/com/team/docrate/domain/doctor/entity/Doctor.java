@@ -8,7 +8,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "doctors")
+@Table(name = "doctors", uniqueConstraints = {
+    @UniqueConstraint(
+        name = "uk_doctor_info",
+        columnNames = {"hospital_id", "department_id", "name"} // 세 컬럼의 조합이 유일해야 함
+    )
+})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

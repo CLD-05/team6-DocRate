@@ -1,0 +1,163 @@
+/* DocRate 관리자 공통 테마 */
+:root {
+    --bg-color: #f8f9fa;
+    --card-bg: #ffffff;
+    --primary-black: #1a1a1a;
+    --border-color: #eeeeee;
+    --text-muted: #888888;
+    
+    /* 상태별 색상 */
+    --status-pending-bg: #fff9db;
+    --status-pending-text: #f08c00;
+    --status-approved-bg: #ebfbee;
+    --status-approved-text: #2f9e44;
+    --status-rejected-bg: #fff5f5;
+    --status-rejected-text: #e03131;
+}
+
+/* 기본 레이아웃 */
+body {
+    background-color: var(--bg-color);
+    font-family: 'Pretendard', sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.admin-container {
+    width: 100%;
+    max-width: 1100px;
+    background: var(--card-bg);
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    padding: 40px;
+}
+
+/* 헤더 및 로고 */
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.2s;
+}
+
+.logo:hover { opacity: 0.7; }
+
+.logo span {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-left: 8px;
+}
+
+h1 { font-size: 28px; font-weight: 700; margin: 0 0 20px 0; }
+
+/* 필터 및 버튼 */
+.filter-bar { display: flex; gap: 12px; margin-bottom: 30px; }
+
+select {
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    font-size: 14px;
+    outline: none;
+    background-color: #fff;
+    min-width: 160px;
+}
+
+.btn-black {
+    background-color: var(--primary-black);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-black:hover { background-color: #333; transform: translateY(-1px); }
+
+/* 테이블 공통 스타일 */
+table { width: 100%; border-collapse: collapse; }
+
+th {
+    text-align: left;
+    padding: 18px;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 500;
+}
+
+th a { text-decoration: none; color: inherit; display: block; width: 100%; }
+
+td {
+    padding: 20px 18px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 15px;
+}
+
+/* 상태 배지 (클래스명 대문자 대응) */
+.status-badge, .PENDING, .APPROVED, .REJECTED {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.PENDING { background: var(--status-pending-bg); color: var(--status-pending-text); }
+.APPROVED { background: var(--status-approved-bg); color: var(--status-approved-text); }
+.REJECTED { background: var(--status-rejected-bg); color: var(--status-rejected-text); }
+
+/* 액션 버튼 */
+.action-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 4px;
+    transition: 0.2s;
+}
+
+.btn-approve { background: #e7f5ff; color: #228be6; }
+.btn-approve:hover { background: #d0ebff; }
+.btn-reject { background: #fff5f5; color: #fa5252; }
+.btn-reject:hover { background: #ffe3e3; }
+
+/* 페이징 */
+.pagination { display: flex; justify-content: center; gap: 8px; margin-top: 40px; }
+
+.page-link {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.page-link:hover:not(.active) { background-color: #eee; }
+
+.page-link.active {
+    background-color: var(--primary-black);
+    color: white;
+    border-color: var(--primary-black);
+}

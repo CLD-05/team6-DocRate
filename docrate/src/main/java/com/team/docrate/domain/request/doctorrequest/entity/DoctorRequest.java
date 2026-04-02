@@ -49,4 +49,25 @@ public class DoctorRequest extends BaseEntity {
     private String rejectionReason;
 
     private LocalDateTime approvedAt;
+
+    
+    
+    public void approve(Long doctorId) {
+        this.status = DoctorRequestStatus.APPROVED;
+        this.approvedDoctorId = doctorId;
+        this.approvedAt = LocalDateTime.now();
+    }
+
+    public void reject(String reason) {
+        this.status = DoctorRequestStatus.REJECTED;
+        this.rejectionReason = reason;
+        this.approvedAt = LocalDateTime.now();
+    }
+    
+    
+	public void updateApproval(DoctorRequestStatus approved, Long id2, LocalDateTime now) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
