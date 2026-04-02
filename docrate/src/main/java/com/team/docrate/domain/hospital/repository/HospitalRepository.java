@@ -15,17 +15,18 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
     // 이름으로 검색 (기존 메서드)
     List<Hospital> findByNameContaining(String keyword);
 
-    // 상태로 페이징 조회 (ACTIVE 병원만)
+    // 상태로 페이징 조회 (ACTIVE 병원만) - 이 메소드의 사용 목적에 따라 유지하거나 변경 필요
+    // If the intent is to fetch all hospitals, this method might need to be replaced by findAll or modified.
     Page<Hospital> findByStatus(HospitalStatus status, Pageable pageable);
 
-    // 이름으로만 검색 + 상태 필터링
-    @Query("SELECT h FROM Hospital h WHERE h.status = :status AND h.name LIKE %:search%")
+    // 이름으로만 검색 + 상태 필터링 제거
+    @Query("SELECT h FROM Hospital h WHERE h.name LIKE %:search%")
     Page<Hospital> findByStatusAndSearch(@Param("status") HospitalStatus status, @Param("search") String search, Pageable pageable);
 
-    // 상태 및 카테고리 (대소문자, 공백 무시)로 페이징 조회 (JPQL 사용)
-    @Query("SELECT h FROM Hospital h WHERE h.status = :status AND LOWER(REPLACE(h.category, ' ', '')) = LOWER(REPLACE(:category, ' ', ''))")
+    // 상태 및 카테고리 (대소문자, 공백 무시)로 페이징 조회 (JPQL 사용) -> 상태 필터링 제거
+    @Query("SELECT h FROM Hospital h WHERE LOWER(REPLACE(h.category, ' ', '')) = LOWER(REPLACE(:category, ' ', ''))")
     Page<Hospital> findActiveAndProcessedCategory(
-    		@Param("status") HospitalStatus status,
+    		@Param("status") HospitalStatus status, // Note: status parameter is kept but not used in the query
             @Param("category") String category,
             Pageable pageable
     );
