@@ -1,106 +1,110 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>리뷰 목록 - DocRate</title>
-    <link rel="stylesheet" th:href="@{/css/list.css}">
+    <link rel="stylesheet" th:href="@{/css/review-list.css}">
 </head>
 <body>
-
-    <header class="main-header">
-        <div class="header-container">
-            <h1 class="logo">
-    			<a th:href="@{/}">DOCRATE</a>
-			</h1>
-            
-            <div class="header-menu">
-                <a th:href="@{/mypage}" class="menu-item">마이페이지</a>
-                <a th:href="@{/logout}" class="menu-item">로그아웃</a>
-            </div>
-        </div>
-    </header>
-
-    <main class="container">
-        <section class="list-header">
-            <h2 class="title" th:text="'리뷰 목록 - ' + ${doctor.name}">리뷰 목록 - 김의사</h2>
-            <div class="average-rating">
-                <span>평균 평점: </span>
-                <span class="rating-num" th:text="${averageRating != null ? averageRating : '0.0'}">4.6</span>
-            </div>
-        </section>
-
-        <hr class="divider">
-
-        <section class="review-container">
-            <div th:if="${#lists.isEmpty(reviews)}" class="no-data">
-                작성된 리뷰가 없습니다.
+<div class="page-wrap">
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <a th:href="@{/}">DocRate</a>
             </div>
 
-            <div class="review-card" th:each="review : ${reviews}">
-                <div class="card-row">
-                    <span class="label">작성자:</span>
-                    <span class="value" th:text="${review.user.nickname}">user01</span>
-                </div>
-                
-                <div class="card-row">
-                    <span class="label">평점:</span>
-                    <span class="stars">
-                        <span th:text="${'★'.repeat(review.rating.intValue())}">★★★★★</span>
-                    </span>
+            <div class="header-right">
+                <div th:if="${loginUser == null}" class="guest-menu">
+                    <a th:href="@{/login}" class="header-link">로그인</a>
+                    <a th:href="@{/signup}" class="header-btn">회원가입</a>
                 </div>
 
-                <div class="card-row detail-scores">
-                    <span>친절도 <strong th:text="${review.bedsideManner}">5</strong></span> /
-                    <span>설명력 <strong th:text="${review.explanation}">5</strong></span> /
-                    <span>대기 <strong th:text="${review.waitTime}">4</strong></span> /
-                    <span>재방문 <strong th:text="${review.revisitIntention ? 'Y' : 'N'}">Y</strong></span>
-                </div>
+                <div th:if="${loginUser != null}" class="user-menu">
+                    <span class="welcome-text" th:text="${loginUser.nickname} + '님'">사용자님</span>
+                    <a th:href="@{/mypage}" class="header-link">마이페이지</a>
 
-                <div class="review-text">
-                    <p th:text="${review.content}">"정말 친절하게 설명해주셨어요."</p>
-                </div>
-
-                <div class="review-date">
-                    <span th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd')}">2026-03-30</span>
-                    
-                    <div th:if="${loginUser != null && review.user.id == loginUser.id}" class="review-actions" style="margin-top: 10px; text-align: right;">
-        
-        				<a th:href="@{/reviews/{id}/edit(id=${review.id})}" 
-           					style="font-size: 0.85rem; color: #007bff; text-decoration: none; margin-right: 10px;">[수정]</a>
-        	
-        				<form th:action="@{/reviews/{id}/delete(id=${review.id})}" 
-              					method="post" style="display: inline;">
-           				<button type="submit" 
-                    			style="background: none; border: none; color: #dc3545; cursor: pointer; font-size: 0.85rem; padding: 0;"
-                    			onclick="return confirm('정말 삭제하시겠습니까?')">[삭제]</button>
-        				</form>
-    			  </div>
+                    <form th:action="@{/logout}" method="post" class="logout-form">
+                        <input type="hidden"
+                               th:if="${_csrf != null}"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}" />
+                        <button type="submit" class="logout-btn">로그아웃</button>
+                    </form>
                 </div>
             </div>
-        </section>
-        
-      <div class="pagination" th:if="${totalPages > 1}">
-    <ul>
-        <li th:classappend="${currentPage <= 1} ? 'disabled'">
-            <a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${currentPage > 1 ? currentPage - 1 : 1})}">&laquo;</a>
-        </li>
+        </header>
 
-        <li th:each="pageIdx : ${#numbers.sequence(1, totalPages)}"
-            th:classappend="${pageIdx == currentPage} ? 'active'">
-            <a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${pageIdx})}" 
-               th:text="${pageIdx}">1</a>
-        </li>
+        <main class="list-content">
+            <section class="list-header">
+                <h2 class="title" th:text="'리뷰 목록 - ' + ${doctor.name}">리뷰 목록 - 김의사</h2>
+                <div class="average-rating">
+                    <span>평균 평점: </span>
+                    <span class="rating-num" th:text="${averageRating != null ? averageRating : '0.0'}">4.6</span>
+                </div>
+            </section>
 
-        <li th:classappend="${currentPage >= totalPages} ? 'disabled'">
-            <a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${currentPage < totalPages ? currentPage + 1 : totalPages})}">&raquo;</a>
-        </li>
-    </ul>
+            <hr class="divider">
+
+            <section class="review-container">
+                <div th:if="${#lists.isEmpty(reviews)}" class="no-data">
+                    작성된 리뷰가 없습니다.
+                </div>
+
+                <div class="review-card" th:each="review : ${reviews}">
+                    <div class="card-row">
+                        <span class="label">작성자:</span>
+                        <span class="value" th:text="${review.user.nickname}">user01</span>
+                    </div>
+
+                    <div class="card-row">
+                        <span class="label">평점:</span>
+                        <span class="stars">
+                            <span th:text="${'★'.repeat(review.rating.intValue())}">★★★★★</span>
+                        </span>
+                    </div>
+
+                    <div class="card-row detail-scores">
+                        <span>친절도 <strong th:text="${review.bedsideManner}">5</strong></span> /
+                        <span>설명력 <strong th:text="${review.explanation}">5</strong></span> /
+                        <span>대기 <strong th:text="${review.waitTime}">4</strong></span> /
+                        <span>재방문 <strong th:text="${review.revisitIntention ? 'Y' : 'N'}">Y</strong></span>
+                    </div>
+
+                    <div class="review-text">
+                        <p th:text="${review.content}">정말 친절하게 설명해주셨어요.</p>
+                    </div>
+
+                    <div class="review-date">
+                        <span th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd')}">2026-03-30</span>
+                    </div>
+                </div>
+            </section>
+
+            <div class="pagination" th:if="${totalPages > 0}">
+                <ul>
+                    <li th:classappend="${currentPage == 1} ? 'disabled'">
+                        <a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${currentPage - 1})}">&laquo;</a>
+                    </li>
+
+                    <li th:each="pageIdx : ${#numbers.sequence(1, totalPages)}"
+                        th:classappend="${pageIdx == currentPage} ? 'active'">
+                        <a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${pageIdx})}"
+                           th:text="${pageIdx}">1</a>
+                    </li>
+
+                    <li th:classappend="${currentPage == totalPages} ? 'disabled'">
+                        <a th:href="@{/doctors/{id}/reviews(id=${doctor.id}, page=${currentPage + 1})}">&raquo;</a>
+                    </li>
+                </ul>
+            </div>
+
+            <footer class="list-footer">
+                <a th:href="@{/doctor/detail/{id}(id=${doctor.id})}" class="btn-secondary">의사 상세로</a>
+                <a th:href="@{/doctors/{id}/reviews/new(id=${doctor.id})}" class="btn-primary">리뷰 작성</a>
+            </footer>
+        </main>
+    </div>
 </div>
-
-        <footer class="list-footer">
-            <a th:href="@{/doctor/detail/{id}(id=${doctor.id})}" class="btn-secondary">[의사 상세로]</a>
-            <a th:href="@{/doctors/{id}/reviews/new(id=${doctor.id})}" class="btn-primary">[리뷰 작성]</a>
-        </footer>
-    </main>
 </body>
 </html>
