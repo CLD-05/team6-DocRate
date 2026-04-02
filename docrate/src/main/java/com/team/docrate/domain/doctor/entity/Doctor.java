@@ -16,10 +16,10 @@ public class Doctor {
     @Column(length = 1000)
     private String intro;
 
-    @Column(name = "hospital_id", nullable = false)
+    @Column(name = "hospital_name", nullable = false)
     private String hospitalName;
 
-    @Column(name = "department_id", nullable = false)
+    @Column(name = "department_name", nullable = false)
     private String departmentName;
 
     protected Doctor() {
