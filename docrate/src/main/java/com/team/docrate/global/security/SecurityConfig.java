@@ -51,15 +51,15 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/", "/signup", "/login", "/logout",
-                                "/hospitals", "/hospitals/**",
-                                "/doctors", "/doctors/**",
-                                "/css/**", "/js/**", "/images/**", "/favicon.ico"
-                        ).permitAll()
+                		.requestMatchers(
+                		        "/", "/signup", "/login", "/logout",
+                		        "/hospitals", "/hospitals/**",
+                		        "/doctors", "/doctors/**",
+                		        "/search",
+                		        "/css/**", "/js/**", "/images/**"
+                		).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/mypage/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable())

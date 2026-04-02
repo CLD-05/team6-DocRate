@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>의사 추가 요청 | DocRate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" th:href="@{/css/doctor-request-form.css}">
+</head>
+<body>
+<div class="page-wrap">
+    <div class="form-shell">
+        <header class="topbar">
+            <a th:href="@{/doctors}" class="back-link">← 의사 목록으로</a>
+            <h1 class="page-title">의사 추가 요청</h1>
+        </header>
+
+        <main class="content">
+            <form class="request-form">
+                <div class="form-group">
+                    <label class="form-label">의사 이름</label>
+                    <input type="text" class="form-input" placeholder="의사 이름을 입력하세요">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">병원명</label>
+                    <input type="text" class="form-input" placeholder="병원명을 입력하세요">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">진료과</label>
+                    <input type="text" class="form-input" placeholder="진료과를 입력하세요">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">소개</label>
+                    <textarea class="form-textarea" placeholder="의사 소개가 있다면 입력하세요"></textarea>
+                </div>
+
+                <div class="submit-wrap">
+                    <button type="submit" class="submit-btn">요청 보내기</button>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+</body>
+</html>

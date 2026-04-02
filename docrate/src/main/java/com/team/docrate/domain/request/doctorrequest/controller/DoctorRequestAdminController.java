@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,18 @@ public class DoctorRequestAdminController {
 
     private final DoctorRequestService doctorRequestService;
 
+
+
+    @Controller
+    public class DoctorRequestController {
+
+        @GetMapping("/doctor-requests/new")
+        public String doctorRequestForm() {
+            return "requests/doctor-form";
+        }
+    }
+    
+    
     /**
      * 의사 등록 요청 목록 조회
      * GET /admin/doctor-requests

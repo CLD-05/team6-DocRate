@@ -30,16 +30,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Value("${jwt.access-token-expiration}")
     private long accessTokenExpiration;
-    
+
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
+
         return uri.equals("/login")
                 || uri.equals("/signup")
                 || uri.equals("/logout")
+                || uri.equals("/favicon.ico")
                 || uri.startsWith("/css/")
                 || uri.startsWith("/js/")
                 || uri.startsWith("/images/");
@@ -57,16 +59,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (accessTokenBlacklistService.isBlacklisted(accessToken)) {
-            writeUnauthorizedResponse(response, "로그아웃된 토큰입니다.");
-            return;
-        }
-
         try {
+            if (accessTokenBlacklistService.isBlacklisted(accessToken)) {
+                // 공개 페이지에서는 비로그인 상태로 통과
+                if (isPublicPage(request)) {
+                    SecurityContextHolder.clearContext();
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
+                writeUnauthorizedResponse(response, "로그아웃된 토큰입니다.");
+                return;
+            }
+
             jwtTokenProvider.validateToken(accessToken);
 
             String tokenType = jwtTokenProvider.getTokenType(accessToken);
             if (!"access".equals(tokenType)) {
+                if (isPublicPage(request)) {
+                    SecurityContextHolder.clearContext();
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
                 writeUnauthorizedResponse(response, "Access Token이 아닙니다.");
                 return;
             }
@@ -77,6 +92,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (InvalidTokenException e) {
+            // 공개 페이지면 인증 없이 그냥 진행
+            if (isPublicPage(request)) {
+                SecurityContextHolder.clearContext();
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             if (jwtTokenProvider.isExpiredToken(accessToken)) {
                 try {
                     handleAutoReissue(request, response, accessToken);
@@ -91,6 +113,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.clearContext();
             writeUnauthorizedResponse(response, e.getMessage());
         }
+    }
+
+    private boolean isPublicPage(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+
+        return uri.equals("/")
+                || uri.equals("/hospitals")
+                || uri.startsWith("/hospitals/")
+                || uri.equals("/doctors")
+                || uri.startsWith("/doctors/")
+                || uri.equals("/search");
     }
 
     private void handleAutoReissue(HttpServletRequest request,

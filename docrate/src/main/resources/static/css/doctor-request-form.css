@@ -1,0 +1,135 @@
+@charset "EUC-KR";
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+    background: #f6f6f4;
+    color: #111;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.page-wrap {
+    min-height: 100vh;
+    padding: 24px;
+}
+
+.form-shell {
+    max-width: 820px;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #e7e7e2;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
+}
+
+.topbar {
+    padding: 28px 32px;
+    border-bottom: 1px solid #efefea;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #666;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+}
+
+.content {
+    padding: 32px;
+}
+
+.request-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-label {
+    font-size: 14px;
+    font-weight: 800;
+    color: #333;
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    border: 1px solid #dcdcd6;
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-size: 15px;
+    background: #fff;
+}
+
+.form-input {
+    height: 52px;
+}
+
+.form-textarea {
+    min-height: 160px;
+    resize: vertical;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: #111;
+}
+
+.submit-wrap {
+    margin-top: 8px;
+}
+
+.submit-btn {
+    min-width: 140px;
+    height: 48px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 999px;
+    background: #111;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.submit-btn:hover {
+    opacity: 0.92;
+}
+
+@media (max-width: 768px) {
+    .page-wrap {
+        padding: 14px;
+    }
+
+    .topbar,
+    .content {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .page-title {
+        font-size: 28px;
+    }
+}
