@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지 | DocRate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+</head>
+<body>
+<div class="page-wrap">
+    <div class="mypage-shell">
+
+        <!-- 상단 헤더 -->
+        <header class="topbar">
+            <div class="brand">
+                <a th:href="@{/}">DocRate</a>
+            </div>
+
+            <div class="topbar-right">
+                <span class="topbar-role"
+                      th:if="${myPage.role != null}"
+                      th:text="${myPage.role}">USER</span>
+
+                <form th:action="@{/logout}" method="post" class="logout-form">
+                    <input type="hidden"
+                           th:if="${_csrf != null}"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}" />
+                    <button type="submit" class="logout-btn">로그아웃</button>
+                </form>
+            </div>
+        </header>
+
+        <!-- 페이지 본문 -->
+        <main class="content">
+            <section class="hero-section">
+                <p class="eyebrow">MY PAGE</p>
+                <h1 class="page-title">마이페이지</h1>
+                <p class="page-desc">내 계정 정보와 활동 내역을 한눈에 확인해보세요.</p>
+            </section>
+
+            <!-- 회원 정보 -->
+            <section class="card profile-card">
+                <div class="section-head">
+                    <div>
+                        <p class="section-label">PROFILE</p>
+                        <h2 class="section-title">회원 정보</h2>
+                    </div>
+
+                    <span class="role-badge"
+                          th:classappend="${myPage.role.name() == 'ADMIN'} ? ' admin' : ' user'"
+                          th:text="${myPage.role}">USER</span>
+                </div>
+
+                <div class="profile-grid">
+                    <div class="info-box">
+                        <span class="info-label">이메일</span>
+                        <p class="info-value" th:text="${myPage.email}">user01@email.com</p>
+                    </div>
+
+                    <div class="info-box">
+                        <span class="info-label">닉네임</span>
+                        <p class="info-value" th:text="${myPage.nickname}">user01</p>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <a th:href="@{/mypage/edit}" class="secondary-btn">회원정보 수정</a>
+                    <a th:href="@{/mypage/password}" class="primary-btn">비밀번호 변경</a>
+                </div>
+            </section>
+
+            <!-- 요약 카드 그리드 -->
+            <section class="dashboard-grid">
+                <!-- 내 리뷰 관리 -->
+                <section class="card summary-card">
+                    <div class="section-head">
+                        <div>
+                            <p class="section-label">MY REVIEWS</p>
+                            <h2 class="section-title">내 리뷰 관리</h2>
+                        </div>
+                        <a th:href="@{/mypage/reviews}" class="text-link">리뷰 목록 보기</a>
+                    </div>
+
+                    <div class="summary-list" th:if="${recentReviews != null and !#lists.isEmpty(recentReviews)}">
+                        <article class="summary-item" th:each="review : ${recentReviews}">
+                            <div class="summary-main">
+                                <p class="summary-title" th:text="${review.doctorName}">김의사</p>
+                                <p class="summary-sub">
+                                    <span th:text="${review.hospitalName}">OO병원</span>
+                                    <span class="dot">•</span>
+                                    <span th:text="'평점 ' + ${review.rating}">평점 4.5</span>
+                                </p>
+                            </div>
+                            <a th:href="@{'/reviews/' + ${review.reviewId}}" class="mini-link">보기</a>
+                        </article>
+                    </div>
+
+                    <div class="empty-box" th:if="${recentReviews == null or #lists.isEmpty(recentReviews)}">
+                        아직 작성한 리뷰가 없습니다.
+                    </div>
+                </section>
+
+                <!-- 내 요청 목록 -->
+                <section class="card summary-card">
+                    <div class="section-head">
+                        <div>
+                            <p class="section-label">MY REQUESTS</p>
+                            <h2 class="section-title">내 요청 목록</h2>
+                        </div>
+                        <a th:href="@{/mypage/requests}" class="text-link">요청 목록 보기</a>
+                    </div>
+
+                    <div class="summary-list" th:if="${recentRequests != null and !#lists.isEmpty(recentRequests)}">
+                        <article class="summary-item" th:each="request : ${recentRequests}">
+                            <div class="summary-main">
+                                <p class="summary-title">
+                                    <span th:text="${request.requestType}">의사 추가 요청</span>
+                                </p>
+                                <p class="summary-sub">
+                                    <span th:text="${request.targetName}">홍길동 / OO병원</span>
+                                </p>
+                            </div>
+
+                            <span class="status-badge"
+                                  th:classappend="${request.status.name() == 'APPROVED'} ? ' approved' :
+                                                  (${request.status.name() == 'REJECTED'} ? ' rejected' : ' pending')"
+                                  th:text="${request.status}">PENDING</span>
+                        </article>
+                    </div>
+
+                    <div class="empty-box" th:if="${recentRequests == null or #lists.isEmpty(recentRequests)}">
+                        아직 요청한 내역이 없습니다.
+                    </div>
+                </section>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>

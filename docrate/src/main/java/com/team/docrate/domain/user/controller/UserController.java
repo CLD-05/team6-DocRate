@@ -12,6 +12,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.security.Principal;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequiredArgsConstructor
@@ -109,14 +107,30 @@ public class UserController {
         return "redirect:/";
     }
 
+ // 마이페이지 화면 반환
     @GetMapping("/mypage")
+    public String myPage(Principal principal, Model model) {
+        MyPageResponseDto myPage = userService.getMyPage(principal.getName());
+
+        model.addAttribute("myPage", myPage);
+
+        // 아직 리뷰/요청 백엔드 연결 전이면 임시로 빈 리스트
+        model.addAttribute("recentReviews", Collections.emptyList());
+        model.addAttribute("recentRequests", Collections.emptyList());
+
+        return "users/mypage";
+    }
+
+    // 마이페이지 JSON 조회 API
+    @GetMapping("/api/mypage")
     @ResponseBody
-    public ResponseEntity<MyPageResponseDto> getMyPage(Principal principal) {
+    public ResponseEntity<MyPageResponseDto> getMyPageApi(Principal principal) {
         MyPageResponseDto response = userService.getMyPage(principal.getName());
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/mypage")
+    // 사용자 정보 수정 API
+    @PatchMapping("/api/mypage")
     @ResponseBody
     public ResponseEntity<MyPageResponseDto> updateMyInfo(
             Principal principal,
@@ -126,7 +140,8 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/mypage/password")
+    // 비밀번호 변경 API
+    @PatchMapping("/api/mypage/password")
     @ResponseBody
     public ResponseEntity<Void> changePassword(
             Principal principal,
@@ -135,6 +150,7 @@ public class UserController {
         userService.changePassword(principal.getName(), requestDto);
         return ResponseEntity.ok().build();
     }
+
 
     
     
