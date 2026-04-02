@@ -112,6 +112,13 @@ public class JwtTokenProvider {
         return parseClaims(token).get("type", String.class);
     }
 
+    public long getRemainingTime(String token) {
+        Claims claims = parseClaims(token);
+        Date expiration = claims.getExpiration();
+        long remaining = expiration.getTime() - System.currentTimeMillis();
+        return Math.max(remaining, 0);
+    }
+
     public Claims parseClaims(String token) {
         return Jwts.parser()
                 .verifyWith(key)

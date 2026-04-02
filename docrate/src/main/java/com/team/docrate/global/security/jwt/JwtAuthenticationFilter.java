@@ -4,6 +4,7 @@ import com.team.docrate.domain.user.entity.User;
 import com.team.docrate.domain.user.repository.UserRepository;
 import com.team.docrate.global.exception.InvalidRefreshTokenException;
 import com.team.docrate.global.exception.InvalidTokenException;
+import com.team.docrate.infra.redis.AccessTokenBlacklistService;
 import com.team.docrate.infra.redis.RefreshTokenRedisService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -24,13 +25,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRedisService refreshTokenRedisService;
+    private final AccessTokenBlacklistService accessTokenBlacklistService;
     private final UserRepository userRepository;
-
-    @Value("${jwt.access-token-expiration}")
-    private long accessTokenExpiration;
 
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        return uri.equals("/login")
+                || uri.equals("/signup")
+                || uri.equals("/logout")
+                || uri.startsWith("/css/")
+                || uri.startsWith("/js/")
+                || uri.startsWith("/images/");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -41,6 +51,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (!StringUtils.hasText(accessToken)) {
             filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (accessTokenBlacklistService.isBlacklisted(accessToken)) {
+            writeUnauthorizedResponse(response, "로그아웃된 토큰입니다.");
             return;
         }
 
@@ -116,10 +131,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         refreshTokenRedisService.saveRefreshToken(user.getEmail(), newRefreshToken);
 
-        // accessToken 쿠키는 JWT보다 조금 더 오래 유지
         addTokenCookie(response, "accessToken", newAccessToken, 60);
-
-        // refreshToken은 실제 만료시간 사용
         addTokenCookie(
                 response,
                 "refreshToken",
@@ -129,18 +141,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         var authentication = jwtTokenProvider.getAuthentication(newAccessToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        System.out.println("=== 자동 재발급 성공 ===");
-        System.out.println("email = " + email);
-        System.out.println("newAccessToken = " + newAccessToken);
-        System.out.println("newRefreshToken = " + newRefreshToken);
     }
 
     private String resolveAccessToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            System.out.println("[JWT] access token from Authorization header");
             return bearerToken.substring(7);
         }
 
@@ -151,7 +157,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         for (Cookie cookie : cookies) {
             if ("accessToken".equals(cookie.getName())) {
-                System.out.println("[JWT] access token from Cookie");
                 return cookie.getValue();
             }
         }
