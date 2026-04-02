@@ -7,11 +7,40 @@
     <link rel="stylesheet" th:href="@{/css/review-list.css}">
 </head>
 <body>
-<div class="page-wrap">
-    <div class="container">
-        <header class="header">
-            <div class="logo">
-                <a th:href="@{/}">DocRate</a>
+
+    <header class="main-header">
+    <div class="header-container">
+        <h1 class="logo">
+            <a th:href="@{/}">DOCRATE</a>
+        </h1>
+        
+        <div class="header-menu">
+            <a th:href="@{/mypage}" class="menu-item">마이페이지</a>
+            
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="menu-item" 
+                        style="background: none; border: none; cursor: pointer; font-family: inherit; font-size: inherit; padding: 0;">
+                    로그아웃
+                </button>
+            </form>
+        </div>
+    </div>
+</header>
+
+    <main class="container">
+        <section class="list-header">
+            <h2 class="title" th:text="'리뷰 목록 - ' + ${doctor.name}">리뷰 목록 - 김의사</h2>
+            <div class="average-rating">
+                <span>평균 평점: </span>
+                <span class="rating-num" th:text="${averageRating != null ? averageRating : '0.0'}">4.6</span>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <section class="review-container">
+            <div th:if="${#lists.isEmpty(reviews)}" class="no-data">
+                작성된 리뷰가 없습니다.
             </div>
 
             <div class="header-right">
