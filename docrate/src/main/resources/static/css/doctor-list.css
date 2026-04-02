@@ -1,0 +1,286 @@
+@charset "EUC-KR";
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+    background: #f6f6f4;
+    color: #111111;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.page-wrap {
+    min-height: 100vh;
+    padding: 24px;
+}
+
+.list-shell {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 1px solid #e7e7e2;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
+}
+
+.topbar {
+    padding: 26px 32px;
+    border-bottom: 1px solid #efefea;
+}
+
+.brand a {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+.content {
+    padding: 40px 32px 48px;
+}
+
+.hero-section {
+    margin-bottom: 28px;
+}
+
+.eyebrow {
+    margin: 0 0 10px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #7a7a74;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 48px;
+    font-weight: 900;
+    letter-spacing: -0.05em;
+}
+
+.page-desc {
+    margin: 14px 0 0;
+    color: #666666;
+    font-size: 15px;
+}
+
+.search-section {
+    margin-bottom: 28px;
+}
+
+.search-form {
+    display: flex;
+    gap: 10px;
+}
+
+.search-input {
+    flex: 1;
+    height: 50px;
+    border: 1px solid #dcdcd6;
+    border-radius: 16px;
+    padding: 0 18px;
+    font-size: 15px;
+    background: #fff;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #111111;
+}
+
+.search-btn {
+    min-width: 100px;
+    height: 50px;
+    border: none;
+    border-radius: 16px;
+    background: #111111;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.result-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    gap: 12px;
+}
+
+.section-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.result-count {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.doctor-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.doctor-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    padding: 22px;
+    border: 1px solid #ecece7;
+    border-radius: 22px;
+    background: #fafaf8;
+}
+
+.card-main {
+    min-width: 0;
+    flex: 1;
+}
+
+.title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.doctor-name {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.department-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: #f0f0ec;
+    border: 1px solid #e0e0db;
+    color: #555;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.doctor-hospital,
+.doctor-intro {
+    margin: 0 0 6px;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.detail-link {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 92px;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid #d8d8d2;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.detail-link:hover {
+    background: #111111;
+    border-color: #111111;
+    color: #ffffff;
+}
+
+.empty-box {
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed #ddddd7;
+    border-radius: 22px;
+    background: #fafaf8;
+    color: #888;
+    font-size: 15px;
+}
+
+.pagination {
+    margin-top: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+    height: 38px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid #d8d8d2;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.page-btn:hover {
+    background: #111111;
+    border-color: #111111;
+    color: #fff;
+}
+
+.page-info {
+    font-size: 14px;
+    font-weight: 700;
+    color: #444;
+}
+
+@media (max-width: 768px) {
+    .page-wrap {
+        padding: 14px;
+    }
+
+    .content,
+    .topbar {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .page-title {
+        font-size: 34px;
+    }
+
+    .search-form {
+        flex-direction: column;
+    }
+
+    .doctor-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .detail-link {
+        margin-top: 4px;
+    }
+
+    .result-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

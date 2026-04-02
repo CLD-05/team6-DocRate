@@ -1,19 +1,18 @@
 package com.team.docrate.domain.hospital.repository;
 
-import com.team.docrate.domain.department.entity.Department;
-import com.team.docrate.domain.hospital.dto.HospitalResponse;
 import com.team.docrate.domain.hospital.entity.Hospital;
+import com.team.docrate.domain.hospital.enumtype.HospitalStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
 public interface HospitalRepository extends JpaRepository<Hospital, Long> {
-    List<Hospital> findByNameContaining(String keyword);
 
-	List<Hospital> findAll();
+    Page<Hospital> findByStatus(HospitalStatus status, Pageable pageable);
 
-	Optional<Hospital> findByName(String string);
-	
+    Page<Hospital> findByStatusAndNameContainingIgnoreCase(
+            HospitalStatus status,
+            String name,
+            Pageable pageable
+    );
 }

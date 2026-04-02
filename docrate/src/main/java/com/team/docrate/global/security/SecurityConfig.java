@@ -53,9 +53,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/", "/signup", "/login", "/logout",
-                                "/css/**", "/js/**", "/images/**"
+                                "/hospitals", "/hospitals/**",
+                                "/doctors", "/doctors/**",
+                                "/css/**", "/js/**", "/images/**", "/favicon.ico"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/mypage/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable())

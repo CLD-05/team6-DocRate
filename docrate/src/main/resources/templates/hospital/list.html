@@ -1,17 +1,92 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>병원 목록</title>
+    <meta charset="UTF-8">
+    <title>병원 목록 | DocRate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/hospital-list.css}">
 </head>
 <body>
-<h1>병원 목록</h1>
+<div class="page-wrap">
+    <div class="list-shell">
 
-<ul>
-    <li th:each="hospital : ${hospitals}">
-        <span th:text="${hospital.name}">병원명</span>
-        -
-        <span th:text="${hospital.category}">카테고리</span>
-    </li>
-</ul>
+        <header class="topbar">
+            <div class="brand">
+                <a th:href="@{/}">DocRate</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <section class="hero-section">
+                <p class="eyebrow">HOSPITAL LIST</p>
+                <h1 class="page-title">병원 목록</h1>
+                <p class="page-desc">검색 결과와 전체 병원 목록을 확인해보세요.</p>
+            </section>
+
+            <section class="search-section">
+                <form th:action="@{/hospitals}" method="get" class="search-form">
+                    <input type="text"
+                           name="search"
+                           class="search-input"
+                           th:value="${search}"
+                           placeholder="병원명을 입력하세요">
+                    <button type="submit" class="search-btn">검색</button>
+                </form>
+            </section>
+
+            <section class="result-section">
+                <div class="result-head">
+                    <h2 class="section-title">검색 결과</h2>
+                    <p class="result-count">
+                        총 <span th:text="${hospitalPage.totalElements}">0</span>건
+                    </p>
+                </div>
+
+                <div class="hospital-list" th:if="${hospitalList != null and !#lists.isEmpty(hospitalList)}">
+                    <article class="hospital-card" th:each="hospital : ${hospitalList}">
+                        <div class="card-main">
+                            <div class="title-row">
+                                <h3 class="hospital-name" th:text="${hospital.name}">서울병원</h3>
+                                <span class="category-badge" th:text="${hospital.category}">종합병원</span>
+                            </div>
+
+                            <p class="hospital-address" th:text="${hospital.address}">서울시 강남구 ...</p>
+                            <p class="hospital-phone"
+                               th:text="${hospital.phone != null and !hospital.phone.isEmpty() ? hospital.phone : '전화번호 정보 없음'}">
+                                02-000-0000
+                            </p>
+                        </div>
+
+                        <a th:href="@{'/hospitals/' + ${hospital.id}}" class="detail-link">상세 보기</a>
+                    </article>
+                </div>
+
+                <div class="empty-box" th:if="${hospitalList == null or #lists.isEmpty(hospitalList)}">
+                    검색 결과가 없습니다.
+                </div>
+            </section>
+
+            <nav class="pagination" th:if="${hospitalPage.totalPages > 1}">
+                <a class="page-btn"
+                   th:if="${hospitalPage.hasPrevious()}"
+                   th:href="@{/hospitals(page=${hospitalPage.number - 1}, search=${search})}">
+                    이전
+                </a>
+
+                <span class="page-info">
+                    <span th:text="${hospitalPage.number + 1}">1</span>
+                    /
+                    <span th:text="${hospitalPage.totalPages}">1</span>
+                </span>
+
+                <a class="page-btn"
+                   th:if="${hospitalPage.hasNext()}"
+                   th:href="@{/hospitals(page=${hospitalPage.number + 1}, search=${search})}">
+                    다음
+                </a>
+            </nav>
+        </main>
+    </div>
+</div>
 </body>
 </html>
