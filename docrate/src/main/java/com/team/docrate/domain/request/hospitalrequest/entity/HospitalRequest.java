@@ -46,16 +46,12 @@ public class HospitalRequest extends BaseEntity {
     private LocalDateTime approvedAt;
     
     
-    public void approve(Long hospitalId) {
-        this.status = HospitalRequestStatus.APPROVED;
-        this.approvedHospitalId = hospitalId;
-        this.approvedAt = LocalDateTime.now();
+    public void approve() {
+        this.status = HospitalRequestStatus.APPROVED; // 필드에 값을 넣어야 함
     }
 
-    // 거절 처리 메서드
-    public void reject(String reason) {
-        this.status = HospitalRequestStatus.REJECTED;
-        this.rejectionReason = reason;
+    public void reject() {
+        this.status = HospitalRequestStatus.REJECTED; // 필드에 값을 넣어야 함
     }
 
 	public void updateStatus(HospitalRequestStatus approved) {

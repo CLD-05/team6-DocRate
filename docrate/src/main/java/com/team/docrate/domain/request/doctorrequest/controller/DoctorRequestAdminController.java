@@ -2,54 +2,57 @@ package com.team.docrate.domain.request.doctorrequest.controller;
 
 import com.team.docrate.domain.request.doctorrequest.dto.DoctorRequestResponseDto;
 import com.team.docrate.domain.request.doctorrequest.service.DoctorRequestService;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/admin/doctor-requests")
+@RequestMapping("/api/admin/doctor-requests") // 도메인 기준 경로
 @RequiredArgsConstructor
 public class DoctorRequestAdminController {
 
     private final DoctorRequestService doctorRequestService;
 
     /**
-     * 의사 등록 요청 승인
-     * PATCH /api/admin/doctor-requests/{requestId}/approve
+     * 의사 등록 요청 목록 조회
+     * GET /admin/doctor-requests
      */
-    @PatchMapping("/api/{requestId}/approve")
-    public ResponseEntity<Void> approveRequest(@PathVariable Long requestId) {
-        doctorRequestService.approveRequest(requestId);
+    @GetMapping
+    public ResponseEntity<List<DoctorRequestResponseDto>> getAllRequests() {
+        List<DoctorRequestResponseDto> responses = doctorRequestService.getAllRequests();
+        return ResponseEntity.ok(responses);
+    }
+
+    /**
+     * 의사 등록 요청 승인
+     * POST /admin/doctor-requests/{id}/approve
+     */
+    @PostMapping("/{id}/approve") // 정해진 기준: POST 방식, 경로 변수명 id
+    public ResponseEntity<Void> approveRequest(@PathVariable("id") Long id) {
+        doctorRequestService.approveRequest(id);
         return ResponseEntity.ok().build();
     }
 
     /**
-     * 의사 등록 요청 거절
-     * PATCH /api/admin/doctor-requests/{requestId}/reject
+     * 의사 등록 요청 반려 (거절)
+     * POST /admin/doctor-requests/{id}/reject
      */
-    @PatchMapping("/{requestId}/reject")
+    @PostMapping("/{id}/reject") // 정해진 기준: POST 방식
     public ResponseEntity<Void> rejectRequest(
-            @PathVariable Long requestId,
-            @RequestBody RejectRequestDto rejectRequestDto) {
+            @PathVariable("id") Long id,
+            @RequestBody(required = false) RejectRequestDto rejectRequestDto) {
         
-        doctorRequestService.rejectRequest(requestId, rejectRequestDto.getReason());
+        String reason = (rejectRequestDto != null) ? rejectRequestDto.getReason() : "관리자 반려";
+        doctorRequestService.rejectRequest(id, reason);
         return ResponseEntity.ok().build();
     }
-    
-    @GetMapping("/pending")
-    public ResponseEntity<List<DoctorRequestResponseDto>> getPendingRequests() {
-        List<DoctorRequestResponseDto> responses = doctorRequestService.getPendingRequests();
-        
-        // 명시적으로 List 타입을 담아 반환
-        return ResponseEntity.ok(responses); 
-    }
 
-    // 거절 사유를 받기 위한 내부 DTO
-    @lombok.Getter
-    @lombok.NoArgsConstructor
+    @Getter
+    @NoArgsConstructor
     public static class RejectRequestDto {
         private String reason;
     }

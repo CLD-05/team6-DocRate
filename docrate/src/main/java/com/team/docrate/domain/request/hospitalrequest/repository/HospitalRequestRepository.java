@@ -3,6 +3,8 @@ package com.team.docrate.domain.request.hospitalrequest.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.team.docrate.domain.request.hospitalrequest.entity.HospitalRequest;
@@ -14,5 +16,7 @@ public interface HospitalRequestRepository extends JpaRepository<HospitalRequest
 	
 	Optional<HospitalRequest> findById(Long requestId);
 
+	Page<HospitalRequest> findByStatus(HospitalRequestStatus status, Pageable pageable);
 
+	
 }

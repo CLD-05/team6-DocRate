@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,6 +83,15 @@ public class DoctorRequestService {
         return doctorRequestRepository.findAll().stream()
                 .map(DoctorRequestResponseDto::new)
                 .toList();
+    }
+
+    public Page<DoctorRequest> getRequestsPage(String status, Pageable pageable) {
+        if (status != null && !status.isEmpty()) {
+            // String을 Enum으로 변환하는 과정이 필요할 수 있습니다.
+            DoctorRequestStatus enumStatus = DoctorRequestStatus.valueOf(status.toUpperCase());
+            return doctorRequestRepository.findByStatus(enumStatus, pageable);
+        }
+        return doctorRequestRepository.findAll(pageable);
     }
 
 }

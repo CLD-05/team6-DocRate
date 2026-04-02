@@ -2,21 +2,32 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>의사 등록 관리자 페이지</title>
-    <style>
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-family: sans-serif; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #f8f9fa; color: #333; }
-        tr:hover { background-color: #f1f1f1; }
-        .btn-approve { background-color: #28a745; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; }
-        .btn-reject { background-color: #dc3545; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; }
-        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; background: #eee; }
-    </style>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>DocRate Admin - 의사 관리</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
+
 </head>
 <body>
-    <div style="padding: 20px;">
-        <h1>👨‍⚕️ 의사 등록 요청 관리</h1>
-        <button onclick="location.reload()" style="padding: 10px 15px; cursor: pointer;">🔄 목록 새로고침</button>
+
+    <div class="admin-container">
+        <div class="header-section">
+            <div class="logo" onclick="location.href='/'">DocRate <span>Admin Panel</span></div>
+            <button class="btn-black" onclick="location.href='/admin/hospital-requests'" style="background:none; color:#888; border:1px solid #ddd;">병원 관리로 이동</button>
+        </div>
+
+        <h1 style="font-size: 28px; font-weight: 700; margin-bottom: 20px;">◈ 의사 등록 요청 관리</h1>
+
+        <div class="filter-bar">
+            <select id="statusFilter" onchange="location.href='/admin/doctor-requests?status=' + this.value">
+                <option value="" th:selected="${currentStatus == null || currentStatus == ''}">전체 상태</option>
+                <option value="PENDING" th:selected="${currentStatus == 'PENDING'}">대기</option>
+                <option value="APPROVED" th:selected="${currentStatus == 'APPROVED'}">승인됨</option>
+                <option value="REJECTED" th:selected="${currentStatus == 'REJECTED'}">반려됨</option>
+            </select>
+        </div>
 
         <table>
             <thead>
@@ -26,83 +37,83 @@
                     <th>병원 / 진료과</th>
                     <th>의사명</th>
                     <th>상태</th>
-                    <th>관리 액션</th>
+                    <th>관리</th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:if="${#lists.isEmpty(requests)}">
-                    <td colspan="6" style="text-align: center; color: #888; padding: 40px;">대기 중인 등록 요청이 없습니다.</td>
+                <tr th:if="${requests == null or requests.isEmpty()}">
+                    <td colspan="6" style="text-align: center; color: #bbb; padding: 60px 0;">조회된 요청이 없습니다.</td>
                 </tr>
-                
                 <tr th:each="req : ${requests}">
                     <td th:text="${req.id}">1</td>
-                    <td th:text="${req.requesterNickname ?: '알 수 없음'}">신청자</td>
+                    <td th:text="${req.requester != null ? req.requester.nickname : '알 수 없음'}">신청자</td>
                     <td>
-                        <b th:text="${req.hospitalName}">병원명</b> / 
-                        <span th:text="${req.departmentName}">진료과</span>
+                        <strong th:text="${req.hospital != null ? req.hospital.name : '미지정'}">병원</strong><br/>
+                        <span th:text="${req.department != null ? req.department.name : '-'}" style="font-size: 12px; color: #888;">과</span>
                     </td>
-                    <td th:text="${req.doctorName}">의사명</td>
+                    <td th:text="${req.name}" style="font-weight: 600;">의사명</td>
                     <td>
-                        <span class="status-badge" th:text="${req.status}">PENDING</span>
+                        <span th:if="${req.status != null}" 
+                              th:class="'status-badge ' + ${req.status}" 
+                              th:text="${req.status.toString() == 'PENDING' ? 'PENDING' : (req.status.toString() == 'APPROVED' ? 'APPROVED' : 'REJECTED')}">
+                        </span>
                     </td>
                     <td>
-                        <button class="btn-approve" 
-                                th:data-id="${req.id}" 
-                                onclick="approveRequest(this.getAttribute('data-id'))">승인</button>
-                        
-                        <button class="btn-reject" 
-                                th:data-id="${req.id}" 
-                                onclick="rejectRequest(this.getAttribute('data-id'))">거절</button>
+                        <div th:if="${req.status != null and req.status.toString() == 'PENDING'}">
+                            <button class="action-btn btn-approve" th:onclick="approveRequest([[${req.id}]])">승인</button>
+                            <button class="action-btn btn-reject" th:onclick="rejectRequest([[${req.id}]])">반려</button>
+                        </div>
+                        <span th:unless="${req.status != null and req.status.toString() == 'PENDING'}" style="color: #ccc; font-size: 13px;">처리 완료</span>
                     </td>
                 </tr>
             </tbody>
         </table>
+
+        <div class="pagination" th:if="${page != null and page.totalPages > 0}">
+            <a class="page-link" th:if="${page.hasPrevious()}"
+               th:href="@{/admin/doctor-requests(page=${page.number - 1}, status=${currentStatus})}">&lt;</a>
+
+            <th:block th:each="pageNum : ${#numbers.sequence(0, page.totalPages - 1)}">
+                <a class="page-link" 
+                   th:classappend="${pageNum == page.number} ? 'active' : ''"
+                   th:href="@{/admin/doctor-requests(page=${pageNum}, status=${currentStatus})}"
+                   th:text="${pageNum + 1}">1</a>
+            </th:block>
+
+            <a class="page-link" th:if="${page.hasNext()}"
+               th:href="@{/admin/doctor-requests(page=${page.number + 1}, status=${currentStatus})}">&gt;</a>
+        </div>
     </div>
 
     <script th:inline="javascript">
-        // 승인 API 호출
         async function approveRequest(id) {
-            if (!confirm(id + "번 요청을 승인하시겠습니까?")) return;
-            
+            if (!confirm("승인하시겠습니까?")) return;
+            const token = document.querySelector('meta[name="_csrf"]').content;
+            const header = document.querySelector('meta[name="_csrf_header"]').content;
             try {
-                const response = await fetch(`/api/admin/doctor-requests/${id}/approve`, {
-                    method: 'PATCH'
+                const response = await fetch(`/admin/doctor-requests/${id}/approve`, {
+                    method: 'POST',
+                    headers: { [header]: token }
                 });
-                
-                if (response.ok) {
-                    alert("성공적으로 승인되었습니다.");
-                    location.reload();
-                } else {
-                    const errorMsg = await response.text();
-                    alert("승인 실패: " + errorMsg);
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("서버와 통신 중 오류가 발생했습니다.");
-            }
+                if (response.ok) { alert("승인 완료"); location.reload(); }
+                else { alert("처리 중 오류 발생"); }
+            } catch (e) { alert("통신 에러"); }
         }
 
-        // 거절 API 호출
         async function rejectRequest(id) {
-            const reason = prompt("거절 사유를 입력해주세요:");
+            const reason = prompt("반려 사유:");
             if (!reason) return;
-
+            const token = document.querySelector('meta[name="_csrf"]').content;
+            const header = document.querySelector('meta[name="_csrf_header"]').content;
             try {
-                const response = await fetch(`/api/admin/doctor-requests/${id}/reject`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
+                const response = await fetch(`/admin/doctor-requests/${id}/reject`, {
+                    method: 'POST',
+                    headers: { [header]: token, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ reason: reason })
                 });
-
-                if (response.ok) {
-                    alert("거절 처리가 완료되었습니다.");
-                    location.reload();
-                } else {
-                    alert("거절 처리 실패");
-                }
-            } catch (error) {
-                alert("오류가 발생했습니다.");
-            }
+                if (response.ok) { alert("반려 완료"); location.reload(); }
+                else { alert("처리 중 오류 발생"); }
+            } catch (e) { alert("통신 에러"); }
         }
     </script>
 </body>
