@@ -93,6 +93,10 @@ public class JwtTokenProvider {
 
         String email = claims.getSubject();
         String role = claims.get("role", String.class);
+        
+        System.out.println("email = " + email);
+        System.out.println("role claim = " + role);
+        System.out.println("authority = ROLE_" + role);
 
         Collection<SimpleGrantedAuthority> authorities =
                 List.of(new SimpleGrantedAuthority("ROLE_" + role));
