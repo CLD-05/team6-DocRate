@@ -27,30 +27,30 @@ public class HospitalController {
     // 1. 병원 목록 조회
     @GetMapping
     public String list(
-        @RequestParam(value = "search", required = false) String search, 
-        @RequestParam(value = "category", required = false) String category, 
+        @RequestParam(value = "search", required = false) String search,
+        @RequestParam(value = "category", required = false) String category,
         @RequestParam(value = "page", defaultValue = "1") int page, // 기본값을 1로 설정
         Model model) {
-        
+
         // 사용자가 보는 페이지 번호(1부터 시작)를 Spring Data JPA의 0 기반 인덱스로 변환
         int pageIndex = page - 1;
         if (pageIndex < 0) pageIndex = 0;
 
         // PageRequest를 직접 생성하여 0 기반 인덱스 적용 (한 페이지당 9개)
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(pageIndex, 9, Sort.Direction.DESC, "id");
-        
+
         Page<HospitalResponse> hospitalPage = hospitalService.getHospitalList(search, category, pageable);
-        
+
         model.addAttribute("hospitals", hospitalPage.getContent());
-        model.addAttribute("page", hospitalPage); 
-        model.addAttribute("totalCount", hospitalPage.getTotalElements()); 
-        model.addAttribute("search", search); 
-        
+        model.addAttribute("page", hospitalPage);
+        model.addAttribute("totalCount", hospitalPage.getTotalElements());
+        model.addAttribute("search", search);
+
         // 뷰에서 사용할 현재 페이지 번호 (1부터 시작)
         int currentPage = hospitalPage.getNumber() + 1;
         model.addAttribute("currentPage", currentPage);
-        
-        return "hospital/hospitals"; 
+
+        return "hospital/hospitals";
     }
 
     // 2. 병원 상세 페이지
@@ -58,7 +58,8 @@ public class HospitalController {
     public String detail(@PathVariable("id") Long id, Model model) {
         HospitalResponse hospital = hospitalService.getHospitalById(id);
         model.addAttribute("hospital", hospital);
-        model.addAttribute("doctors", new java.util.ArrayList<>());
+        // Modified line: Fetch doctors from HospitalService and add to model
+        model.addAttribute("doctors", hospitalService.getDoctorsByHospitalId(id));
         return "hospital/hospitalDetail";
     }
 }

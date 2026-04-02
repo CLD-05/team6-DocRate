@@ -1,23 +1,28 @@
 package com.team.docrate.domain.hospital.service;
 
-import com.team.docrate.domain.hospital.dto.HospitalResponse;
-import com.team.docrate.domain.hospital.entity.Hospital;
-import com.team.docrate.domain.hospital.enumtype.HospitalStatus;
-import com.team.docrate.domain.hospital.repository.HospitalRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.team.docrate.domain.doctor.entity.Doctor; // Import Doctor
+import com.team.docrate.domain.doctor.repository.DoctorRepository; // Import DoctorRepository
+import com.team.docrate.domain.hospital.dto.HospitalResponse;
+import com.team.docrate.domain.hospital.entity.Hospital;
+import com.team.docrate.domain.hospital.enumtype.HospitalStatus;
+import com.team.docrate.domain.hospital.repository.HospitalRepository;
+
 import java.util.List;
 import java.util.stream.Collectors;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class HospitalService {
 
     private final HospitalRepository hospitalRepository;
+    private final DoctorRepository doctorRepository; // Added DoctorRepository injection
 
     // 검색어(search), 카테고리(category), 페이징 정보를 받아 병원 목록 조회 (ACTIVE 상태 병원만)
     public Page<HospitalResponse> getHospitalList(String search, String category, Pageable pageable) {
@@ -51,7 +56,7 @@ public class HospitalService {
 
     // 카테고리 필터링만 있는 경우 (페이징 기본값 사용)
     public Page<HospitalResponse> getHospitalListByCategory(String category, Pageable pageable) {
-        return getHospitalList(category, pageable);
+        return getHospitalList(null, category, pageable);
     }
 
  // 특정 병원 ID로 상세 정보 가져오기
@@ -59,5 +64,10 @@ public class HospitalService {
         Hospital hospital = hospitalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("병원을 찾을 수 없습니다. ID: " + id));
         return HospitalResponse.from(hospital);
+    }
+    
+    // 특정 병원 ID에 속한 의사 목록 가져오기 (New method)
+    public List<Doctor> getDoctorsByHospitalId(Long hospitalId) {
+        return doctorRepository.findByHospitalId(hospitalId);
     }
 }

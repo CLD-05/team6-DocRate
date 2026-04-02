@@ -34,7 +34,7 @@
         <ul style="list-style: none; padding-left: 0;">
             <li th:each="doctor : ${doctors}" style="margin-bottom: 10px;">
                 - <span th:text="${doctor.name}">김의사</span> 
-                (<span th:text="${doctor.departmentName}">내과</span>)
+                (<span th:text="${doctor.department.name}">내과</span>)
                 <a th:href="@{/doctors/{id}(id=${doctor.id})}" style="margin-left: 10px; font-size: 0.9rem; color: #007bff;">상세보기</a>
             </li>
             <li th:if="${#lists.isEmpty(doctors)}" style="color: #888;">등록된 의사가 없습니다.</li>
