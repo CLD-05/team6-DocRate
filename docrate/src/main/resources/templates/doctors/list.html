@@ -73,17 +73,17 @@
 
                             <div class="info-row">
                                 <span class="info-label">병원명</span>
-                                <span class="info-value" th:text="${doctor.hospitalName}">서울튼튼내과</span>
+                                <span class="info-value small-info" th:text="${doctor.hospitalName}">서울튼튼내과</span>
                             </div>
 
                             <div class="info-row">
                                 <span class="info-label">진료과</span>
-                                <span class="info-value" th:text="${doctor.departmentName}">내과</span>
+                                <span class="info-value small-info" th:text="${doctor.departmentName}">내과</span>
                             </div>
 
                             <div class="info-row">
                                 <span class="info-label">평균 평점</span>
-                                <span class="info-value rating"
+                                <span class="info-value rating small-info"
                                       th:text="${doctor.averageRating != null ? doctor.averageRating : '평점 정보 없음'}">
                                     4.6
                                 </span>

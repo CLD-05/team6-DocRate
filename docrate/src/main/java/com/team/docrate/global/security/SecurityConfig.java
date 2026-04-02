@@ -56,10 +56,11 @@ public class SecurityConfig {
                 		        "/hospitals", "/hospitals/**",
                 		        "/doctors", "/doctors/**",
                 		        "/search",
-                		        "/css/**", "/js/**", "/images/**"
+                		        "/css/**", "/js/**", "/images/**",
+                		        "/favicon.ico"
                 		).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/mypage/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/mypage/**", "/doctor-requests/new", "/doctor-requests").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable())

@@ -197,6 +197,8 @@ button {
     gap: 14px;
 }
 
+
+
 .info-row {
     display: flex;
     gap: 14px;
@@ -213,13 +215,17 @@ button {
 
 .info-value {
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 900;
     color: #111;
     letter-spacing: -0.02em;
 }
 
 .info-value.rating {
     color: #111;
+}
+
+.small-info{
+	font-weight: 500;
 }
 
 .empty-box {

@@ -65,9 +65,6 @@ public class DoctorRequest extends BaseEntity {
     }
     
     
-	public void updateApproval(DoctorRequestStatus approved, Long id2, LocalDateTime now) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 	
 }
