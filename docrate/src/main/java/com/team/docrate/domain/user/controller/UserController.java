@@ -1,20 +1,25 @@
 package com.team.docrate.domain.user.controller;
 
 
+import com.team.docrate.domain.user.dto.ChangePasswordRequestDto;
 import com.team.docrate.domain.user.dto.LoginRequestDto;
 import com.team.docrate.domain.user.dto.LoginResponseDto;
+import com.team.docrate.domain.user.dto.MyPageResponseDto;
 import com.team.docrate.domain.user.dto.SignupRequestDto;
+import com.team.docrate.domain.user.dto.UpdateUserInfoRequestDto;
 import com.team.docrate.domain.user.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.security.Principal;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -102,6 +107,33 @@ public class UserController {
         return "redirect:/";
     }
 
+    @GetMapping("/mypage")
+    public String myPage(Principal principal, Model model) {
+        MyPageResponseDto myPage = userService.getMyPage(principal.getName());
+
+        model.addAttribute("myPage", myPage);
+        model.addAttribute("recentReviews", userService.getMyReviews(principal.getName()).stream().limit(3).toList());
+        model.addAttribute("recentRequests", userService.getMyRequests(principal.getName()).stream().limit(3).toList());
+
+        return "users/mypage";
+    }
+
+    @GetMapping("/mypage/reviews")
+    public String myReviews(Principal principal, Model model) {
+        model.addAttribute("reviewList", userService.getMyReviews(principal.getName()));
+        return "users/my-reviews";
+    }
+
+    @GetMapping("/mypage/requests")
+    public String myRequests(Principal principal, Model model) {
+        model.addAttribute("requestList", userService.getMyRequests(principal.getName()));
+        return "users/my-requests";
+    }
+
+
+
+
+    
     
     // JWT 토콘을 저장할 쿠키 생성
     private Cookie createCookie(String name, String value, int maxAge) {

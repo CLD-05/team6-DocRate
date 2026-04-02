@@ -16,5 +16,5 @@ public interface DoctorRequestRepository extends JpaRepository<DoctorRequest, Lo
 
 	Page<DoctorRequest> findByStatus(DoctorRequestStatus enumStatus, Pageable pageable);
 
-	
+	List<DoctorRequest> findAllByRequesterIdOrderByCreatedAtDesc(Long requesterUserId);
 }

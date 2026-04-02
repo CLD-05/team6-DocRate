@@ -13,7 +13,7 @@ import lombok.*;
 @Builder
 public class User extends BaseEntity {
 
-	// 회원 고유 번호
+    // 회원 고유 번호
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,7 +34,7 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private UserRole role;
-    
+
     // 회원가입 시 일반 사용자 계정 생성
     public static User createUser(String email, String encodedPassword, String nickname) {
         return User.builder()
@@ -43,5 +43,13 @@ public class User extends BaseEntity {
                 .nickname(nickname)
                 .role(UserRole.USER)
                 .build();
+    }
+
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
     }
 }

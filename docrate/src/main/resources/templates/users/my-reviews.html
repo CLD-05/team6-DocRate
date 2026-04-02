@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>내 리뷰 목록 | DocRate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/my-reviews.css}">
+</head>
+<body>
+<div class="page-wrap">
+    <div class="list-shell">
+        <header class="topbar">
+            <a th:href="@{/mypage}" class="back-link">← 마이페이지</a>
+            <h1 class="page-title">내 리뷰 목록</h1>
+        </header>
+
+        <main class="content">
+            <div class="review-list" th:if="${reviewList != null and !#lists.isEmpty(reviewList)}">
+                <article class="review-card" th:each="review : ${reviewList}">
+                    <div class="card-head">
+                        <div>
+                            <h2 class="doctor-name" th:text="${review.doctorName}">김의사</h2>
+                            <p class="hospital-name" th:text="${review.hospitalName}">OO병원</p>
+                        </div>
+                        <span class="rating-badge" th:text="${review.rating}">4.5</span>
+                    </div>
+
+                    <p class="review-preview" th:text="${review.contentPreview}">
+                        내가 작성한 리뷰 미리보기입니다.
+                    </p>
+
+                    <div class="card-foot">
+                        <span class="created-at" th:text="${review.createdAt}">2026-04-02 14:00</span>
+                        
+                    </div>
+                </article>
+            </div>
+
+            <div class="empty-box" th:if="${reviewList == null or #lists.isEmpty(reviewList)}">
+                아직 작성한 리뷰가 없습니다.
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

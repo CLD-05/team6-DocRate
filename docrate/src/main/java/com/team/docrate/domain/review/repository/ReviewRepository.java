@@ -17,4 +17,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     
  // 전체리스트(평균 계산)
     List<Review> findAllByDoctorId(Long doctorId);
+    
+    List<Review> findAllByUserIdOrderByCreatedAtDesc(Long userId);
 }

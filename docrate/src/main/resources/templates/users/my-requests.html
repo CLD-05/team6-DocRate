@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>내 요청 목록 | DocRate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/my-requests.css}">
+</head>
+<body>
+<div class="page-wrap">
+    <div class="list-shell">
+        <header class="topbar">
+            <a th:href="@{/mypage}" class="back-link">← 마이페이지</a>
+            <h1 class="page-title">내 요청 목록</h1>
+        </header>
+
+        <main class="content">
+            <div class="request-list" th:if="${requestList != null and !#lists.isEmpty(requestList)}">
+                <article class="request-card" th:each="request : ${requestList}">
+                    <div class="card-head">
+                        <div>
+                            <h2 class="request-type" th:text="${request.requestType}">의사 추가 요청</h2>
+                            <p class="target-name" th:text="${request.targetName}">홍길동 / OO병원 / 내과</p>
+                        </div>
+
+                        <span class="status-badge"
+                              th:classappend="${request.status == 'APPROVED'} ? ' approved' :
+                                              (${request.status == 'REJECTED'} ? ' rejected' : ' pending')"
+                              th:text="${request.status}">
+                            PENDING
+                        </span>
+                    </div>
+
+                    <div class="card-foot">
+                        <span class="created-at" th:text="${request.createdAt}">2026-04-02 14:00</span>
+                    </div>
+                </article>
+            </div>
+
+            <div class="empty-box" th:if="${requestList == null or #lists.isEmpty(requestList)}">
+                아직 요청한 내역이 없습니다.
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>
