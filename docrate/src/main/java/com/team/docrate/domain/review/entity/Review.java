@@ -1,5 +1,7 @@
 package com.team.docrate.domain.review.entity;
 
+import java.math.BigDecimal;
+
 import com.team.docrate.domain.doctor.entity.Doctor;
 import com.team.docrate.domain.user.entity.User;
 import com.team.docrate.global.common.BaseEntity;
@@ -27,33 +29,43 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Review extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @JoinColumn(name = "doctor_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Doctor doctor;
+	@JoinColumn(name = "doctor_id", nullable = false)
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Doctor doctor;
 
-    @JoinColumn(name = "user_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+	@JoinColumn(name = "user_id", nullable = false)
+	@ManyToOne(fetch = FetchType.LAZY)
+	private User user;
 
-    @Column(nullable = false, columnDefinition = "DECIMAL(2, 1)")
-    private Double rating;
+	@Column(nullable = false, precision = 2, scale = 1)
+	private BigDecimal rating;
 
-    @Column(nullable = false)
-    private Integer bedsideManner;
+	@Column(nullable = false)
+	private Integer bedsideManner;
 
-    @Column(nullable = false)
-    private Integer explanation;
+	@Column(nullable = false)
+	private Integer explanation;
 
-    @Column(nullable = false)
-    private Integer waitTime;
+	@Column(nullable = false)
+	private Integer waitTime;
 
-    @Column(nullable = false)
-    private Boolean revisitIntention;
+	@Column(nullable = false)
+	private Boolean revisitIntention;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+	@Column(nullable = false, columnDefinition = "TEXT")
+	private String content;
+
+	public void edit(BigDecimal rating, Integer bedsideManner, Integer explanation, Integer waitTime,
+			Boolean revisitIntention, String content) {
+		this.rating = rating;
+		this.bedsideManner = bedsideManner;
+		this.explanation = explanation;
+		this.waitTime = waitTime;
+		this.revisitIntention = revisitIntention;
+		this.content = content;
+	}
 }

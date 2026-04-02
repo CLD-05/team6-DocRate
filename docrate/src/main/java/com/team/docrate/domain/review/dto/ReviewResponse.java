@@ -1,5 +1,6 @@
 package com.team.docrate.domain.review.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.team.docrate.domain.review.entity.Review;
@@ -13,7 +14,7 @@ public class ReviewResponse {
     private Long id;
     private String userName;
     private String doctorName;
-    private Double rating;
+    private BigDecimal rating;
 //    상세 점수 추가
     private Integer bedsideManner;
     private Integer explanation;

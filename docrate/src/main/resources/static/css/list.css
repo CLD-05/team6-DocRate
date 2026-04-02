@@ -42,6 +42,31 @@ body {
 
 .divider { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
 
+/* 로고 감싸는 h1 태그 */
+/* 로고 스타일 수정 */
+.logo {
+    margin: 0;
+    padding: 0;
+    /* 글자 크기를 약간 키우고, 라인 높이를 맞춰 정렬을 잡습니다 */
+    line-height: 1; 
+}
+
+.logo a {
+    text-decoration: none;
+    /* 가장 두꺼운 900 수치 사용 */
+    font-weight: 900; 
+    /* 굵고 단단한 고딕체 계열 폰트 적용 */
+    font-family: 'Arial Black', 'Inter', 'Pretendard', sans-serif;
+    /* 글자색을 아주 진한 검정으로 */
+    color: #000000;
+    /* 사진처럼 글자 사이를 살짝 좁히면 더 묵직해 보입니다 */
+    letter-spacing: -1.5px;
+    /* 소문자도 섞여 있다면 그대로 두되, 대문자 느낌을 강조하고 싶을 때 사용 */
+    text-transform: none; 
+    
+    transition: all 0.2s ease;
+}
+
 /* 리뷰 카드 */
 .review-card {
     border: 1px solid #ccc;
