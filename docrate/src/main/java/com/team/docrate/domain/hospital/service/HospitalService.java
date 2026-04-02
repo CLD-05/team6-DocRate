@@ -19,22 +19,20 @@ public class HospitalService {
 
     private final HospitalRepository hospitalRepository;
 
-    // 카테고리, 페이징 정보를 받아 병원 목록 조회 (ACTIVE 상태 병원만, 대소문자/공백 무시 필터링)
-    public Page<HospitalResponse> getHospitalList(String category, Pageable pageable) {
+    // 검색어(search), 카테고리(category), 페이징 정보를 받아 병원 목록 조회 (ACTIVE 상태 병원만)
+    public Page<HospitalResponse> getHospitalList(String search, String category, Pageable pageable) {
         Page<Hospital> hospitalPage;
 
-        // 입력된 카테고리 값을 전처리 (소문자 변환, 모든 공백 제거)
-        String processedCategory = null;
-        if (category != null && !category.isEmpty()) {
-            processedCategory = category.toLowerCase().replaceAll("\\s+", "");
-        }
-
-        if (processedCategory != null) {
-            // 전처리된 카테고리와 ACTIVE 상태로 필터링하여 페이징 조회
-        	hospitalPage = hospitalRepository.findActiveAndProcessedCategory(HospitalStatus.ACTIVE, processedCategory, pageable);
+        if (search != null && !search.isEmpty()) {
+            // 검색어(search)가 있는 경우: 이름 또는 주소로 검색
+            hospitalPage = hospitalRepository.findByStatusAndSearch(HospitalStatus.ACTIVE, search, pageable);
+        } else if (category != null && !category.isEmpty()) {
+            // 카테고리 필터가 있는 경우: 전처리 후 필터링 조회
+            String processedCategory = category.toLowerCase().replaceAll("\\s+", "");
+            hospitalPage = hospitalRepository.findActiveAndProcessedCategory(HospitalStatus.ACTIVE, processedCategory, pageable);
         } else {
-            // 카테고리 필터가 없으면 ACTIVE 상태인 병원만 페이징하여 조회
-        	hospitalPage = hospitalRepository.findByStatus(HospitalStatus.ACTIVE, pageable);
+            // 필터가 없는 경우: 전체 ACTIVE 상태인 병원 페이징 조회
+            hospitalPage = hospitalRepository.findByStatus(HospitalStatus.ACTIVE, pageable);
         }
 
         // Page<Hospital>을 Page<HospitalResponse>로 변환
@@ -48,7 +46,7 @@ public class HospitalService {
 
     // 기본 목록 조회 (페이징 기본값 사용)
     public Page<HospitalResponse> getHospitalList(Pageable pageable) {
-        return getHospitalList(null, pageable); // 카테고리 없이 기본 페이징 조회
+        return getHospitalList(null, null, pageable);
     }
 
     // 카테고리 필터링만 있는 경우 (페이징 기본값 사용)

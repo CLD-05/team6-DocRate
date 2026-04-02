@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>병원 상세 | DocRate</title>
+    <link rel="stylesheet" href="/css/hospitalDetail.css"> <!-- Assuming a separate CSS for hospital detail -->
+</head>
+
+<body>
+
+<header class="header">
+    <div class="header-left">
+        <a href="/" class="logo">DOC RATE</a>
+    </div>
+    <nav class="header-right">
+        <!-- 
+            JWT 인증 상태에 따라 로그인/마이페이지/로그아웃 메뉴를 조건부로 표시해야 합니다.
+            현재는 사용자 요청에 따라 JWT 관련 동적 로직 구현은 보류하고,
+            와이어프레임에 명시된 링크 구조와 기본 상태(로그아웃 상태)를 우선 반영합니다.
+         -->
+        <!-- 기본값: 로그아웃 상태 -->
+        <a href="/login">로그인</a>
+        <a href="/signup">회원가입</a>
+
+        <!-- 
+            로그인 후에는 아래와 같이 표시될 것입니다.
+            <a href="/mypage">마이페이지</a>
+            <a href="/logout">로그아웃</a> 
+        -->
+    </nav>
+</header>
+
+<main class="container">
+
+    <section class="hospital-detail-section">
+        <h1 class="section-title">병원 상세</h1>
+
+        <div class="hospital-info-card">
+            <h2 class="hospital-name" th:text="${hospital.name}">서울튼튼내과</h2>
+            <p><strong>주소:</strong> <span th:text="${hospital.address}">서울시 강남구 ...</span></p>
+            <p><strong>전화:</strong> <span th:text="${hospital.phone}">02-1234-5678</span></p>
+            <p><strong>카테고리:</strong> <span th:text="${hospital.category}">내과</span></p>
+            <p><strong>상태:</strong> <span th:text="${hospital.status}">운영중</span></p>
+        </div>
+
+        <!-- 소속 의사 목록 -->
+        <section class="doctor-list-in-hospital" th:if="${not #lists.isEmpty(doctors)}">
+            <h2 class="section-subtitle">소속 의사 목록</h2>
+            <div class="doctor-list">
+                <article class="doctor-card-small" th:each="doctor : ${doctors}">
+                    <p>
+                        <strong>의사명:</strong>
+                        <span th:text="${doctor.name}">김의사</span>
+                    </p>
+                    <p>
+                        <strong>진료과:</strong>
+                        <span th:text="${doctor.departmentName}">내과</span> <!-- Assuming departmentName is available -->
+                    </p>
+                    <!-- 의사 상세 페이지로 이동하는 링크 -->
+                    <a th:href="@{/doctors/{doctorId}(doctorId=${doctor.doctorId})}" class="detail-link">
+                        의사 상세보기
+                    </a>
+                </article>
+            </div>
+        </section>
+        
+        <!-- 의사가 없을 경우 -->
+        <div class="empty-box" th:if="${#lists.isEmpty(doctors)}">
+            <p class="empty-title">등록된 의사가 없습니다.</p>
+        </div>
+
+        <div class="action-buttons">
+            <a th:href="@{/hospitals}" class="btn btn-secondary">[목록으로]</a>
+            <!-- 병원 상세 화면에서 의사 요청 링크를 따라가는 것은 와이어프레임에 명시되어 있습니다. -->
+            <a th:href="@{/doctor-requests/new}" class="btn btn-primary">
+                찾으시는 의사가 없다면 추가할까요?
+            </a>
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>

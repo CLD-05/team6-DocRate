@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.team.docrate.domain.hospital.dto.HospitalResponse;
 import com.team.docrate.domain.hospital.service.HospitalService;
-import com.team.docrate.domain.request.hospitalrequest.dto.HospitalRequestDto;
-import com.team.docrate.domain.request.hospitalrequest.service.HospitalRequestService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,27 +23,32 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class HospitalController {
     private final HospitalService hospitalService;
-    private final HospitalRequestService hospitalRequestService;
 
     // 1. 병원 목록 조회
     @GetMapping
     public String list(
+        @RequestParam(value = "search", required = false) String search, 
         @RequestParam(value = "category", required = false) String category, 
-        @PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable, 
+        @RequestParam(value = "page", defaultValue = "1") int page, // 기본값을 1로 설정
         Model model) {
         
-        Page<HospitalResponse> hospitalPage = hospitalService.getHospitalList(category, pageable);
+        // 사용자가 보는 페이지 번호(1부터 시작)를 Spring Data JPA의 0 기반 인덱스로 변환
+        int pageIndex = page - 1;
+        if (pageIndex < 0) pageIndex = 0;
+
+        // PageRequest를 직접 생성하여 0 기반 인덱스 적용 (한 페이지당 9개)
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(pageIndex, 9, Sort.Direction.DESC, "id");
+        
+        Page<HospitalResponse> hospitalPage = hospitalService.getHospitalList(search, category, pageable);
         
         model.addAttribute("hospitals", hospitalPage.getContent());
         model.addAttribute("page", hospitalPage); 
+        model.addAttribute("totalCount", hospitalPage.getTotalElements()); 
+        model.addAttribute("search", search); 
         
-        int nowPage = hospitalPage.getPageable().getPageNumber() + 1;
-        int startPage = Math.max(nowPage - 4, 1);
-        int endPage = Math.min(nowPage + 5, hospitalPage.getTotalPages());
-        
-        model.addAttribute("nowPage", nowPage);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
+        // 뷰에서 사용할 현재 페이지 번호 (1부터 시작)
+        int currentPage = hospitalPage.getNumber() + 1;
+        model.addAttribute("currentPage", currentPage);
         
         return "hospital/hospitals"; 
     }
@@ -58,23 +61,4 @@ public class HospitalController {
         model.addAttribute("doctors", new java.util.ArrayList<>());
         return "hospital/hospitalDetail";
     }
-
-    // 3. 병원 등록 요청 폼 띄우기 (주소: /hospitals/request)
-    @GetMapping("/request")
-    public String showRequestForm() {
-        // templates/hospital/requestForm.html 경로와 일치
-        return "hospital/requestForm"; 
-    }
-
-    // 4. 병원 등록 요청 처리 (POST 주소: /hospitals/request)
-    @PostMapping("/request")
-    public String createRequest(@ModelAttribute("hospitalRequestDto") HospitalRequestDto requestDto) {
-        // [참고] 아직 로그인 유저 연동 전이라면, DB에 있는 유저 ID 1번 등을 임시로 사용해야 할 수도 있습니다.
-        // User loginUser = ... (현재 로그인 유저 가져오는 로직)
-        // hospitalRequestService.saveRequest(requestDto, loginUser);
-        
-        hospitalRequestService.saveRequest(requestDto, null); // 일단 구조만 맞춤
-        return "redirect:/hospitals";
-    }
-    
 }

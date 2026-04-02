@@ -1,104 +1,123 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout/default}">
-
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-<title>병원 목록</title>
-<link rel="stylesheet" th:href="@{/css/hospital/hospitals.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>병원 검색 | DocRate</title>
+    <link rel="stylesheet" href="/css/hospital/hospitals.css">
 </head>
-
 <body>
-	<!-- layout:fragment="content"는 base layout에 정의된 content 블록에 삽입될 부분입니다. -->
-	<div layout:fragment="content">
-		<main class="container">
-			<h1>병원 목록</h1>
-			<a th:href="@{/hospitals/request}" class="btn-request">병원 등록 요청하기</a>
-			<div class="filters">
-				<div class="filter-group">
-					<label for="category">카테고리:</label> <select id="category"
-						name="category">
-						<option value="">전체</option>
-						<!-- 예시: 실제로는 서버에서 동적으로 받아와야 합니다. -->
-						<option th:each="category : ${categories}"
-							th:value="${category.code}" th:text="${category.name}">내과</option>
-					</select>
-				</div>
-				<div class="filter-group">
-					<label for="region">지역:</label> <select id="region" name="region">
-						<option value="">전체</option>
-						<!-- 예시: 실제로는 서버에서 동적으로 받아와야 합니다. -->
-						<option th:each="region : ${regions}" th:value="${region.code}"
-							th:text="${region.name}">서울시</option>
-					</select>
-				</div>
-				<div class="filter-group">
-					<label for="sort">정렬:</label> <select id="sort" name="sort">
-						<option value="default">기본</option>
-						<option value="rating_desc">평점순 (높은순)</option>
-						<option value="distance_asc">거리순 (가까운순)</option>
-						<!-- 추가 정렬 옵션 -->
-					</select>
-				</div>
-				<button class="btn-search">검색</button>
-			</div>
 
-			<div class="hospital-list">
-				<!-- 병원 목록을 동적으로 표시합니다. -->
-				<div th:each="hospital : ${hospitals}" class="hospital-card">
-					<h3 th:text="${hospital.name}">병원명: 서울튼튼내과</h3>
-					<p>
-						<strong>주소:</strong> <span th:text="${hospital.address}">서울시
-							강남구 ...</span>
-					</p>
-					<p>
-						<strong>전화:</strong> <span th:text="${hospital.phone}">02-1234-5678</span>
-					</p>
-					<p>
-						<strong>진료분야:</strong> <span th:text="${hospital.department}">내과</span>
-					</p>
-					<a th:href="@{/hospitals/{id}(id=${hospital.id})}"
-						class="btn-details">상세보기</a>
-				</div>
+<header class="header">
+    <div class="header-left">
+        <a href="/" class="logo">DOC RATE</a>
+    </div>
+    <nav class="header-right">
+        <a href="/mypage">마이페이지</a>
+        <a href="/logout">로그아웃</a>
+    </nav>
+</header>
 
-				<!-- 병원이 없을 경우 표시될 메시지 -->
-				<div th:if="${#lists.isEmpty(hospitals)}" class="no-results">
-					검색 조건에 맞는 병원을 찾을 수 없습니다.</div>
-			</div>
+<main class="container">
+    <!-- 검색 결과 수 -->
+    <section class="result-section">
+        <h1>검색된 <span th:text="${totalCount}">0</span> 결과</h1>
+    </section>
 
-			<div class="pagination">
-				<nav aria-label="Page navigation">
-					<ul class="pagination justify-content-center">
-						<li class="page-item" th:classappend="${page.first} ? 'disabled'">
-							<a class="page-link"
-							th:href="@{/hospitals(page=0, category=${param.category})}">&laquo;&laquo;</a>
-						</li>
+    <!-- 검색 섹션 -->
+    <section class="search-section">
+        <form method="get" action="/hospitals" class="search-form">
+            <div class="search-row">
+                <input
+                    type="text"
+                    name="search"
+                    th:value="${search}"
+                    placeholder="병원 이름을 입력하세요"
+                    class="search-input"
+                />
+                <button type="submit" class="search-button">검색</button>
+            </div>
+            <p class="search-guide">
+                <a th:href="@{/doctors}" class="hospital-link">의사 이름으로 찾을게요</a>
+            </p>
+        </form>
+    </section>
 
-						<li class="page-item" th:classappend="${page.first} ? 'disabled'">
-							<a class="page-link"
-							th:href="@{/hospitals(page=${page.number - 1}, category=${param.category})}">&laquo;</a>
-						</li>
+    <!-- 병원 리스트 섹션 -->
+    <section class="hospital-list-section">
+        <div class="hospital-list" th:if="${not #lists.isEmpty(hospitals)}">
+            <!-- article 전체를 클릭 가능하게 수정 (상세보기 버튼 제거) -->
+            <div class="hospital-card-wrapper" th:each="hospital : ${hospitals}" 
+                 th:onclick="|location.href='/hospitals/${hospital.id}'|" 
+                 style="cursor: pointer;">
+                <article class="hospital-card">
+                    <p>
+                        <strong>병원명:</strong>
+                        <span th:text="${hospital.name}">서울튼튼내과</span>
+                    </p>
+                    <p>
+                        <strong>주소:</strong>
+                        <span th:text="${hospital.address}">서울시 강남구 ...</span>
+                    </p>
+                    <p>
+                        <strong>전화:</strong>
+                        <span th:text="${hospital.phone}">02-1234-5678</span>
+                    </p>
+                    <p>
+                        <strong>진료분야:</strong>
+                        <span th:text="${hospital.category}">내과</span>
+                    </p>
+                </article>
+            </div>
+        </div>
 
-						<li th:each="idx : ${#numbers.sequence(startPage, endPage)}"
-							class="page-item" th:classappend="${idx == nowPage} ? 'active'">
-							<a class="page-link"
-							th:href="@{/hospitals(page=${idx - 1}, category=${param.category})}"
-							th:text="${idx}">1</a>
-						</li>
+        <div class="empty-box" th:if="${#lists.isEmpty(hospitals)}">
+            <p class="empty-title">검색 결과가 없습니다.</p>
+            <p class="empty-desc">찾으시는 병원이 없다면 아래에서 등록 요청을 해보세요.</p>
+        </div>
+    </section>
 
-						<li class="page-item" th:classappend="${page.last} ? 'disabled'">
-							<a class="page-link"
-							th:href="@{/hospitals(page=${page.number + 1}, category=${param.category})}">&raquo;</a>
-						</li>
+    <!-- 페이징 섹션 -->
+    <section class="pagination-section" th:if="${page.totalPages > 0}">
+        <div class="pagination">
+            <!-- 이전 페이지 링크: currentPage - 1 -->
+            <a th:if="${currentPage > 1}"
+               th:href="@{/hospitals(page=${currentPage - 1}, search=${search})}"
+               class="page-btn">
+                이전
+            </a>
 
-						<li class="page-item" th:classappend="${page.last} ? 'disabled'">
-							<a class="page-link"
-							th:href="@{/hospitals(page=${page.totalPages - 1}, category=${param.category})}">&raquo;&raquo;</a>
-						</li>
-					</ul>
-				</nav>
-			</div>
-		</main>
-	</div>
+            <!-- 페이지 번호 링크: i + 1 -->
+            <span th:each="i : ${#numbers.sequence(
+                currentPage - 3 > 0 ? currentPage - 3 : 0,
+                currentPage + 1 < page.totalPages - 1 ? currentPage + 1 : page.totalPages - 1
+            )}">
+                <a th:href="@{/hospitals(page=${i + 1}, search=${search})}"
+                   th:text="${i + 1}"
+                   th:classappend="${(i + 1) == currentPage} ? ' current' : ''"
+                   class="page-number">
+                    1
+                </a>
+            </span>
+
+            <!-- 다음 페이지 링크: currentPage + 1 -->
+            <a th:if="${currentPage < page.totalPages}"
+               th:href="@{/hospitals(page=${currentPage + 1}, search=${search})}"
+               class="page-btn">
+                다음
+            </a>
+        </div>
+    </section>
+
+    <!-- 요청 섹션 -->
+    <section class="request-section">
+        <p class="request-text">
+            <a th:href="@{/hospital-requests/new}" class="request-link">
+                찾으시는 병원이 없다면 추가할까요?
+            </a>
+        </p>
+    </section>
+</main>
+
 </body>
 </html>
