@@ -10,7 +10,6 @@
 <div class="page-wrap">
     <div class="mypage-shell">
 
-        <!-- 상단 헤더 -->
         <header class="topbar">
             <div class="brand">
                 <a th:href="@{/}">DocRate</a>
@@ -31,7 +30,6 @@
             </div>
         </header>
 
-        <!-- 페이지 본문 -->
         <main class="content">
             <section class="hero-section">
                 <p class="eyebrow">MY PAGE</p>
@@ -39,7 +37,6 @@
                 <p class="page-desc">내 계정 정보와 활동 내역을 한눈에 확인해보세요.</p>
             </section>
 
-            <!-- 회원 정보 -->
             <section class="card profile-card">
                 <div class="section-head">
                     <div>
@@ -63,16 +60,9 @@
                         <p class="info-value" th:text="${myPage.nickname}">user01</p>
                     </div>
                 </div>
-
-                <div class="profile-actions">
-                    <a th:href="@{/mypage/edit}" class="secondary-btn">회원정보 수정</a>
-                    <a th:href="@{/mypage/password}" class="primary-btn">비밀번호 변경</a>
-                </div>
             </section>
 
-            <!-- 요약 카드 그리드 -->
             <section class="dashboard-grid">
-                <!-- 내 리뷰 관리 -->
                 <section class="card summary-card">
                     <div class="section-head">
                         <div>
@@ -92,7 +82,7 @@
                                     <span th:text="'평점 ' + ${review.rating}">평점 4.5</span>
                                 </p>
                             </div>
-                            <a th:href="@{'/reviews/' + ${review.reviewId}}" class="mini-link">보기</a>
+                            
                         </article>
                     </div>
 
@@ -101,7 +91,6 @@
                     </div>
                 </section>
 
-                <!-- 내 요청 목록 -->
                 <section class="card summary-card">
                     <div class="section-head">
                         <div>
@@ -114,17 +103,15 @@
                     <div class="summary-list" th:if="${recentRequests != null and !#lists.isEmpty(recentRequests)}">
                         <article class="summary-item" th:each="request : ${recentRequests}">
                             <div class="summary-main">
-                                <p class="summary-title">
-                                    <span th:text="${request.requestType}">의사 추가 요청</span>
-                                </p>
+                                <p class="summary-title" th:text="${request.requestType}">의사 추가 요청</p>
                                 <p class="summary-sub">
                                     <span th:text="${request.targetName}">홍길동 / OO병원</span>
                                 </p>
                             </div>
 
                             <span class="status-badge"
-                                  th:classappend="${request.status.name() == 'APPROVED'} ? ' approved' :
-                                                  (${request.status.name() == 'REJECTED'} ? ' rejected' : ' pending')"
+                                  th:classappend="${request.status == 'APPROVED'} ? ' approved' :
+                                                  (${request.status == 'REJECTED'} ? ' rejected' : ' pending')"
                                   th:text="${request.status}">PENDING</span>
                         </article>
                     </div>

@@ -1,25 +1,34 @@
 package com.team.docrate.domain.user.service;
 
-import com.team.docrate.domain.user.dto.ChangePasswordRequestDto;
+import com.team.docrate.domain.request.doctorrequest.entity.DoctorRequest;
+import com.team.docrate.domain.request.doctorrequest.repository.DoctorRequestRepository;
+import com.team.docrate.domain.request.hospitalrequest.entity.HospitalRequest;
+import com.team.docrate.domain.request.hospitalrequest.repository.HospitalRequestRepository;
+import com.team.docrate.domain.review.entity.Review;
+import com.team.docrate.domain.review.repository.ReviewRepository;
 import com.team.docrate.domain.user.dto.LoginRequestDto;
 import com.team.docrate.domain.user.dto.LoginResponseDto;
 import com.team.docrate.domain.user.dto.MyPageResponseDto;
+import com.team.docrate.domain.user.dto.MyRequestListItemDto;
+import com.team.docrate.domain.user.dto.MyReviewListItemDto;
 import com.team.docrate.domain.user.dto.SignupRequestDto;
 import com.team.docrate.domain.user.dto.SignupResponseDto;
 import com.team.docrate.domain.user.dto.TokenReissueResponseDto;
-import com.team.docrate.domain.user.dto.UpdateUserInfoRequestDto;
 import com.team.docrate.domain.user.entity.User;
 import com.team.docrate.domain.user.repository.UserRepository;
 import com.team.docrate.global.exception.DuplicateEmailException;
 import com.team.docrate.global.exception.DuplicateNicknameException;
 import com.team.docrate.global.exception.InvalidLoginException;
 import com.team.docrate.global.exception.InvalidRefreshTokenException;
-import com.team.docrate.global.exception.InvalidTokenException;
 import com.team.docrate.global.exception.PasswordMismatchException;
 import com.team.docrate.global.security.jwt.JwtTokenProvider;
 import com.team.docrate.infra.redis.AccessTokenBlacklistService;
 import com.team.docrate.infra.redis.RefreshTokenRedisService;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,11 +40,17 @@ import org.springframework.util.StringUtils;
 @Transactional(readOnly = true)
 public class UserService {
 
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRedisService refreshTokenRedisService;
     private final AccessTokenBlacklistService accessTokenBlacklistService;
+    private final ReviewRepository reviewRepository;
+    private final HospitalRequestRepository hospitalRequestRepository;
+    private final DoctorRequestRepository doctorRequestRepository;
 
     @Transactional
     public SignupResponseDto signup(SignupRequestDto requestDto) {
@@ -147,48 +162,86 @@ public class UserService {
     }
 
     public MyPageResponseDto getMyPage(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
+        User user = getUserByEmail(email);
         return MyPageResponseDto.from(user);
     }
 
-    @Transactional
-    public MyPageResponseDto updateUserInfo(String email, UpdateUserInfoRequestDto requestDto) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+    public List<MyReviewListItemDto> getMyReviews(String email) {
+        User user = getUserByEmail(email);
 
-        if (userRepository.existsByNicknameAndEmailNot(requestDto.getNickname(), email)) {
-            throw new DuplicateNicknameException();
-        }
-
-        user.changeNickname(requestDto.getNickname());
-
-        return MyPageResponseDto.from(user);
+        return reviewRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId())
+                .stream()
+                .map(this::toMyReviewListItemDto)
+                .toList();
     }
 
-    @Transactional
-    public void changePassword(String email, ChangePasswordRequestDto requestDto) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+    public List<MyRequestListItemDto> getMyRequests(String email) {
+        User user = getUserByEmail(email);
 
-        if (!passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPassword())) {
-            throw new InvalidLoginException();
-        }
+        List<MyRequestListItemDto> hospitalRequests = hospitalRequestRepository
+                .findAllByRequesterIdOrderByCreatedAtDesc(user.getId())
+                .stream()
+                .map(this::toHospitalRequestDto)
+                .toList();
 
-        if (!requestDto.isNewPasswordMatched()) {
-            throw new PasswordMismatchException();
-        }
+        List<MyRequestListItemDto> doctorRequests = doctorRequestRepository
+                .findAllByRequesterIdOrderByCreatedAtDesc(user.getId())
+                .stream()
+                .map(this::toDoctorRequestDto)
+                .toList();
 
-        if (passwordEncoder.matches(requestDto.getNewPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("기존 비밀번호와 다른 비밀번호를 입력해주세요.");
-        }
-
-        user.changePassword(passwordEncoder.encode(requestDto.getNewPassword()));
+        return Stream.concat(hospitalRequests.stream(), doctorRequests.stream())
+                .sorted(Comparator.comparing(MyRequestListItemDto::getCreatedAt).reversed())
+                .toList();
     }
 
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    private User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+    }
+
+    private MyReviewListItemDto toMyReviewListItemDto(Review review) {
+        String preview = review.getContent();
+        if (preview != null && preview.length() > 60) {
+            preview = preview.substring(0, 60) + "...";
+        }
+
+        return MyReviewListItemDto.builder()
+                .reviewId(review.getId())
+                .doctorName(review.getDoctor().getName())
+                .hospitalName(review.getDoctor().getHospital().getName())
+                .rating(review.getRating())
+                .contentPreview(preview)
+                .createdAt(review.getCreatedAt().format(DATE_TIME_FORMATTER))
+                .build();
+    }
+
+    private MyRequestListItemDto toHospitalRequestDto(HospitalRequest request) {
+        return MyRequestListItemDto.builder()
+                .requestId(request.getId())
+                .requestType("병원 추가 요청")
+                .targetName(request.getName())
+                .status(request.getStatus().name())
+                .createdAt(request.getCreatedAt().format(DATE_TIME_FORMATTER))
+                .build();
+    }
+
+    private MyRequestListItemDto toDoctorRequestDto(DoctorRequest request) {
+        String targetName = request.getName() + " / "
+                + request.getHospital().getName() + " / "
+                + request.getDepartment().getName();
+
+        return MyRequestListItemDto.builder()
+                .requestId(request.getId())
+                .requestType("의사 추가 요청")
+                .targetName(targetName)
+                .status(request.getStatus().name())
+                .createdAt(request.getCreatedAt().format(DATE_TIME_FORMATTER))
+                .build();
     }
 
     private void validateSignupRequest(SignupRequestDto requestDto) {

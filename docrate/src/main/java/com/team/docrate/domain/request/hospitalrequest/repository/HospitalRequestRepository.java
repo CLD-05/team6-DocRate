@@ -18,5 +18,5 @@ public interface HospitalRequestRepository extends JpaRepository<HospitalRequest
 
 	Page<HospitalRequest> findByStatus(HospitalRequestStatus status, Pageable pageable);
 
-	
+	List<HospitalRequest> findAllByRequesterIdOrderByCreatedAtDesc(Long requesterUserId);
 }

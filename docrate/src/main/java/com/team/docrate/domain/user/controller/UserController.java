@@ -107,49 +107,30 @@ public class UserController {
         return "redirect:/";
     }
 
- // 마이페이지 화면 반환
     @GetMapping("/mypage")
     public String myPage(Principal principal, Model model) {
         MyPageResponseDto myPage = userService.getMyPage(principal.getName());
 
         model.addAttribute("myPage", myPage);
-
-        // 아직 리뷰/요청 백엔드 연결 전이면 임시로 빈 리스트
-        model.addAttribute("recentReviews", Collections.emptyList());
-        model.addAttribute("recentRequests", Collections.emptyList());
+        model.addAttribute("recentReviews", userService.getMyReviews(principal.getName()).stream().limit(3).toList());
+        model.addAttribute("recentRequests", userService.getMyRequests(principal.getName()).stream().limit(3).toList());
 
         return "users/mypage";
     }
 
-    // 마이페이지 JSON 조회 API
-    @GetMapping("/api/mypage")
-    @ResponseBody
-    public ResponseEntity<MyPageResponseDto> getMyPageApi(Principal principal) {
-        MyPageResponseDto response = userService.getMyPage(principal.getName());
-        return ResponseEntity.ok(response);
+    @GetMapping("/mypage/reviews")
+    public String myReviews(Principal principal, Model model) {
+        model.addAttribute("reviewList", userService.getMyReviews(principal.getName()));
+        return "users/my-reviews";
     }
 
-    // 사용자 정보 수정 API
-    @PatchMapping("/api/mypage")
-    @ResponseBody
-    public ResponseEntity<MyPageResponseDto> updateMyInfo(
-            Principal principal,
-            @Valid @RequestBody UpdateUserInfoRequestDto requestDto
-    ) {
-        MyPageResponseDto response = userService.updateUserInfo(principal.getName(), requestDto);
-        return ResponseEntity.ok(response);
+    @GetMapping("/mypage/requests")
+    public String myRequests(Principal principal, Model model) {
+        model.addAttribute("requestList", userService.getMyRequests(principal.getName()));
+        return "users/my-requests";
     }
 
-    // 비밀번호 변경 API
-    @PatchMapping("/api/mypage/password")
-    @ResponseBody
-    public ResponseEntity<Void> changePassword(
-            Principal principal,
-            @Valid @RequestBody ChangePasswordRequestDto requestDto
-    ) {
-        userService.changePassword(principal.getName(), requestDto);
-        return ResponseEntity.ok().build();
-    }
+
 
 
     
