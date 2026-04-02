@@ -64,11 +64,14 @@ public class UserController {
     
     // GET /login → 로그인 페이지
     @GetMapping("/login")
-    public String loginForm(Model model) {
+    public String loginForm(
+            @org.springframework.web.bind.annotation.RequestParam(value = "redirectUrl", required = false) String redirectUrl,
+            Model model) {
     	// 로그인 폼과 바인딩할 DTO가 없으면 새로 생성
         if (!model.containsAttribute("loginRequestDto")) {
             model.addAttribute("loginRequestDto", new LoginRequestDto());
         }
+        model.addAttribute("redirectUrl", redirectUrl);
         // 로그인 페이지 반환
         return "users/login";
     }
@@ -78,16 +81,17 @@ public class UserController {
     public String login(
             @Valid LoginRequestDto loginRequestDto,
             BindingResult bindingResult,
+            @org.springframework.web.bind.annotation.RequestParam(value = "redirectUrl", required = false) String redirectUrl,
             HttpServletResponse response
     ) {
     	// 1. 입력한 검증 실패 시 로그인 페이지로 다시 이동
         if (bindingResult.hasErrors()) {
             return "users/login";
         }
-        
+
         // 2. 로그인 처리 (이메일/비밀번호 검증 + JWT
         LoginResponseDto loginResponse = userService.login(loginRequestDto);
-        
+
         int accessTokenCookieMaxAge = Math.toIntExact(accessTokenExpiration / 1000);
         int refreshTokenCookieMaxAge = Math.toIntExact(refreshTokenExpiration / 1000);
 
@@ -103,7 +107,10 @@ public class UserController {
                 refreshTokenCookieMaxAge
         ));
 
-        // 4. 로그인 성공 후 메인 페이지로 이동
+        // 4. 로그인 성공 후 redirectUrl이 있으면 해당 페이지로, 없으면 메인 페이지로 이동
+        if (org.springframework.util.StringUtils.hasText(redirectUrl) && redirectUrl.startsWith("/")) {
+            return "redirect:" + redirectUrl;
+        }
         return "redirect:/";
     }
 
