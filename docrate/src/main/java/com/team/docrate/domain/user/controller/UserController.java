@@ -1,26 +1,33 @@
 package com.team.docrate.domain.user.controller;
 
 
+import com.team.docrate.domain.user.dto.LoginRequestDto;
+import com.team.docrate.domain.user.dto.LoginResponseDto;
 import com.team.docrate.domain.user.dto.SignupRequestDto;
 import com.team.docrate.domain.user.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.team.docrate.domain.user.dto.LoginRequestDto;
-import com.team.docrate.domain.user.dto.LoginResponseDto;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-
 @Controller
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
+    
+    @Value("${jwt.access-token-expiration}")
+    private long accessTokenExpiration;
+
+    @Value("${jwt.refresh-token-expiration}")
+    private long refreshTokenExpiration;
+   
 
     // GET /signup → 회원가입 화면 보여주기
     @GetMapping("/signup")
@@ -75,10 +82,24 @@ public class UserController {
         
         // 2. 로그인 처리 (이메일/비밀번호 검증 + JWT
         LoginResponseDto loginResponse = userService.login(loginRequestDto);
+        
+        // JWT 만료는 15초여도, 쿠키는 조금 더 오래 살아있게 해서
+        // 만료된 AT를 서버가 받아 자동 재발급할 수 있게 함
+        int accessTokenCookieMaxAge = 60; // 60초
+        int refreshTokenCookieMaxAge = Math.toIntExact(refreshTokenExpiration / 1000);
 
         // 3. 발급된 access token, refresh token을 쿠키에 저장
-        response.addCookie(createCookie("accessToken", loginResponse.getAccessToken(), 60 * 30));
-        response.addCookie(createCookie("refreshToken", loginResponse.getRefreshToken(), 60 * 60 * 24 * 7));
+        response.addCookie(createCookie(
+                "accessToken",
+                loginResponse.getAccessToken(),
+                accessTokenCookieMaxAge
+        ));
+
+        response.addCookie(createCookie(
+                "refreshToken",
+                loginResponse.getRefreshToken(),
+                refreshTokenCookieMaxAge
+        ));
 
         // 4. 로그인 성공 후 메인 페이지로 이동
         return "redirect:/";
