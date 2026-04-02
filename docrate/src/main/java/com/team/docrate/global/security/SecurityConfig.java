@@ -46,16 +46,29 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .logout(logout -> logout.disable())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                        .deleteCookies("accessToken", "refreshToken", "JSESSIONID")
+                        .invalidateHttpSession(true)
+                )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/", "/signup", "/login", "/logout",
-                                "/hospitals", "/hospitals/**",
-                                "/doctors", "/doctors/**",
-                                "/css/**", "/js/**", "/images/**", "/favicon.ico"
+                                "/",
+                                "/signup",
+                                "/login",
+                                "/error",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/favicon.ico",
+                                "/hospitals",
+                                "/hospitals/**",
+                                "/doctors",
+                                "/doctors/**"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/mypage/**").hasAnyRole("USER", "ADMIN")

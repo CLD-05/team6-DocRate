@@ -1,8 +1,12 @@
 package com.team.docrate.domain.doctor.service;
 
+import com.team.docrate.domain.doctor.dto.DoctorDetailDto;
 import com.team.docrate.domain.doctor.dto.DoctorListItemDto;
+import com.team.docrate.domain.doctor.entity.Doctor;
 import com.team.docrate.domain.doctor.enumtype.DoctorStatus;
 import com.team.docrate.domain.doctor.repository.DoctorRepository;
+import com.team.docrate.domain.review.dto.ReviewSummaryDto;
+import com.team.docrate.domain.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +20,7 @@ import org.springframework.util.StringUtils;
 public class DoctorService {
 
     private final DoctorRepository doctorRepository;
+    private final ReviewService reviewService;
 
     public Page<DoctorListItemDto> getDoctorList(String search, Pageable pageable) {
         if (StringUtils.hasText(search)) {
@@ -29,5 +34,40 @@ public class DoctorService {
 
         return doctorRepository.findByStatus(DoctorStatus.ACTIVE, pageable)
                 .map(DoctorListItemDto::from);
+    }
+
+    public DoctorDetailDto getDoctorDetail(Long doctorId) {
+        Doctor doctor = doctorRepository.findWithHospitalAndDepartmentById(doctorId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 의사를 찾을 수 없습니다. id=" + doctorId));
+
+        ReviewSummaryDto summary = reviewService.getDoctorReviewSummary(doctorId);
+
+        System.out.println("summary = " + summary.getAverageRating() + ", "
+                + summary.getBedsideMannerAvg() + ", "
+                + summary.getExplanationAvg() + ", "
+                + summary.getWaitTimeAvg() + ", "
+                + summary.getRevisitIntentionScore());
+
+        return DoctorDetailDto.builder()
+                .id(doctor.getId())
+                .name(doctor.getName())
+                .hospitalName(
+                        doctor.getHospital() != null ? doctor.getHospital().getName() : "병원 정보 없음"
+                )
+                .departmentName(
+                        doctor.getDepartment() != null ? doctor.getDepartment().getName() : "진료과 없음"
+                )
+                .intro(
+                        doctor.getIntro() != null && !doctor.getIntro().isBlank()
+                                ? doctor.getIntro()
+                                : "등록된 소개가 없습니다."
+                )
+                .averageRating(summary.getAverageRating())
+                .kindnessRating(summary.getBedsideMannerAvg())
+                .explanationRating(summary.getExplanationAvg())
+                .waitingRating(summary.getWaitTimeAvg())
+                .revisitRating(summary.getRevisitIntentionScore())
+                .reviewCount(summary.getReviewCount())
+                .build();
     }
 }
