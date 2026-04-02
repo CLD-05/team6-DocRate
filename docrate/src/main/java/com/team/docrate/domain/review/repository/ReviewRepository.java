@@ -19,6 +19,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     List<Review> findAllByUserIdOrderByCreatedAtDesc(Long userId);
 
+
     @Query("select round(avg(r.rating), 1) from Review r where r.doctor.id = :doctorId")
     Double findAverageRatingByDoctorId(Long doctorId);
 }
+
+
+
