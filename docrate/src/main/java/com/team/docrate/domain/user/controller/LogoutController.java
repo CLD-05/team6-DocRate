@@ -25,9 +25,6 @@ public class LogoutController {
         String accessToken = resolveAccessToken(request);
         String refreshToken = resolveRefreshToken(request);
 
-        System.out.println("=== logout controller 진입 ===");
-        System.out.println("accessToken = " + accessToken);
-        System.out.println("refreshToken = " + refreshToken);
 
         userService.logout(accessToken, refreshToken);
 
