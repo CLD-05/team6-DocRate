@@ -101,7 +101,14 @@
 
             <footer class="list-footer">
                 <a th:href="@{/doctor/detail/{id}(id=${doctor.id})}" class="btn-secondary">의사 상세로</a>
-                <a th:href="@{/doctors/{id}/reviews/new(id=${doctor.id})}" class="btn-primary">리뷰 작성</a>
+                <a th:if="${loginUser != null}" 
+       th:href="@{/doctors/{id}/reviews/new(id=${doctor.id})}" 
+       class="btn-primary">리뷰 작성</a>
+
+    <a th:if="${loginUser == null}" 
+       href="javascript:void(0);" 
+       onclick="if(confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) location.href='/login';" 
+       class="btn-primary">리뷰 작성</a>
             </footer>
         </main>
     </div>
