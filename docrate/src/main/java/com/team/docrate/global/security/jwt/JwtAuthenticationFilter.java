@@ -28,6 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final AccessTokenBlacklistService accessTokenBlacklistService;
     private final UserRepository userRepository;
 
+    @Value("${jwt.access-token-expiration}")
+    private long accessTokenExpiration;
+    
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
@@ -131,7 +134,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         refreshTokenRedisService.saveRefreshToken(user.getEmail(), newRefreshToken);
 
-        addTokenCookie(response, "accessToken", newAccessToken, 60);
+        addTokenCookie(
+                response,
+                "accessToken",
+                newAccessToken,
+                Math.toIntExact(accessTokenExpiration / 1000)
+        );
+
         addTokenCookie(
                 response,
                 "refreshToken",
