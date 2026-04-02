@@ -203,5 +203,3 @@ CREATE TABLE doctor_requests (
         ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT chk_doctor_requests_status CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED'))
 );
-
-SHOW TABLES;
