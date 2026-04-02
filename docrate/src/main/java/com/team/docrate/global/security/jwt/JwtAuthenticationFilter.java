@@ -3,6 +3,7 @@ package com.team.docrate.global.security.jwt;
 import com.team.docrate.domain.user.entity.User;
 import com.team.docrate.domain.user.repository.UserRepository;
 import com.team.docrate.global.exception.InvalidRefreshTokenException;
+import com.team.docrate.global.exception.InvalidTokenException;
 import com.team.docrate.infra.redis.RefreshTokenRedisService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -38,28 +39,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String accessToken = resolveAccessToken(request);
 
-        try {
-            if (StringUtils.hasText(accessToken)) {
-                jwtTokenProvider.validateToken(accessToken);
+        if (!StringUtils.hasText(accessToken)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-                String tokenType = jwtTokenProvider.getTokenType(accessToken);
-                if ("access".equals(tokenType)) {
-                    var authentication = jwtTokenProvider.getAuthentication(accessToken);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
+        try {
+            jwtTokenProvider.validateToken(accessToken);
+
+            String tokenType = jwtTokenProvider.getTokenType(accessToken);
+            if (!"access".equals(tokenType)) {
+                writeUnauthorizedResponse(response, "Access Token이 아닙니다.");
+                return;
             }
+
+            var authentication = jwtTokenProvider.getAuthentication(accessToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
             filterChain.doFilter(request, response);
 
-        } catch (Exception e) {
-            try {
-                handleAutoReissue(request, response, accessToken);
-                filterChain.doFilter(request, response);
-            } catch (Exception reissueException) {
-                SecurityContextHolder.clearContext();
-                request.setAttribute("jwtException", reissueException.getMessage());
-                filterChain.doFilter(request, response);
+        } catch (InvalidTokenException e) {
+            if (jwtTokenProvider.isExpiredToken(accessToken)) {
+                try {
+                    handleAutoReissue(request, response, accessToken);
+                    filterChain.doFilter(request, response);
+                } catch (Exception reissueException) {
+                    SecurityContextHolder.clearContext();
+                    writeUnauthorizedResponse(response, reissueException.getMessage());
+                }
+                return;
             }
+
+            SecurityContextHolder.clearContext();
+            writeUnauthorizedResponse(response, e.getMessage());
         }
     }
 
@@ -67,21 +79,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                    HttpServletResponse response,
                                    String expiredAccessToken) {
 
-        if (!StringUtils.hasText(expiredAccessToken)) {
-            throw new InvalidRefreshTokenException("Access Token이 존재하지 않습니다.");
-        }
-
-        // 만료된 access token에서도 사용자 정보 추출
         Claims accessClaims = jwtTokenProvider.parseClaimsAllowExpired(expiredAccessToken);
         String email = accessClaims.getSubject();
 
-        // 쿠키에서 refresh token 추출
         String refreshToken = resolveRefreshToken(request);
         if (!StringUtils.hasText(refreshToken)) {
             throw new InvalidRefreshTokenException("Refresh Token이 존재하지 않습니다.");
         }
 
-        // refresh token 유효성 검증
         jwtTokenProvider.validateToken(refreshToken);
 
         String refreshTokenType = jwtTokenProvider.getTokenType(refreshToken);
@@ -94,7 +99,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throw new InvalidRefreshTokenException("토큰 사용자 정보가 일치하지 않습니다.");
         }
 
-        // Redis 저장된 refresh token과 비교
         String savedRefreshToken = refreshTokenRedisService.getRefreshToken(email);
         if (savedRefreshToken == null) {
             throw new InvalidRefreshTokenException("저장된 Refresh Token이 없습니다.");
@@ -104,24 +108,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throw new InvalidRefreshTokenException("Refresh Token이 일치하지 않습니다.");
         }
 
-        // 사용자 조회
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new InvalidRefreshTokenException("사용자를 찾을 수 없습니다."));
 
-        // 새 토큰 발급
         String newAccessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getRole());
         String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
 
-        // RT Rotation: Redis refresh token 교체
         refreshTokenRedisService.saveRefreshToken(user.getEmail(), newRefreshToken);
 
-        // 쿠키 갱신
-        addTokenCookie(
-                response,
-                "accessToken",
-                newAccessToken,
-                Math.toIntExact(accessTokenExpiration / 1000)
-        );
+        // accessToken 쿠키는 JWT보다 조금 더 오래 유지
+        addTokenCookie(response, "accessToken", newAccessToken, 60);
+
+        // refreshToken은 실제 만료시간 사용
         addTokenCookie(
                 response,
                 "refreshToken",
@@ -129,15 +127,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Math.toIntExact(refreshTokenExpiration / 1000)
         );
 
-        // 새 access token으로 인증 세팅
         var authentication = jwtTokenProvider.getAuthentication(newAccessToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        System.out.println("=== 자동 재발급 성공 ===");
+        System.out.println("email = " + email);
+        System.out.println("newAccessToken = " + newAccessToken);
+        System.out.println("newRefreshToken = " + newRefreshToken);
     }
 
     private String resolveAccessToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            System.out.println("[JWT] access token from Authorization header");
             return bearerToken.substring(7);
         }
 
@@ -148,6 +151,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         for (Cookie cookie : cookies) {
             if ("accessToken".equals(cookie.getName())) {
+                System.out.println("[JWT] access token from Cookie");
                 return cookie.getValue();
             }
         }
@@ -176,5 +180,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         cookie.setPath("/");
         cookie.setMaxAge(maxAge);
         response.addCookie(cookie);
+    }
+
+    private void writeUnauthorizedResponse(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write("{\"message\":\"" + message + "\"}");
     }
 }
