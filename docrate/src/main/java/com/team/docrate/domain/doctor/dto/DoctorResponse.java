@@ -10,15 +10,15 @@ public class DoctorResponse {
 
     private Long doctorId;
     private String doctorName;
-    private String hospitalName;
-    private String departmentName;
+    private Long hospitalId;
+    private Long departmentId;
 
     public static DoctorResponse from(Doctor doctor) {
         return DoctorResponse.builder()
                 .doctorId(doctor.getId())
                 .doctorName(doctor.getName())
-                .hospitalName(doctor.getHospital().getName())
-                .departmentName(doctor.getDepartment().getName())
+                .hospitalId(doctor.getHospitalId())
+                .departmentId(doctor.getDepartmentId())
                 .build();
     }
 }

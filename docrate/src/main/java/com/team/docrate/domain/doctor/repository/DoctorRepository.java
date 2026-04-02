@@ -1,22 +1,20 @@
 package com.team.docrate.domain.doctor.repository;
 
 import com.team.docrate.domain.doctor.entity.Doctor;
+import com.team.docrate.domain.doctor.enumtype.DoctorStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
-import java.util.List;
 
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
 
-    // 전체 조회 + 필터
-    @Query("select d from Doctor d " +
-           "join fetch d.hospital " +
-           "join fetch d.department " +
-           "where (:hospitalId is null or d.hospital.id = :hospitalId) " +
-           "and (:departmentId is null or d.department.id = :departmentId)")
-    List<Doctor> findDoctors(
-            @Param("hospitalId") Long hospitalId,
-            @Param("departmentId") Long departmentId
+    Page<Doctor> findByStatus(DoctorStatus status, Pageable pageable);
+
+    Page<Doctor> findByHospitalIdAndStatus(Long hospitalId, DoctorStatus status, Pageable pageable);
+
+    Page<Doctor> findByDepartmentIdAndStatus(Long departmentId, DoctorStatus status, Pageable pageable);
+
+    Page<Doctor> findByHospitalIdAndDepartmentIdAndStatus(
+            Long hospitalId, Long departmentId, DoctorStatus status, Pageable pageable
     );
 }

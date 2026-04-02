@@ -25,7 +25,7 @@
         <p class="hero-label">Doctor Directory</p>
         <h1 class="hero-title">Find the right doctor.</h1>
         <p class="hero-desc">
-            병원명으로 의사를 검색하고, 진료과와 기본 정보를 한눈에 확인해보세요.
+            의사 목록과 기본 정보를 확인해보세요.
         </p>
     </section>
 
@@ -41,7 +41,6 @@
                 <input
                     type="text"
                     name="keyword"
-                    th:value="${keyword}"
                     class="search-input"
                     placeholder="병원 이름으로 찾을게요"
                 >
@@ -62,12 +61,12 @@
 
                     <div class="doctor-meta">
                         <div class="meta-row">
-                            <span class="meta-label">병원</span>
-                            <span class="meta-value" th:text="${doctor.hospitalName}">서울튼튼내과</span>
+                            <span class="meta-label">병원 ID</span>
+                            <span class="meta-value" th:text="${doctor.hospitalId}">1</span>
                         </div>
                         <div class="meta-row">
-                            <span class="meta-label">진료과</span>
-                            <span class="meta-value" th:text="${doctor.departmentName}">내과</span>
+                            <span class="meta-label">진료과 ID</span>
+                            <span class="meta-value" th:text="${doctor.departmentId}">1</span>
                         </div>
                     </div>
                 </div>
@@ -82,20 +81,20 @@
 
         <div class="empty-state" th:if="${#lists.isEmpty(doctors)}">
             <p class="empty-title">검색 결과가 없어요</p>
-            <p class="empty-desc">다른 병원 이름으로 다시 검색해보세요.</p>
+            <p class="empty-desc">다른 조건으로 다시 검색해보세요.</p>
         </div>
     </section>
 
     <section class="pagination-section">
         <div class="pagination" th:if="${totalPages > 0}">
             <a th:if="${currentPage > 0}"
-               th:href="@{/doctors(page=${currentPage - 1}, keyword=${keyword})}"
+               th:href="@{/doctors(page=${currentPage - 1})}"
                class="page-btn">
                 이전
             </a>
 
             <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-                <a th:href="@{/doctors(page=${i}, keyword=${keyword})}"
+                <a th:href="@{/doctors(page=${i})}"
                    th:text="${i + 1}"
                    th:classappend="${i == currentPage} ? ' current' : ''"
                    class="page-number">
@@ -104,7 +103,7 @@
             </span>
 
             <a th:if="${currentPage < totalPages - 1}"
-               th:href="@{/doctors(page=${currentPage + 1}, keyword=${keyword})}"
+               th:href="@{/doctors(page=${currentPage + 1})}"
                class="page-btn">
                 다음
             </a>

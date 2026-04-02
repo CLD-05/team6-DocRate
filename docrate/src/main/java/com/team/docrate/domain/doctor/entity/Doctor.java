@@ -1,31 +1,26 @@
 package com.team.docrate.domain.doctor.entity;
 
-import com.team.docrate.domain.department.entity.Department;
 import com.team.docrate.domain.doctor.enumtype.DoctorStatus;
-import com.team.docrate.domain.hospital.entity.Hospital;
-import com.team.docrate.global.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "doctors")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
-public class Doctor extends BaseEntity {
+public class Doctor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "hospital_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Hospital hospital;
+    @Column(name = "hospital_id", nullable = false)
+    private Long hospitalId;
 
-    @JoinColumn(name = "department_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Department department;
+    @Column(name = "department_id", nullable = false)
+    private Long departmentId;
 
     @Column(nullable = false)
     private String name;
@@ -36,5 +31,4 @@ public class Doctor extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DoctorStatus status;
-    
 }
