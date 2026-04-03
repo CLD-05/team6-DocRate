@@ -27,40 +27,34 @@ import org.springframework.transaction.annotation.Transactional;
 public class DoctorRequestService {
 
     private final DoctorRequestRepository doctorRequestRepository;
-    private final UserRepository userRepository;
-    private final HospitalRepository hospitalRepository;
     private final DepartmentRepository departmentRepository;
+    private final HospitalRepository hospitalRepository;
+    private final UserRepository userRepository;
     private final DoctorRepository doctorRepository;
 
-    /**
-     * 사용자 의사 추가 요청 등록
-     */
     @Transactional
-    public void createDoctorRequest(String email, DoctorRequestCreateRequestDto requestDto) {
-        User requester = userRepository.findByEmail(email)
+    public void createDoctorRequest(String requesterEmail, DoctorRequestCreateRequestDto requestDto) {
+        User requester = userRepository.findByEmail(requesterEmail)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        Hospital hospital = hospitalRepository.findById(requestDto.getHospitalId())
-                .orElseThrow(() -> new IllegalArgumentException("병원을 찾을 수 없습니다."));
 
         Department department = departmentRepository.findById(requestDto.getDepartmentId())
                 .orElseThrow(() -> new IllegalArgumentException("진료과를 찾을 수 없습니다."));
+
+        Hospital hospital = hospitalRepository.findFirstByName(requestDto.getHospitalName().trim())
+                .orElseThrow(() -> new IllegalArgumentException("입력한 이름의 병원을 찾을 수 없습니다."));
 
         DoctorRequest doctorRequest = DoctorRequest.builder()
                 .requester(requester)
                 .hospital(hospital)
                 .department(department)
-                .name(requestDto.getName())
-                .intro(requestDto.getIntro())
+                .name(requestDto.getName().trim())
+                .intro(requestDto.getIntro() != null ? requestDto.getIntro().trim() : null)
                 .status(DoctorRequestStatus.PENDING)
                 .build();
 
         doctorRequestRepository.save(doctorRequest);
     }
 
-    /**
-     * 관리자 요청 목록 조회 (전체)
-     */
     public List<DoctorRequestResponseDto> getAllRequests() {
         return doctorRequestRepository.findAll()
                 .stream()
@@ -68,9 +62,6 @@ public class DoctorRequestService {
                 .toList();
     }
 
-    /**
-     * 관리자 요청 목록 페이징 조회
-     */
     public Page<DoctorRequest> getRequestsPage(String status, Pageable pageable) {
         if (status == null || status.isBlank()) {
             return doctorRequestRepository.findAll(pageable);
@@ -86,9 +77,6 @@ public class DoctorRequestService {
         return doctorRequestRepository.findByStatus(requestStatus, pageable);
     }
 
-    /**
-     * 관리자 요청 승인
-     */
     @Transactional
     public void approveRequest(Long id) {
         DoctorRequest doctorRequest = doctorRequestRepository.findById(id)
@@ -103,13 +91,9 @@ public class DoctorRequestService {
                 .build();
 
         Doctor savedDoctor = doctorRepository.save(doctor);
-
         doctorRequest.approve(savedDoctor.getId());
     }
 
-    /**
-     * 관리자 요청 반려
-     */
     @Transactional
     public void rejectRequest(Long id, String reason) {
         DoctorRequest doctorRequest = doctorRequestRepository.findById(id)

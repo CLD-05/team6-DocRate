@@ -1,7 +1,6 @@
 package com.team.docrate.domain.request.doctorrequest.controller;
 
 import com.team.docrate.domain.department.repository.DepartmentRepository;
-import com.team.docrate.domain.hospital.repository.HospitalRepository;
 import com.team.docrate.domain.request.doctorrequest.dto.DoctorRequestCreateRequestDto;
 import com.team.docrate.domain.request.doctorrequest.service.DoctorRequestService;
 import jakarta.validation.Valid;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class DoctorRequestController {
 
     private final DoctorRequestService doctorRequestService;
-    private final HospitalRepository hospitalRepository;
     private final DepartmentRepository departmentRepository;
 
     @GetMapping("/doctor-requests/new")
@@ -28,9 +26,7 @@ public class DoctorRequestController {
             model.addAttribute("doctorRequestCreateRequestDto", new DoctorRequestCreateRequestDto());
         }
 
-        model.addAttribute("hospitalList", hospitalRepository.findAll());
         model.addAttribute("departmentList", departmentRepository.findAll());
-
         return "request/doctor-form";
     }
 
@@ -41,16 +37,7 @@ public class DoctorRequestController {
             Principal principal,
             Model model
     ) {
-        System.out.println("=== submit start ===");
-        System.out.println("principal = " + (principal != null ? principal.getName() : "null"));
-        System.out.println("hospitalId = " + doctorRequestCreateRequestDto.getHospitalId());
-        System.out.println("departmentId = " + doctorRequestCreateRequestDto.getDepartmentId());
-        System.out.println("name = " + doctorRequestCreateRequestDto.getName());
-        System.out.println("intro = " + doctorRequestCreateRequestDto.getIntro());
-        System.out.println("errors = " + bindingResult.getAllErrors());
-
         if (bindingResult.hasErrors()) {
-            model.addAttribute("hospitalList", hospitalRepository.findAll());
             model.addAttribute("departmentList", departmentRepository.findAll());
             return "request/doctor-form";
         }
@@ -59,8 +46,14 @@ public class DoctorRequestController {
             return "redirect:/login";
         }
 
-        doctorRequestService.createDoctorRequest(principal.getName(), doctorRequestCreateRequestDto);
-        System.out.println("=== saved ===");
+        try {
+            doctorRequestService.createDoctorRequest(principal.getName(), doctorRequestCreateRequestDto);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("departmentList", departmentRepository.findAll());
+            model.addAttribute("hospitalError", e.getMessage());
+            return "request/doctor-form";
+        }
+
         return "redirect:/mypage";
     }
 }

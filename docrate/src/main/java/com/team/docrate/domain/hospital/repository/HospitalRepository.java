@@ -2,6 +2,11 @@ package com.team.docrate.domain.hospital.repository;
 
 import com.team.docrate.domain.hospital.entity.Hospital;
 import com.team.docrate.domain.hospital.enumtype.HospitalStatus;
+
+
+
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +20,8 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
             String name,
             Pageable pageable
     );
+    
+    Optional<Hospital> findFirstByName(String name);
+
+
 }

@@ -34,20 +34,19 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="hospitalId">병원명</label>
-                    <select id="hospitalId"
-                            class="form-input"
-                            th:field="*{hospitalId}">
-                        <option value="">병원을 선택하세요</option>
-                        <option th:each="hospital : ${hospitalList}"
-                                th:value="${hospital.id}"
-                                th:text="${hospital.name}">
-                        </option>
-                    </select>
-                    <p class="field-error"
-                       th:if="${#fields.hasErrors('hospitalId')}"
-                       th:errors="*{hospitalId}"></p>
-                </div>
+					    <label class="form-label" for="hospitalName">병원명</label>
+					    <input type="text"
+					           id="hospitalName"
+					           class="form-input"
+					           th:field="*{hospitalName}"
+					           placeholder="병원명을 입력하세요">
+					    <p class="field-error"
+					       th:if="${#fields.hasErrors('hospitalName')}"
+					       th:errors="*{hospitalName}"></p>
+					    <p class="field-error"
+					       th:if="${hospitalError != null}"
+					       th:text="${hospitalError}"></p>
+					</div>
 
                 <div class="form-group">
                     <label class="form-label" for="departmentId">진료과</label>

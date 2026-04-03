@@ -50,8 +50,6 @@ public class DoctorRequest extends BaseEntity {
 
     private LocalDateTime approvedAt;
 
-    
-    
     public void approve(Long doctorId) {
         this.status = DoctorRequestStatus.APPROVED;
         this.approvedDoctorId = doctorId;
@@ -63,8 +61,4 @@ public class DoctorRequest extends BaseEntity {
         this.rejectionReason = reason;
         this.approvedAt = LocalDateTime.now();
     }
-    
-    
-	
-	
 }
