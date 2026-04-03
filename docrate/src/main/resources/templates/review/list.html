@@ -73,6 +73,19 @@
 
                     <div class="review-text">
                         <p th:text="${review.content}">정말 친절하게 설명해주셨어요.</p>
+                        
+                        <div th:if="${loginUser != null && review.user.id == loginUser.id}" class="review-actions" style="margin-top: 10px; text-align: right;">
+        
+        				<a th:href="@{/reviews/{id}/edit(id=${review.id})}" 
+           					style="font-size: 0.85rem; color: #007bff; text-decoration: none; margin-right: 10px;">[수정]</a>
+        	
+        				<form th:action="@{/reviews/{id}/delete(id=${review.id})}" 
+              					method="post" style="display: inline;">
+           				<button type="submit" 
+                    			style="background: none; border: none; color: #dc3545; cursor: pointer; font-size: 0.85rem; padding: 0;"
+                    			onclick="return confirm('정말 삭제하시겠습니까?')">[삭제]</button>
+        				</form>
+    			  		</div>
                     </div>
 
                     <div class="review-date">
@@ -100,16 +113,16 @@
             </div>
 
             <footer class="list-footer">
-                <a th:href="@{/doctor/detail/{id}(id=${doctor.id})}" class="btn-secondary">의사 상세로</a>
-                <a th:if="${loginUser != null}" 
-       th:href="@{/doctors/{id}/reviews/new(id=${doctor.id})}" 
-       class="btn-primary">리뷰 작성</a>
+    			<a th:href="@{/doctor/detail/{id}(id=${doctor.id})}" class="btn-secondary">의사 상세로</a>
 
-    <a th:if="${loginUser == null}" 
-       href="javascript:void(0);" 
-       onclick="if(confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) location.href='/login';" 
-       class="btn-primary">리뷰 작성</a>
-            </footer>
+    			<a th:if="${loginUser != null}" 
+       				th:href="@{/doctors/{id}/reviews/new(id=${doctor.id})}" 
+       				class="btn-primary">리뷰 작성</a>
+
+    			<a th:if="${loginUser == null}" 
+       				th:href="@{/login}" 
+       			class="btn-primary">리뷰 작성</a>
+			</footer>
         </main>
     </div>
 </div>
