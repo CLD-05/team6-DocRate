@@ -109,21 +109,20 @@
             <nav class="pagination" th:if="${doctorPage != null and doctorPage.totalPages > 1}">
                 <a class="page-btn"
                    th:if="${doctorPage.hasPrevious()}"
-                   th:href="@{/doctors(page=${doctorPage.number - 1}, search=${search})}">
-                    이전
-                </a>
+                   th:href="@{/doctors(page=${doctorPage.number - 1}, search=${search})}">이전</a>
 
-                <span class="page-info">
-                    <span th:text="${doctorPage.number + 1}">1</span>
-                    /
-                    <span th:text="${doctorPage.totalPages}">1</span>
-                </span>
+                <th:block th:each="pageNum : ${#numbers.sequence(
+                    doctorPage.number - 2 > 0 ? doctorPage.number - 2 : 0,
+                    doctorPage.number + 2 < doctorPage.totalPages - 1 ? doctorPage.number + 2 : doctorPage.totalPages - 1)}">
+                    <a class="page-link"
+                       th:classappend="${pageNum == doctorPage.number} ? 'active'"
+                       th:href="@{/doctors(page=${pageNum}, search=${search})}"
+                       th:text="${pageNum + 1}">1</a>
+                </th:block>
 
                 <a class="page-btn"
                    th:if="${doctorPage.hasNext()}"
-                   th:href="@{/doctors(page=${doctorPage.number + 1}, search=${search})}">
-                    다음
-                </a>
+                   th:href="@{/doctors(page=${doctorPage.number + 1}, search=${search})}">다음</a>
             </nav>
         </main>
     </div>

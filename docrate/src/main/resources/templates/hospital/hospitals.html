@@ -4,132 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>병원 검색 | DocRate</title>
-    <link rel="stylesheet" href="/css/hospital/hospitals.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" th:href="@{/css/hospital/hospitals.css}">
 </head>
 <body>
+<div class="page-wrap">
+    <div class="list-shell">
 
-<header class="header">
-    <div class="header-left">
-        <a href="/" class="logo">DOC RATE</a>
+        <header class="topbar">
+            <div class="brand">
+                <a th:href="@{/}">DocRate</a>
+            </div>
+            <div class="topbar-menu">
+                <div th:if="${isLoggedIn}" class="user-menu">
+                    <span class="welcome-text" th:text="${nickname} + '님'">사용자님</span>
+                    <a th:href="@{/mypage}" class="topbar-link">마이페이지</a>
+                    <form th:action="@{/logout(redirectUrl=${currentUrl})}" method="post" class="logout-form">
+                        <input type="hidden" th:if="${_csrf != null}"
+                               th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="logout-btn">로그아웃</button>
+                    </form>
+                </div>
+                <div th:if="${!isLoggedIn}" class="guest-menu">
+                    <a th:href="@{/login(redirectUrl=${currentUrl})}" class="login-btn">로그인</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="content">
+
+            <section class="hero-section">
+                <h1 class="page-title">
+                    검색된
+                    <span th:text="${search != null and !search.isEmpty() ? search : '전체'}">"병원"</span>
+                    결과 <span class="total-count" th:text="'(' + ${totalCount} + '건)'"></span>
+                </h1>
+            </section>
+
+            <section class="search-section">
+                <form method="get" action="/hospitals" class="search-form">
+                    <input type="text" name="search" th:value="${search}"
+                           placeholder="병원 이름을 입력하세요" class="search-input"/>
+                    <button type="submit" class="search-btn">검색</button>
+                </form>
+                <div class="search-switch-wrap">
+                    <a th:href="@{/doctors}" class="search-switch-link">의사 이름으로 찾을게요</a>
+                </div>
+            </section>
+
+            <section class="result-section">
+                <div class="hospital-list" th:if="${not #lists.isEmpty(hospitals)}">
+                    <div class="hospital-card-wrapper" th:each="hospital : ${hospitals}"
+                         th:onclick="|location.href='/hospitals/${hospital.id}'|">
+                        <article class="hospital-card">
+                            <div class="card-main">
+                                <div class="info-row">
+                                    <span class="info-label">병원명</span>
+                                    <span class="info-value" th:text="${hospital.name}">서울튼튼내과</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">주소</span>
+                                    <span class="info-value small-info" th:text="${hospital.address}">서울시 강남구</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">전화</span>
+                                    <span class="info-value small-info" th:text="${hospital.phone}">02-1234-5678</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">진료분야</span>
+                                    <span class="info-value small-info" th:text="${hospital.category}">내과</span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="empty-box" th:if="${#lists.isEmpty(hospitals)}">
+                    검색 결과가 없습니다.
+                </div>
+            </section>
+
+            <section class="request-section">
+                <p class="request-text">찾으시는 병원이 없다면 추가할까요?</p>
+                <a th:href="@{/hospital-requests/new}" class="request-link">병원 추가 요청하기</a>
+            </section>
+
+            <nav class="pagination" th:if="${page.totalPages > 1}">
+                <a class="page-btn" th:if="${currentPage > 1}"
+                   th:href="@{/hospitals(page=${currentPage - 1}, search=${search})}">이전</a>
+
+                <span th:each="i : ${#numbers.sequence(
+                    currentPage - 3 > 0 ? currentPage - 3 : 0,
+                    currentPage + 1 < page.totalPages - 1 ? currentPage + 1 : page.totalPages - 1)}">
+                    <a th:href="@{/hospitals(page=${i + 1}, search=${search})}"
+                       th:text="${i + 1}"
+                       th:classappend="${(i + 1) == currentPage} ? ' current' : ''"
+                       class="page-number">1</a>
+                </span>
+
+                <a class="page-btn" th:if="${currentPage < page.totalPages}"
+                   th:href="@{/hospitals(page=${currentPage + 1}, search=${search})}">다음</a>
+            </nav>
+
+        </main>
     </div>
-    <nav class="header-right">
-        <div th:if="${isLoggedIn}">
-            <span th:text="${nickname} + '님'">사용자님</span>
-            <a href="/mypage">마이페이지</a>
-            <form th:action="@{/logout(redirectUrl=${currentUrl})}" method="post" style="display:inline;">
-                <input type="hidden"
-                       th:if="${_csrf != null}"
-                       th:name="${_csrf.parameterName}"
-                       th:value="${_csrf.token}" />
-                <button type="submit">로그아웃</button>
-            </form>
-        </div>
-        <div th:if="${!isLoggedIn}">
-            <a th:href="@{/login(redirectUrl=${currentUrl})}">로그인</a>
-        </div>
-    </nav>
-</header>
-
-<main class="container">
-    <!-- 검색 결과 수 -->
-    <section class="result-section">
-        <h1>검색된 <span th:text="${totalCount}">0</span> 결과</h1>
-    </section>
-
-    <!-- 검색 섹션 -->
-    <section class="search-section">
-        <form method="get" action="/hospitals" class="search-form">
-            <div class="search-row">
-                <input
-                    type="text"
-                    name="search"
-                    th:value="${search}"
-                    placeholder="병원 이름을 입력하세요"
-                    class="search-input"
-                />
-                <button type="submit" class="search-button">검색</button>
-            </div>
-            <p class="search-guide">
-                <a th:href="@{/doctors}" class="hospital-link">의사 이름으로 찾을게요</a>
-            </p>
-        </form>
-    </section>
-
-    <!-- 병원 리스트 섹션 -->
-    <section class="hospital-list-section">
-        <div class="hospital-list" th:if="${not #lists.isEmpty(hospitals)}">
-            <!-- article 전체를 클릭 가능하게 수정 (상세보기 버튼 제거) -->
-            <div class="hospital-card-wrapper" th:each="hospital : ${hospitals}" 
-                 th:onclick="|location.href='/hospitals/${hospital.id}'|" 
-                 style="cursor: pointer;">
-                <article class="hospital-card">
-                    <p>
-                        <strong>병원명:</strong>
-                        <span th:text="${hospital.name}">서울튼튼내과</span>
-                    </p>
-                    <p>
-                        <strong>주소:</strong>
-                        <span th:text="${hospital.address}">서울시 강남구 ...</span>
-                    </p>
-                    <p>
-                        <strong>전화:</strong>
-                        <span th:text="${hospital.phone}">02-1234-5678</span>
-                    </p>
-                    <p>
-                        <strong>진료분야:</strong>
-                        <span th:text="${hospital.category}">내과</span>
-                    </p>
-                </article>
-            </div>
-        </div>
-
-        <div class="empty-box" th:if="${#lists.isEmpty(hospitals)}">
-            <p class="empty-title">검색 결과가 없습니다.</p>
-            <p class="empty-desc">찾으시는 병원이 없다면 아래에서 등록 요청을 해보세요.</p>
-        </div>
-    </section>
-
-    <!-- 페이징 섹션 -->
-    <section class="pagination-section" th:if="${page.totalPages > 0}">
-        <div class="pagination">
-            <!-- 이전 페이지 링크: currentPage - 1 -->
-            <a th:if="${currentPage > 1}"
-               th:href="@{/hospitals(page=${currentPage - 1}, search=${search})}"
-               class="page-btn">
-                이전
-            </a>
-
-            <!-- 페이지 번호 링크: i + 1 -->
-            <span th:each="i : ${#numbers.sequence(
-                currentPage - 3 > 0 ? currentPage - 3 : 0,
-                currentPage + 1 < page.totalPages - 1 ? currentPage + 1 : page.totalPages - 1
-            )}">
-                <a th:href="@{/hospitals(page=${i + 1}, search=${search})}"
-                   th:text="${i + 1}"
-                   th:classappend="${(i + 1) == currentPage} ? ' current' : ''"
-                   class="page-number">
-                    1
-                </a>
-            </span>
-
-            <!-- 다음 페이지 링크: currentPage + 1 -->
-            <a th:if="${currentPage < page.totalPages}"
-               th:href="@{/hospitals(page=${currentPage + 1}, search=${search})}"
-               class="page-btn">
-                다음
-            </a>
-        </div>
-    </section>
-
-    <!-- 요청 섹션 -->
-    <section class="request-section">
-        <p class="request-text">
-            <a th:href="@{/hospital-requests/new}" class="request-link">
-                찾으시는 병원이 없다면 추가할까요?
-            </a>
-        </p>
-    </section>
-</main>
-
+</div>
 </body>
 </html>
