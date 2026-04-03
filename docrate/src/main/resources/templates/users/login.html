@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>로그인 | DocRate</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="stylesheet" th:href="@{/css/login.css}">
 </head>
 <body>
@@ -28,7 +29,8 @@
                            th:if="${_csrf != null}"
                            th:name="${_csrf.parameterName}"
                            th:value="${_csrf.token}" />
-                    <input type="hidden" name="redirectUrl" th:value="${redirectUrl}" />
+						   
+						   <input type="hidden" name="redirectUrl" th:value="${redirectUrl}">
 
                     <div class="form-group">
                         <label for="email" class="form-label">Email</label>

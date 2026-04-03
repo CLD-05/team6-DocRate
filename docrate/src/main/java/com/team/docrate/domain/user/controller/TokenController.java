@@ -36,19 +36,14 @@ public class TokenController {
             @CookieValue(value = "refreshToken", required = false) String refreshTokenFromCookie,
             HttpServletResponse response
     ) {
-    	// 확인용
-    	 System.out.println("=== /token/reissue 진입 ===");
-    	 System.out.println("requestDto refreshToken = " + (requestDto != null ? requestDto.getRefreshToken() : null));
-    	 System.out.println("cookie refreshToken = " + refreshTokenFromCookie);
+    
     	
     	
         String refreshToken = extractRefreshToken(requestDto, refreshTokenFromCookie);
 
         TokenReissueResponseDto reissueResponse = userService.reissueToken(refreshToken);
 
-        // 확인용
-        System.out.println("new accessToken = " + reissueResponse.getAccessToken());
-        System.out.println("new refreshToken = " + reissueResponse.getRefreshToken());
+        
         
         // 브라우저 쿠키 갱신
         response.addCookie(createCookie(

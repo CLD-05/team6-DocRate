@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.team.docrate.domain.review.dto.ReviewSummaryDto;
 
 import com.team.docrate.domain.doctor.entity.Doctor;
 import com.team.docrate.domain.doctor.repository.DoctorRepository;
@@ -21,6 +22,11 @@ import com.team.docrate.domain.user.repository.UserRepository;
 import com.team.docrate.global.exception.BusinessException;
 
 import lombok.RequiredArgsConstructor;
+
+
+import com.team.docrate.domain.review.dto.ReviewResponse;
+
+
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +40,48 @@ public class ReviewService {
     public Doctor getDoctorById(Long doctorId) {
         return doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new BusinessException("의사를 찾을 수 없습니다."));
+    }
+    
+    public ReviewSummaryDto getDoctorReviewSummary(Long doctorId) {
+        List<Review> reviews = reviewRepository.findAllByDoctorId(doctorId);
+
+        if (reviews.isEmpty()) {
+            return new ReviewSummaryDto(0.0, 0.0, 0.0, 0.0, 0.0, 0L);
+        }
+
+        double averageRating = reviews.stream()
+        		.mapToDouble(r -> r.getRating().doubleValue())
+                .average()
+                .orElse(0.0);
+
+        double kindnessRating = reviews.stream()
+                .mapToDouble(r -> r.getBedsideManner().doubleValue())
+                .average()
+                .orElse(0.0);
+
+        double explanationRating = reviews.stream()
+                .mapToDouble(r -> r.getExplanation().doubleValue())
+                .average()
+                .orElse(0.0);
+
+        double waitingRating = reviews.stream()
+                .mapToDouble(r -> r.getWaitTime().doubleValue())
+                .average()
+                .orElse(0.0);
+
+        double revisitRating = reviews.stream()
+                .mapToDouble(r -> r.getRevisitIntention() ? 5.0 : 0.0)
+                .average()
+                .orElse(0.0);
+
+        return new ReviewSummaryDto(
+                averageRating,
+                kindnessRating,
+                explanationRating,
+                waitingRating,
+                revisitRating,
+                (long) reviews.size()
+        );
     }
     
     // 작성자 본인인지 바로 검증하며 조회
