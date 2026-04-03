@@ -70,21 +70,20 @@
             <nav class="pagination" th:if="${hospitalPage.totalPages > 1}">
                 <a class="page-btn"
                    th:if="${hospitalPage.hasPrevious()}"
-                   th:href="@{/hospitals(page=${hospitalPage.number - 1}, search=${search})}">
-                    이전
-                </a>
+                   th:href="@{/hospitals(page=${hospitalPage.number - 1}, search=${search})}">이전</a>
 
-                <span class="page-info">
-                    <span th:text="${hospitalPage.number + 1}">1</span>
-                    /
-                    <span th:text="${hospitalPage.totalPages}">1</span>
-                </span>
+                <th:block th:each="pageNum : ${#numbers.sequence(
+                    hospitalPage.number - 2 > 0 ? hospitalPage.number - 2 : 0,
+                    hospitalPage.number + 2 < hospitalPage.totalPages - 1 ? hospitalPage.number + 2 : hospitalPage.totalPages - 1)}">
+                    <a class="page-link"
+                       th:classappend="${pageNum == hospitalPage.number} ? 'active'"
+                       th:href="@{/hospitals(page=${pageNum}, search=${search})}"
+                       th:text="${pageNum + 1}">1</a>
+                </th:block>
 
                 <a class="page-btn"
                    th:if="${hospitalPage.hasNext()}"
-                   th:href="@{/hospitals(page=${hospitalPage.number + 1}, search=${search})}">
-                    다음
-                </a>
+                   th:href="@{/hospitals(page=${hospitalPage.number + 1}, search=${search})}">다음</a>
             </nav>
         </main>
     </div>
