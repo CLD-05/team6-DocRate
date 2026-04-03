@@ -42,7 +42,7 @@ public class Doctor extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DoctorStatus status;
-
+    
     @Column(name = "average_rating")
     private Double averageRating;
 
@@ -57,7 +57,7 @@ public class Doctor extends BaseEntity {
 
     @Column(name = "revisit_rating_avg")
     private Double revisitRatingAvg;
-    
+
     public static Doctor from(DoctorRequest doctorRequest) {
         return Doctor.builder()
                 .hospital(doctorRequest.getHospital())
@@ -67,5 +67,4 @@ public class Doctor extends BaseEntity {
                 .status(DoctorStatus.ACTIVE)
                 .build();
     }
-
 }

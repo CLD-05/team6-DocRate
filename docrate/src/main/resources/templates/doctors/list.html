@@ -64,32 +64,34 @@
 
             <section class="result-section">
                 <div class="doctor-list" th:if="${doctorList != null and !#lists.isEmpty(doctorList)}">
-                    <article class="doctor-card" th:each="doctor : ${doctorList}">
-                        <div class="doctor-info">
-                            <div class="info-row">
-                                <span class="info-label">의사명</span>
-                                <span class="info-value" th:text="${doctor.name}">김의사</span>
-                            </div>
+            <article class="doctor-card" th:each="doctor : ${doctorList}">
+    <div class="card-main">
+        <div class="info-row">
+            <span class="info-label">의사명</span>
+            <span class="info-value" th:text="${doctor.name}">김의사</span>
+        </div>
 
-                            <div class="info-row">
-                                <span class="info-label">병원명</span>
-                                <span class="info-value small-info" th:text="${doctor.hospitalName}">서울튼튼내과</span>
-                            </div>
+        <div class="info-row">
+            <span class="info-label">병원명</span>
+            <span class="info-value small-info" th:text="${doctor.hospitalName}">서울튼튼내과</span>
+        </div>
 
-                            <div class="info-row">
-                                <span class="info-label">진료과</span>
-                                <span class="info-value small-info" th:text="${doctor.departmentName}">내과</span>
-                            </div>
+        <div class="info-row">
+            <span class="info-label">진료과</span>
+            <span class="info-value small-info" th:text="${doctor.departmentName}">내과</span>
+        </div>
 
-                            <div class="info-row">
-                                <span class="info-label">평균 평점</span>
-                                <span class="info-value rating small-info"
-                                      th:text="${doctor.averageRating != null ? doctor.averageRating : '평점 정보 없음'}">
-                                    4.6
-                                </span>
-                            </div>
-                        </div>
-                    </article>
+        <div class="info-row">
+            <span class="info-label">평균 평점</span>
+            <span class="info-value rating small-info"
+                  th:text="${doctor.averageRating != null ? doctor.averageRating : '평점 정보 없음'}">
+                4.6
+            </span>
+        </div>
+    </div>
+
+    <a th:href="@{'/doctors/' + ${doctor.id}}" class="detail-link">상세 보기</a>
+</article>
                 </div>
 
                 <div class="empty-box" th:if="${doctorList == null or #lists.isEmpty(doctorList)}">

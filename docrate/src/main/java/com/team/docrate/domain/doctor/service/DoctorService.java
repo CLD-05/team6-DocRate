@@ -24,11 +24,8 @@ import org.springframework.util.StringUtils;
 public class DoctorService {
 
     private final DoctorRepository doctorRepository;
-
     private final ReviewRepository reviewRepository;
-
     private final ReviewService reviewService;
-
 
     public Page<DoctorListItemDto> getDoctorList(String search, Pageable pageable) {
         if (StringUtils.hasText(search)) {
