@@ -1,0 +1,239 @@
+/* General Layout */
+body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* Header Styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.header-right a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #555;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.header-right a:hover {
+    color: #007bff;
+}
+
+/* Result Section */
+.result-section h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: #444;
+}
+
+.result-section span {
+    color: #007bff;
+}
+
+/* Search Section */
+.search-section {
+    margin-bottom: 40px;
+}
+
+.search-row {
+    display: flex;
+    gap: 10px;
+}
+
+.search-input {
+    flex: 1;
+    padding: 15px 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    border-color: #007bff;
+}
+
+.search-button {
+    padding: 0 30px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-button:hover {
+    background-color: #000;
+}
+
+.search-guide {
+    margin-top: 15px;
+    text-align: right;
+}
+
+.hospital-link {
+    color: #888;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.hospital-link:hover {
+    text-decoration: underline;
+}
+
+/* Hospital Card List */
+.hospital-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.hospital-card {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.hospital-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+.hospital-card p {
+    margin: 8px 0;
+    font-size: 0.95rem;
+    color: #666;
+}
+
+.hospital-card strong {
+    color: #333;
+    margin-right: 5px;
+}
+
+.detail-link {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+    padding: 12px;
+    background-color: #f1f3f5;
+    color: #495057;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.detail-link:hover {
+    background-color: #e9ecef;
+}
+
+/* Empty Box */
+.empty-box {
+    text-align: center;
+    padding: 60px 0;
+    background-color: #fff;
+    border-radius: 12px;
+    border: 1px dashed #ddd;
+}
+
+.empty-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #444;
+}
+
+.empty-desc {
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: 10px;
+}
+
+/* Pagination */
+.pagination-section {
+    margin-top: 50px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.page-btn, .page-number {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 10px;
+    text-decoration: none;
+    color: #666;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.page-btn:hover, .page-number:hover {
+    background-color: #eee;
+}
+
+.page-number.current {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Request Section */
+.request-section {
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+
+.request-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.request-link:hover {
+    text-decoration: underline;
+}
