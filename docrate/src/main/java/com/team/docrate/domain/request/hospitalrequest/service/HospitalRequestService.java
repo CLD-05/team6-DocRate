@@ -1,5 +1,6 @@
 package com.team.docrate.domain.request.hospitalrequest.service;
 
+import com.team.docrate.domain.hospital.entity.Hospital;
 import com.team.docrate.domain.hospital.repository.HospitalRepository;
 import com.team.docrate.domain.request.hospitalrequest.dto.HospitalRequestDto;
 import com.team.docrate.domain.request.hospitalrequest.dto.HospitalRequestResponseDto;
@@ -7,6 +8,8 @@ import com.team.docrate.domain.request.hospitalrequest.entity.HospitalRequest;
 import com.team.docrate.domain.request.hospitalrequest.repository.HospitalRequestRepository;
 import com.team.docrate.domain.request.hospitalrequest.enumtype.HospitalRequestStatus;
 import com.team.docrate.domain.user.entity.User; // 유저 엔티티 임포트
+import com.team.docrate.domain.user.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 
 
@@ -28,6 +31,7 @@ public class HospitalRequestService {
 
 	private final HospitalRequestRepository hospitalRequestRepository;
     private final HospitalRepository hospitalRepository;
+    private final UserRepository userRepository;
 
     @Transactional // ⭐ 반드시 붙어 있어야 DB에 반영됩니다!
     public void approveRequest(Long requestId) {
@@ -89,19 +93,65 @@ public class HospitalRequestService {
         return hospitalRequestRepository.findAll(pageable);
     }
 
-    @Transactional
-    public void saveRequest(HospitalRequestDto dto, User user) {
+//	@Transactional
+//	public void saveRequest(HospitalRequestDto dto, User user) {
+//	    // 1. DTO 데이터 검증 (데이터가 잘 왔는지 확인)
+//	    if (dto.getName() == null || dto.getName().isEmpty()) {
+//	        throw new IllegalArgumentException("병원 이름은 필수입니다.");
+//	    }
+//
+//	    HospitalRequest request = HospitalRequest.builder()
+//	            .name(dto.getName())
+//	            .address(dto.getAddress())
+//	            .phone(dto.getPhone())
+//	            .category(dto.getCategory())
+//	            .status(HospitalRequestStatus.PENDING)
+//	            .requester(user) // user가 null이어도 DB 컬럼이 허용한다면 저장됨
+//	            .build();
+//
+//	    // 2. Repository 상속 확인: public interface HospitalRequestRepository extends JpaRepository<HospitalRequest, Long>
+//	    hospitalRequestRepository.save(request); 
+//	}
+
+//	@Transactional
+//	public void save(HospitalRequestDto dto, User loginUser, Long hospitalId) {
+//	    // 유저가 세션에 없는 경우 처리 (로그인 안 됨)
+//	    if (loginUser == null) {
+//	        throw new RuntimeException("로그인이 필요한 서비스입니다.");
+//	    }
+//
+//	    HospitalRequest request = HospitalRequest.builder()
+//	            .name(dto.getName())
+//	            .address(dto.getAddress())
+//	            .phone(dto.getPhone())
+//	            .category(dto.getCategory())
+//	            .status(HospitalRequestStatus.PENDING)
+//	            .requester(loginUser)
+//	            // 만약 hospitalId가 있다면 세팅하는 로직 추가 가능
+//	            .build();
+//
+//	    hospitalRequestRepository.save(request);
+//	}
+
+	@Transactional
+    public void saveByEmail(HospitalRequestDto dto, String email, Long hospitalId) {
+        // 1. 이메일로 유저 정보 조회 (JWT 방식이므로 이메일이 식별자)
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        // 2. HospitalRequest 엔티티 생성
         HospitalRequest request = HospitalRequest.builder()
                 .name(dto.getName())
                 .address(dto.getAddress())
                 .phone(dto.getPhone())
                 .category(dto.getCategory())
-                .status(HospitalRequestStatus.PENDING)
-                .requester(user)
+                .status(HospitalRequestStatus.PENDING) // 초기 상태는 대기중
+                .requester(user) // 조회한 유저 설정
                 .build();
 
-        // 여기서 에러가 났던 건데, 위에서 extends JpaRepository를 하면 해결됩니다!
-        hospitalRequestRepository.save(request); 
+        // 3. DB 저장
+        hospitalRequestRepository.save(request);
     }
+	
 
 }
