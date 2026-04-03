@@ -100,7 +100,7 @@
             </div>
 
             <footer class="list-footer">
-                <a th:href="@{/doctor/detail/{id}(id=${doctor.id})}" class="btn-secondary">의사 상세로</a>
+                <a th:href="@{/doctors/{id}(id=${doctor.id})}" class="btn-secondary">의사 상세로</a>
                 <a th:href="@{/doctors/{id}/reviews/new(id=${doctor.id})}" class="btn-primary">리뷰 작성</a>
             </footer>
         </main>
