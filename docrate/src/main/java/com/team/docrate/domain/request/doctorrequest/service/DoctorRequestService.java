@@ -1,24 +1,25 @@
 package com.team.docrate.domain.request.doctorrequest.service;
 
+import com.team.docrate.domain.department.entity.Department;
+import com.team.docrate.domain.department.repository.DepartmentRepository;
 import com.team.docrate.domain.doctor.entity.Doctor;
 import com.team.docrate.domain.doctor.enumtype.DoctorStatus;
 import com.team.docrate.domain.doctor.repository.DoctorRepository;
+import com.team.docrate.domain.hospital.entity.Hospital;
+import com.team.docrate.domain.hospital.repository.HospitalRepository;
+import com.team.docrate.domain.request.doctorrequest.dto.DoctorRequestCreateRequestDto;
 import com.team.docrate.domain.request.doctorrequest.dto.DoctorRequestResponseDto;
 import com.team.docrate.domain.request.doctorrequest.entity.DoctorRequest;
 import com.team.docrate.domain.request.doctorrequest.enumtype.DoctorRequestStatus;
 import com.team.docrate.domain.request.doctorrequest.repository.DoctorRequestRepository;
-
-
-
-import lombok.RequiredArgsConstructor;
-
+import com.team.docrate.domain.user.entity.User;
+import com.team.docrate.domain.user.repository.UserRepository;
 import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 @Service
 @RequiredArgsConstructor
@@ -26,72 +27,97 @@ import org.springframework.transaction.annotation.Transactional;
 public class DoctorRequestService {
 
     private final DoctorRequestRepository doctorRequestRepository;
+    private final DepartmentRepository departmentRepository;
+    private final HospitalRepository hospitalRepository;
+    private final UserRepository userRepository;
     private final DoctorRepository doctorRepository;
 
     @Transactional
-    public void approveRequest(Long requestId) {
-        // 1. 승인 대기 중인 요청 조회
-        DoctorRequest request = doctorRequestRepository.findById(requestId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 요청입니다."));
+    public void createDoctorRequest(String requesterEmail, DoctorRequestCreateRequestDto requestDto) {
+        User requester = userRepository.findByEmail(requesterEmail)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        if (request.getStatus() != DoctorRequestStatus.PENDING) {
-        	throw new IllegalStateException("이미 처리된 요청입니다.");
-        }
-        
-        boolean isDuplicate = doctorRepository.existsByHospitalAndDepartmentAndName(
-                request.getHospital(), 
-                request.getDepartment(), 
-                request.getName()
-        );
+        Department department = departmentRepository.findById(requestDto.getDepartmentId())
+                .orElseThrow(() -> new IllegalArgumentException("진료과를 찾을 수 없습니다."));
 
-        if (isDuplicate) {
-            throw new IllegalStateException("해당 병원에 이미 등록된 의사 정보입니다.");
-        }
-        
+        Hospital hospital = hospitalRepository.findFirstByName(requestDto.getHospitalName().trim())
+                .orElseThrow(() -> new IllegalArgumentException("입력한 이름의 병원을 찾을 수 없습니다."));
 
-        // 2. 새로운 Doctor 엔티티 생성 및 저장 (시스템에 의사 등록)
-        Doctor newDoctor = Doctor.builder()
-                .hospital(request.getHospital())
-                .department(request.getDepartment())
-                .name(request.getName())
-                .intro(request.getIntro())
-                .status(DoctorStatus.ACTIVE) // 바로 활동 가능 상태로 등록
+        DoctorRequest doctorRequest = DoctorRequest.builder()
+                .requester(requester)
+                .hospital(hospital)
+                .department(department)
+                .name(requestDto.getName().trim())
+                .intro(requestDto.getIntro() != null ? requestDto.getIntro().trim() : null)
+                .status(DoctorRequestStatus.PENDING)
                 .build();
 
-        Doctor savedDoctor = doctorRepository.save(newDoctor);
-
-        // 3. 요청 데이터에 승인 결과 업데이트 (어떤 의사 ID로 등록됐는지 기록)
-        request.approve(savedDoctor.getId());
+        doctorRequestRepository.save(doctorRequest);
     }
 
-    @Transactional
-    public void rejectRequest(Long requestId, String reason) {
-        DoctorRequest request = doctorRequestRepository.findById(requestId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 요청입니다."));
-
-        request.reject(reason);
-    }
- 	// 1. 대기 중인 요청 목록 조회 (PENDING 상태만)
-    public List<DoctorRequestResponseDto> getPendingRequests() {
-        return doctorRequestRepository.findAll().stream()
-                .filter(request -> request.getStatus() == DoctorRequestStatus.PENDING)
-                .map(DoctorRequestResponseDto::new)
-                .toList();
-    }
-    // 2. 전체 요청 목록 조회 (APPROVED, REJECTED 포함)
     public List<DoctorRequestResponseDto> getAllRequests() {
-        return doctorRequestRepository.findAll().stream()
-                .map(DoctorRequestResponseDto::new)
+        return doctorRequestRepository.findAll()
+                .stream()
+                .map(this::toResponseDto)
                 .toList();
     }
 
     public Page<DoctorRequest> getRequestsPage(String status, Pageable pageable) {
-        if (status != null && !status.isEmpty()) {
-            // String을 Enum으로 변환하는 과정이 필요할 수 있습니다.
-            DoctorRequestStatus enumStatus = DoctorRequestStatus.valueOf(status.toUpperCase());
-            return doctorRequestRepository.findByStatus(enumStatus, pageable);
+        if (status == null || status.isBlank()) {
+            return doctorRequestRepository.findAll(pageable);
         }
-        return doctorRequestRepository.findAll(pageable);
+
+        DoctorRequestStatus requestStatus;
+        try {
+            requestStatus = DoctorRequestStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("올바르지 않은 요청 상태입니다: " + status);
+        }
+
+        return doctorRequestRepository.findByStatus(requestStatus, pageable);
     }
 
+    @Transactional
+    public void approveRequest(Long id) {
+        DoctorRequest doctorRequest = doctorRequestRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("의사 요청을 찾을 수 없습니다."));
+
+        Doctor doctor = Doctor.builder()
+                .hospital(doctorRequest.getHospital())
+                .department(doctorRequest.getDepartment())
+                .name(doctorRequest.getName())
+                .intro(doctorRequest.getIntro())
+                .status(DoctorStatus.ACTIVE)
+                .build();
+
+        Doctor savedDoctor = doctorRepository.save(doctor);
+        doctorRequest.approve(savedDoctor.getId());
+    }
+
+    @Transactional
+    public void rejectRequest(Long id, String reason) {
+        DoctorRequest doctorRequest = doctorRequestRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("의사 요청을 찾을 수 없습니다."));
+
+        doctorRequest.reject(reason);
+    }
+
+    private DoctorRequestResponseDto toResponseDto(DoctorRequest doctorRequest) {
+        return DoctorRequestResponseDto.builder()
+                .id(doctorRequest.getId())
+                .requesterUserId(doctorRequest.getRequester().getId())
+                .requesterEmail(doctorRequest.getRequester().getEmail())
+                .hospitalId(doctorRequest.getHospital().getId())
+                .hospitalName(doctorRequest.getHospital().getName())
+                .departmentId(doctorRequest.getDepartment().getId())
+                .departmentName(doctorRequest.getDepartment().getName())
+                .name(doctorRequest.getName())
+                .intro(doctorRequest.getIntro())
+                .status(doctorRequest.getStatus().name())
+                .approvedDoctorId(doctorRequest.getApprovedDoctorId())
+                .rejectionReason(doctorRequest.getRejectionReason())
+                .approvedAt(doctorRequest.getApprovedAt())
+                .createdAt(doctorRequest.getCreatedAt())
+                .build();
+    }
 }

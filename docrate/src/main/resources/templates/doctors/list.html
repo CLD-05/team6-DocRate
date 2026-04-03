@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>의사 검색 결과 | DocRate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" th:href="@{/css/doctor-list.css}">
+</head>
+<body>
+<div class="page-wrap">
+    <div class="list-shell">
+
+        <header class="topbar">
+		    <div class="brand">
+		        <a th:href="@{/}">DocRate</a>
+		    </div>
+		
+		    <div class="topbar-menu">
+		        <div th:if="${isLoggedIn}" class="user-menu">
+		            <span class="welcome-text" th:text="${nickname} + '님'">사용자님</span>
+		            <a th:href="@{/mypage}" class="topbar-link">마이페이지</a>
+		            <form th:action="@{/logout}" method="post" class="logout-form">
+		                <input type="hidden"
+		                       th:if="${_csrf != null}"
+		                       th:name="${_csrf.parameterName}"
+		                       th:value="${_csrf.token}" />
+		                <button type="submit" class="logout-btn">로그아웃</button>
+		            </form>
+		        </div>
+		
+		        <div th:if="${!isLoggedIn}" class="guest-menu">
+		            <a th:href="@{/login}" class="login-btn">로그인</a>
+		        </div>
+		    </div>
+		</header>
+
+        <main class="content">
+            <section class="hero-section">
+                <h1 class="page-title">
+                    검색된
+                    <span class="keyword"
+                          th:text="${search != null and !search.isEmpty() ? search : '전체'}">"김민수"</span>
+                    결과
+                </h1>
+            </section>
+
+            <section class="search-section">
+                <form th:action="@{/doctors}" method="get" class="search-form">
+                    <input type="text"
+                           name="search"
+                           class="search-input"
+                           th:value="${search}"
+                           placeholder="의사 이름을 입력하세요">
+                    <button type="submit" class="search-btn">검색</button>
+                </form>
+
+                <div class="search-switch-wrap">
+                    <a th:href="@{/hospitals(search=${search})}" class="search-switch-link">
+                        병원 이름으로 찾을게요
+                    </a>
+                </div>
+            </section>
+
+            <section class="result-section">
+                <div class="doctor-list" th:if="${doctorList != null and !#lists.isEmpty(doctorList)}">
+            <article class="doctor-card" th:each="doctor : ${doctorList}">
+    <div class="card-main">
+        <div class="info-row">
+            <span class="info-label">의사명</span>
+            <span class="info-value" th:text="${doctor.name}">김의사</span>
+        </div>
+
+        <div class="info-row">
+            <span class="info-label">병원명</span>
+            <span class="info-value small-info" th:text="${doctor.hospitalName}">서울튼튼내과</span>
+        </div>
+
+        <div class="info-row">
+            <span class="info-label">진료과</span>
+            <span class="info-value small-info" th:text="${doctor.departmentName}">내과</span>
+        </div>
+
+        <div class="info-row">
+            <span class="info-label">평균 평점</span>
+            <span class="info-value rating small-info"
+                  th:text="${doctor.averageRating != null ? doctor.averageRating : '평점 정보 없음'}">
+                4.6
+            </span>
+        </div>
+    </div>
+
+    <a th:href="@{'/doctors/' + ${doctor.id}}" class="detail-link">상세 보기</a>
+</article>
+                </div>
+
+                <div class="empty-box" th:if="${doctorList == null or #lists.isEmpty(doctorList)}">
+                    검색 결과가 없습니다.
+                </div>
+            </section>
+
+            <section class="request-section">
+                <p class="request-text">
+                    찾으시는 의사가 없다면 추가할까요?
+                </p>
+                <a th:href="@{/doctor-requests/new}" class="request-link">의사 추가 요청하기</a>
+            </section>
+
+            <nav class="pagination" th:if="${doctorPage != null and doctorPage.totalPages > 1}">
+                <a class="page-btn"
+                   th:if="${doctorPage.hasPrevious()}"
+                   th:href="@{/doctors(page=${doctorPage.number - 1}, search=${search})}">
+                    이전
+                </a>
+
+                <span class="page-info">
+                    <span th:text="${doctorPage.number + 1}">1</span>
+                    /
+                    <span th:text="${doctorPage.totalPages}">1</span>
+                </span>
+
+                <a class="page-btn"
+                   th:if="${doctorPage.hasNext()}"
+                   th:href="@{/doctors(page=${doctorPage.number + 1}, search=${search})}">
+                    다음
+                </a>
+            </nav>
+        </main>
+    </div>
+</div>
+</body>
+</html>

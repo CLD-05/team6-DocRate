@@ -1,5 +1,6 @@
 package com.team.docrate.domain.review.controller;
 
+import org.springframework.security.core.Authentication;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -10,11 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.team.docrate.domain.doctor.entity.Doctor;
 import com.team.docrate.domain.review.dto.ReviewCreateRequest;
-import com.team.docrate.domain.review.entity.Review;
 import com.team.docrate.domain.review.service.ReviewService;
 import com.team.docrate.domain.user.entity.User;
 import com.team.docrate.domain.user.service.UserService;

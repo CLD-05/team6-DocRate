@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>의사 추가 요청 | DocRate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" th:href="@{/css/doctor-request-form.css}">
+</head>
+<body>
+<div class="page-wrap">
+    <div class="form-shell">
+        <header class="topbar">
+            <a th:href="@{/doctors}" class="back-link">← 의사 목록으로</a>
+            <h1 class="page-title">의사 추가 요청</h1>
+        </header>
+
+        <main class="content">
+            <form class="request-form"
+                  th:action="@{/doctor-requests}"
+                  th:object="${doctorRequestCreateRequestDto}"
+                  method="post">
+
+                <div class="form-group">
+                    <label class="form-label" for="name">의사 이름</label>
+                    <input type="text"
+                           id="name"
+                           class="form-input"
+                           th:field="*{name}"
+                           placeholder="의사 이름을 입력하세요">
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('name')}"
+                       th:errors="*{name}"></p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="hospitalId">병원명</label>
+                    <select id="hospitalId"
+                            class="form-input"
+                            th:field="*{hospitalId}">
+                        <option value="">병원을 선택하세요</option>
+                        <option th:each="hospital : ${hospitalList}"
+                                th:value="${hospital.id}"
+                                th:text="${hospital.name}">
+                        </option>
+                    </select>
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('hospitalId')}"
+                       th:errors="*{hospitalId}"></p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="departmentId">진료과</label>
+                    <select id="departmentId"
+                            class="form-input"
+                            th:field="*{departmentId}">
+                        <option value="">진료과를 선택하세요</option>
+                        <option th:each="department : ${departmentList}"
+                                th:value="${department.id}"
+                                th:text="${department.name}">
+                        </option>
+                    </select>
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('departmentId')}"
+                       th:errors="*{departmentId}"></p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="intro">소개</label>
+                    <textarea id="intro"
+                              class="form-textarea"
+                              th:field="*{intro}"
+                              placeholder="의사 소개가 있다면 입력하세요"></textarea>
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('intro')}"
+                       th:errors="*{intro}"></p>
+                </div>
+
+                <div class="submit-wrap">
+                    <button type="submit" class="submit-btn">요청 보내기</button>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+</body>
+</html>
