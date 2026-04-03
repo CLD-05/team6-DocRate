@@ -55,8 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String accessToken = resolveAccessToken(request);
 
-        System.out.println("요청 URI = " + request.getRequestURI());
-        System.out.println("accessToken = " + accessToken);
+        
 
         // 토큰이 없으면 그냥 통과
         if (!StringUtils.hasText(accessToken)) {
@@ -106,9 +105,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     jwtTokenProvider.getAuthentication(accessToken)
             );
 
-            System.out.println("인증 완료 = "
-                    + SecurityContextHolder.getContext().getAuthentication().getName());
-
+           
             filterChain.doFilter(request, response);
 
         } catch (InvalidTokenException e) {
