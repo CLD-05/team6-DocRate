@@ -1,5 +1,6 @@
 package com.team.docrate.domain.review.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -33,6 +34,7 @@ public class ReviewController {
             @PathVariable Long doctorId,
             @AuthenticationPrincipal String email,
             @RequestParam(value = "page", defaultValue = "1") int page,
+            HttpServletRequest request,
             Model model) {
 
         Doctor doctor = reviewService.getDoctorById(doctorId);
@@ -47,6 +49,7 @@ public class ReviewController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", reviewPage.getTotalPages());
         model.addAttribute("averageRating", averageRating);
+        model.addAttribute("currentUrl", request.getRequestURI());
 
         if (email != null) {
             User loginUser = userService.findByEmail(email).orElse(null);
