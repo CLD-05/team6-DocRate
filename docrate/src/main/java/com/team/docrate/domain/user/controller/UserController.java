@@ -53,6 +53,7 @@ public class UserController {
 
     @GetMapping("/login")
     public String loginForm(
+            @RequestParam(value = "redirectUrl", required = false) String redirectUrl,
             @RequestHeader(value = "Referer", required = false) String referer,
             Model model
     ) {
@@ -60,7 +61,9 @@ public class UserController {
             model.addAttribute("loginRequestDto", new LoginRequestDto());
         }
 
-        if (referer != null && !referer.contains("/login")) {
+        if (org.springframework.util.StringUtils.hasText(redirectUrl) && redirectUrl.startsWith("/")) {
+            model.addAttribute("redirectUrl", redirectUrl);
+        } else if (referer != null && !referer.contains("/login")) {
             model.addAttribute("redirectUrl", referer);
         } else {
             model.addAttribute("redirectUrl", "/");

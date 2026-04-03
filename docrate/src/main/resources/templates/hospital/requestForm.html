@@ -8,14 +8,9 @@
 </head>
 <body>
 
-<header class="header" style="display: flex; justify-content: space-between; padding: 20px; border-bottom: 1px solid #ddd;">
-    <div class="header-left">
-        <a href="/" class="logo" style="text-decoration: none; font-weight: bold; font-size: 1.5rem; color: #2c3e50;">DOC RATE</a>
-    </div>
-    <nav class="header-right" style="display: flex; gap: 15px;">
-        <a href="/mypage" style="text-decoration: none; color: #333;">마이페이지</a>
-        <a href="/logout" style="text-decoration: none; color: #333;">로그아웃</a>
-    </nav>
+<header class="topbar">
+    <a th:href="@{/hospitals}" class="back-link">← 병원 목록으로</a>
+    <h1 class="page-title">병원 등록 요청</h1>
 </header>
 
 <main class="container" style="max-width: 600px; margin: 40px auto; padding: 0 20px;">
@@ -48,20 +43,12 @@
             <div style="border: 1px solid #ddd; padding: 10px;">
                 <select name="category" style="width: 100%; border: none; outline: none; background: transparent; cursor: pointer;" required>
                     <option value="" disabled selected>카테고리를 선택하세요</option>
-                    <option value="내과">내과</option>
-                    <option value="외과">외과</option>
-                    <option value="안과">안과</option>
-                    <option value="치과">치과</option>
-                    <option value="피부과">피부과</option>
-                    <option value="정형외과">정형외과</option>
-                    <option value="이비인후과">이비인후과</option>
-                    <option value="소아과">소아과</option>
+                    <option th:each="cat : ${categoryList}" th:value="${cat}" th:text="${cat}"></option>
                 </select>
             </div>
         </div>
 
-        <div class="form-actions" style="display: flex; justify-content: space-between;">
-            <a href="/hospitals" style="text-decoration: none; color: #333; padding: 10px 30px; border: 1px solid #ccc; border-radius: 5px;">취소</a>
+        <div class="form-actions">
             <button type="submit" style="background: #007bff; color: white; border: none; padding: 10px 30px; border-radius: 5px; cursor: pointer;">요청 제출</button>
         </div>
     </form>

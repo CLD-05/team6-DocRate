@@ -20,7 +20,7 @@
 		        <div th:if="${isLoggedIn}" class="user-menu">
 		            <span class="welcome-text" th:text="${nickname} + '님'">사용자님</span>
 		            <a th:href="@{/mypage}" class="topbar-link">마이페이지</a>
-		            <form th:action="@{/logout}" method="post" class="logout-form">
+		            <form th:action="@{/logout(redirectUrl=${currentUrl})}" method="post" class="logout-form">
 		                <input type="hidden"
 		                       th:if="${_csrf != null}"
 		                       th:name="${_csrf.parameterName}"
@@ -30,7 +30,7 @@
 		        </div>
 		
 		        <div th:if="${!isLoggedIn}" class="guest-menu">
-		            <a th:href="@{/login}" class="login-btn">로그인</a>
+		            <a th:href="@{/login(redirectUrl=${currentUrl})}" class="login-btn">로그인</a>
 		        </div>
 		    </div>
 		</header>
