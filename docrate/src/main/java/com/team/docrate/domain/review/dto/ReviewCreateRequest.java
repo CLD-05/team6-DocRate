@@ -1,5 +1,7 @@
 package com.team.docrate.domain.review.dto;
 
+import java.math.BigDecimal;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -14,7 +16,7 @@ public class ReviewCreateRequest {
     @NotNull
     @Min(0)
     @Max(5)
-    private Double rating;
+    private BigDecimal rating;
 
     @NotNull
     @Min(1)

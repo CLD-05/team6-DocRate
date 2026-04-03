@@ -89,60 +89,49 @@
     </div>
 
     <script th:inline="javascript">
-        async function approveRequest(id) {
-            if (!confirm("승인하시겠습니까?")) return;
+    async function approveRequest(id) {
+        if (!confirm("승인하시겠습니까?")) return;
+        
+        try {
+            // CSRF 토큰 없이 바로 POST 요청
+            const response = await fetch(`/api/admin/doctor-requests/${id}/approve`, {
+                method: 'POST'
+            });
             
-            const token = document.querySelector('meta[name="_csrf"]').content;
-            const header = document.querySelector('meta[name="_csrf_header"]').content;
-            
-            try {
-                // ★ 경로에 /api 를 추가했습니다.
-                const response = await fetch(`/api/admin/doctor-requests/${id}/approve`, {
-                    method: 'POST',
-                    headers: { 
-                        [header]: token 
-                    }
-                });
-                
-                if (response.ok) { 
-                    alert("승인 완료"); 
-                    location.reload(); 
-                } else { 
-                    alert("처리 중 오류 발생 (상태코드: " + response.status + ")"); 
-                }
-            } catch (e) { 
-                alert("통신 에러"); 
+            if (response.ok) { 
+                alert("승인 완료"); 
+                location.reload(); 
+            } else { 
+                alert("처리 중 오류 발생 (상태코드: " + response.status + ")"); 
             }
+        } catch (e) { 
+            alert("통신 에러"); 
         }
+    }
 
-        async function rejectRequest(id) {
-            const reason = prompt("반려 사유:");
-            if (!reason) return;
+    async function rejectRequest(id) {
+        const reason = prompt("반려 사유:");
+        if (!reason) return;
+        
+        try {
+            const response = await fetch(`/api/admin/doctor-requests/${id}/reject`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify({ reason: reason })
+            });
             
-            const token = document.querySelector('meta[name="_csrf"]').content;
-            const header = document.querySelector('meta[name="_csrf_header"]').content;
-            
-            try {
-                // ★ 경로에 /api 를 추가했습니다.
-                const response = await fetch(`/api/admin/doctor-requests/${id}/reject`, {
-                    method: 'POST',
-                    headers: { 
-                        [header]: token, 
-                        'Content-Type': 'application/json' 
-                    },
-                    body: JSON.stringify({ reason: reason })
-                });
-                
-                if (response.ok) { 
-                    alert("반려 완료"); 
-                    location.reload(); 
-                } else { 
-                    alert("처리 중 오류 발생 (상태코드: " + response.status + ")"); 
-                }
-            } catch (e) { 
-                alert("통신 에러"); 
+            if (response.ok) { 
+                alert("반려 완료"); 
+                location.reload(); 
+            } else { 
+                alert("처리 중 오류 발생 (상태코드: " + response.status + ")"); 
             }
+        } catch (e) { 
+            alert("통신 에러"); 
         }
-    </script>
+    }
+</script>
 </body>
 </html>

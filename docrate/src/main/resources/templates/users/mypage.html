@@ -15,7 +15,9 @@
             <div class="brand">
                 <a th:href="@{/}">DocRate</a>
             </div>
-
+			<div class="admin-controls" th:if="${myPage.role.name() == 'ADMIN'}">
+	            <a th:href="@{/admin/doctor-requests}" class="admin-manage-btn">요청 관리</a>
+	        </div>
             <div class="topbar-right">
                 <span class="topbar-role"
                       th:if="${myPage.role != null}"

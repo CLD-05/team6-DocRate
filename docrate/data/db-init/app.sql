@@ -203,8 +203,3 @@ CREATE TABLE doctor_requests (
         ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT chk_doctor_requests_status CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED'))
 );
-
-SHOW TABLES;
-USE app;
-SELECT COUNT(*) FROM hospitals;
-SELECT * FROM hospitals LIMIT 10;

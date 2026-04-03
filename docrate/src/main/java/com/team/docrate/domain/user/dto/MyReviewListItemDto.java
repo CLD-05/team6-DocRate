@@ -1,5 +1,7 @@
 package com.team.docrate.domain.user.dto;
 
+import java.math.BigDecimal;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,7 +12,7 @@ public class MyReviewListItemDto {
     private Long reviewId;
     private String doctorName;
     private String hospitalName;
-    private Double rating;
+    private BigDecimal rating;
     private String contentPreview;
     private String createdAt;
 }

@@ -60,6 +60,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 토큰이 없으면 그냥 통과
         if (!StringUtils.hasText(accessToken)) {
+            String refreshToken = resolveRefreshToken(request);
+            if (StringUtils.hasText(refreshToken)) {
+                try {
+                    handleAutoReissueByRefreshOnly(response, refreshToken);
+                } catch (Exception ignored) {
+                    // refreshToken도 유효하지 않으면 인증 없이 진행
+                }
+            }
             filterChain.doFilter(request, response);
             return;
         }
@@ -197,6 +205,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(
                 jwtTokenProvider.getAuthentication(newAccessToken)
         );
+    }
+
+    private void handleAutoReissueByRefreshOnly(HttpServletResponse response, String refreshToken) {
+        jwtTokenProvider.validateToken(refreshToken);
+
+        String tokenType = jwtTokenProvider.getTokenType(refreshToken);
+        if (!"refresh".equals(tokenType)) {
+            throw new InvalidRefreshTokenException("Refresh Token이 아닙니다.");
+        }
+
+        String email = jwtTokenProvider.getEmail(refreshToken);
+
+        String savedRefreshToken = refreshTokenRedisService.getRefreshToken(email);
+        if (savedRefreshToken == null || !savedRefreshToken.equals(refreshToken)) {
+            throw new InvalidRefreshTokenException("유효하지 않은 Refresh Token입니다.");
+        }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new InvalidRefreshTokenException("사용자를 찾을 수 없습니다."));
+
+        String newAccessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getRole());
+        String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
+
+        refreshTokenRedisService.saveRefreshToken(user.getEmail(), newRefreshToken);
+
+        addTokenCookie(response, "accessToken", newAccessToken, Math.toIntExact(accessTokenExpiration / 1000));
+        addTokenCookie(response, "refreshToken", newRefreshToken, Math.toIntExact(refreshTokenExpiration / 1000));
+
+        var authentication = jwtTokenProvider.getAuthentication(newAccessToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     private String resolveAccessToken(HttpServletRequest request) {

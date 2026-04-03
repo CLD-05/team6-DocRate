@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <title>리뷰 작성 - DocRate</title>
@@ -7,110 +7,192 @@
 <link rel="stylesheet" th:href="@{/css/review-form.css}">
 </head>
 <body>
+<div class="page-wrap">
+    <div class="container-shell">
+        <header class="header">
+            <div class="logo">
+                <a th:href="@{/}">DocRate</a>
+            </div>
 
-	<header class="main-header">
-		<div class="header-container">
-			<h1 class="logo">DocRate</h1>
-			<div class="header-menu">
-				<a th:href="@{/mypage}" class="menu-item">마이페이지</a> <a
-					th:href="@{/logout}" class="menu-item logout">로그아웃</a>
-			</div>
-		</div>
-	</header>
+            <div class="header-right">
+                <div th:if="${loginUser == null}" class="guest-menu">
+                    <a th:href="@{/login}" class="header-link">로그인</a>
+                    <a th:href="@{/signup}" class="header-btn">회원가입</a>
+                </div>
 
-	<main class="container">
-		<section class="page-header">
-			<h2>리뷰 작성</h2>
-			<hr class="header-divider">
-			<div class="doctor-info-bar">
-				<span class="info-label">의사명:</span> <span class="info-value"
-					th:text="${doctor.name}">김의사</span> <span class="info-separator">/</span>
-				<span class="info-value" th:text="${doctor.hospital.name}">서울튼튼내과</span>
-			</div>
-		</section>
+                <div th:if="${loginUser != null}" class="user-menu">
+                    <span class="welcome-text" th:text="${loginUser.nickname} + '님'">사용자님</span>
+                    <a th:href="@{/mypage}" class="header-link">마이페이지</a>
 
-		<form
-			th:action="@{/doctors/{doctorId}/reviews(doctorId=${doctor.id})}"
-			method="post">
+                    <form th:action="@{/logout}" method="post" class="logout-form">
+                        <input type="hidden"
+                               th:if="${_csrf != null}"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}" />
+                        <button type="submit" class="logout-btn">로그아웃</button>
+                    </form>
+                </div>
+            </div>
+        </header>
 
-			<input type="hidden" name="userId" value="1"> <input
-				type="hidden" name="doctorId" th:value="${doctor.id}">
+        <main class="form-container">
+            <section class="page-header">
+                <h2 th:text="${review != null} ? '리뷰 수정' : '리뷰 작성'">리뷰 작성</h2>
+                <hr class="header-divider">
 
-			<div class="form-group rating-section">
-    		  <label>종합 평점 (세부 점수에 따라 자동 계산됨)</label>
-    			<div class="rating-options" style="pointer-events: none;">
-        			<input type="radio" name="rating" id="rate5" value="5.0" checked><label for="rate5">5</label>
-        			<input type="radio" name="rating" id="rate4" value="4.0"><label for="rate4">4</label>
-        			<input type="radio" name="rating" id="rate3" value="3.0"><label for="rate3">3</label>
-        			<input type="radio" name="rating" id="rate2" value="2.0"><label for="rate2">2</label>
-        			<input type="radio" name="rating" id="rate1" value="1.0"><label for="rate1">1</label>
-    			</div>
-			</div>
+                <div class="doctor-info-bar">
+                    <span class="info-label">의사명:</span>
+                    <span class="info-value" th:text="${doctor.name}">김의사</span>
+                    <span class="info-separator">/</span>
+                    <span class="info-value" th:text="${doctor.hospital.name}">서울튼튼내과</span>
+                </div>
+            </section>
 
-			<hr class="section-divider">
+            <form th:action="${review != null} ? @{/reviews/{id}/edit(id=${review.id})} : @{/doctors/{id}/reviews(id=${doctor.id})}"
+                  method="post"
+                  th:object="${reviewCreateRequest}">
 
-			<div class="detail-ratings-grid">
-				<div class="form-group detail-row">
-					<label>친절도 (1~5)</label>
-					<div class="rating-options detail-selection">
-            		<input type="radio" name="bedsideManner" id="manner5" value="5" checked><label for="manner5">5</label>
-            		<input type="radio" name="bedsideManner" id="manner4" value="4"><label for="manner4">4</label>
-            		<input type="radio" name="bedsideManner" id="manner3" value="3"><label for="manner3">3</label>
-            		<input type="radio" name="bedsideManner" id="manner2" value="2"><label for="manner2">2</label>
-            		<input type="radio" name="bedsideManner" id="manner1" value="1"><label for="manner1">1</label>
-        		  </div>
-				</div>
-				
-				<div class="form-group detail-row">
-					<label>설명력 (1~5)</label>
-					<div class="rating-options detail-selection">
-            		<input type="radio" name="explanation" id="exp5" value="5" checked><label for="exp5">5</label>
-            		<input type="radio" name="explanation" id="exp4" value="4"><label for="exp4">4</label>
-            		<input type="radio" name="explanation" id="exp3" value="3"><label for="exp3">3</label>
-            		<input type="radio" name="explanation" id="exp2" value="2"><label for="exp2">2</label>
-            		<input type="radio" name="explanation" id="exp1" value="1"><label for="exp1">1</label>
-        		  </div>
-				</div>
-				
-				<div class="form-group detail-row">
-					<label>대기 만족도 (1~5)</label>
-					<div class="rating-options detail-selection">
-            		<input type="radio" name="waitTime" id="wait5" value="5" checked><label for="wait5">5</label>
-            		<input type="radio" name="waitTime" id="wait4" value="4"><label for="wait4">4</label>
-            		<input type="radio" name="waitTime" id="wait3" value="3"><label for="wait3">3</label>
-            		<input type="radio" name="waitTime" id="wait2" value="2"><label for="wait2">2</label>
-            		<input type="radio" name="waitTime" id="wait1" value="1"><label for="wait1">1</label>
-        		  </div>
-				</div>
-			</div>
+                <input type="hidden" name="doctorId" th:value="${doctor.id}">
 
-			<hr class="section-divider">
+                <div class="form-group rating-section">
+                    <label>종합 평점 (세부 점수에 따라 자동 계산됨)</label>
+                    <div class="rating-options rating-readonly" style="pointer-events: none;">
+                        <input type="radio" name="rating" id="rate5" value="5.0"
+                               th:checked="${review != null ? review.rating == 5.0 : true}">
+                        <label for="rate5">5</label>
 
-			<div class="form-group inline revisit-section">
-				<label>재방문 의사</label>
-				<div class="radio-group-modern">
-					<input type="radio" id="revisit-true" name="revisitIntention"
-						value="true" checked> <label for="revisit-true"
-						class="radio-btn-label">예</label> <input type="radio"
-						id="revisit-false" name="revisitIntention" value="false">
-					<label for="revisit-false" class="radio-btn-label">아니오</label>
-				</div>
-			</div>
+                        <input type="radio" name="rating" id="rate4" value="4.0"
+                               th:checked="${review != null ? review.rating == 4.0 : false}">
+                        <label for="rate4">4</label>
 
-			<div class="form-group">
-				<label>리뷰 내용</label>
-				<textarea name="content" placeholder="솔직한 후기를 입력해주세요 (진료 과정, 태도 등)"
-					required th:text="${review != null ? review.content : ''}"></textarea>
-			</div>
+                        <input type="radio" name="rating" id="rate3" value="3.0"
+                               th:checked="${review != null ? review.rating == 3.0 : false}">
+                        <label for="rate3">3</label>
 
-			<div class="button-group-modern">
-				<button type="submit" class="btn-save">저장</button>
-				<a th:href="@{/doctors/{id}/reviews(id=${doctor.id})}"
-					class="btn-cancel">취소</a>
-			</div>
-		</form>
-	</main>
+                        <input type="radio" name="rating" id="rate2" value="2.0"
+                               th:checked="${review != null ? review.rating == 2.0 : false}">
+                        <label for="rate2">2</label>
+
+                        <input type="radio" name="rating" id="rate1" value="1.0"
+                               th:checked="${review != null ? review.rating == 1.0 : false}">
+                        <label for="rate1">1</label>
+                    </div>
+                </div>
+
+                <hr class="section-divider">
+
+                <div class="detail-ratings-grid">
+                    <div class="form-group detail-row">
+                        <label>친절도 (1~5)</label>
+                        <div class="rating-options detail-selection">
+                            <input type="radio" name="bedsideManner" id="manner5" value="5"
+                                   th:checked="${review != null ? review.bedsideManner == 5 : true}">
+                            <label for="manner5">5</label>
+
+                            <input type="radio" name="bedsideManner" id="manner4" value="4"
+                                   th:checked="${review != null ? review.bedsideManner == 4 : false}">
+                            <label for="manner4">4</label>
+
+                            <input type="radio" name="bedsideManner" id="manner3" value="3"
+                                   th:checked="${review != null ? review.bedsideManner == 3 : false}">
+                            <label for="manner3">3</label>
+
+                            <input type="radio" name="bedsideManner" id="manner2" value="2"
+                                   th:checked="${review != null ? review.bedsideManner == 2 : false}">
+                            <label for="manner2">2</label>
+
+                            <input type="radio" name="bedsideManner" id="manner1" value="1"
+                                   th:checked="${review != null ? review.bedsideManner == 1 : false}">
+                            <label for="manner1">1</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group detail-row">
+                        <label>설명력 (1~5)</label>
+                        <div class="rating-options detail-selection">
+                            <input type="radio" name="explanation" id="exp5" value="5"
+                                   th:checked="${review != null ? review.explanation == 5 : true}">
+                            <label for="exp5">5</label>
+
+                            <input type="radio" name="explanation" id="exp4" value="4"
+                                   th:checked="${review != null ? review.explanation == 4 : false}">
+                            <label for="exp4">4</label>
+
+                            <input type="radio" name="explanation" id="exp3" value="3"
+                                   th:checked="${review != null ? review.explanation == 3 : false}">
+                            <label for="exp3">3</label>
+
+                            <input type="radio" name="explanation" id="exp2" value="2"
+                                   th:checked="${review != null ? review.explanation == 2 : false}">
+                            <label for="exp2">2</label>
+
+                            <input type="radio" name="explanation" id="exp1" value="1"
+                                   th:checked="${review != null ? review.explanation == 1 : false}">
+                            <label for="exp1">1</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group detail-row">
+                        <label>대기 만족도 (1~5)</label>
+                        <div class="rating-options detail-selection">
+                            <input type="radio" name="waitTime" id="wait5" value="5"
+                                   th:checked="${review != null ? review.waitTime == 5 : true}">
+                            <label for="wait5">5</label>
+
+                            <input type="radio" name="waitTime" id="wait4" value="4"
+                                   th:checked="${review != null ? review.waitTime == 4 : false}">
+                            <label for="wait4">4</label>
+
+                            <input type="radio" name="waitTime" id="wait3" value="3"
+                                   th:checked="${review != null ? review.waitTime == 3 : false}">
+                            <label for="wait3">3</label>
+
+                            <input type="radio" name="waitTime" id="wait2" value="2"
+                                   th:checked="${review != null ? review.waitTime == 2 : false}">
+                            <label for="wait2">2</label>
+
+                            <input type="radio" name="waitTime" id="wait1" value="1"
+                                   th:checked="${review != null ? review.waitTime == 1 : false}">
+                            <label for="wait1">1</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="section-divider">
+
+                <div class="form-group revisit-section">
+                    <label>재방문 의사</label>
+                    <div class="radio-group-modern">
+                        <input type="radio" id="revisit-true" name="revisitIntention" value="true"
+                               th:checked="${review != null ? review.revisitIntention == true : true}">
+                        <label for="revisit-true" class="radio-btn-label">예</label>
+
+                        <input type="radio" id="revisit-false" name="revisitIntention" value="false"
+                               th:checked="${review != null ? review.revisitIntention == false : false}">
+                        <label for="revisit-false" class="radio-btn-label">아니오</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>리뷰 내용</label>
+                    <textarea name="content"
+                              placeholder="솔직한 후기를 입력해주세요 (진료 과정, 태도 등)"
+                              required
+                              th:text="${review != null ? review.content : ''}"></textarea>
+                </div>
+
+                <div class="button-group-modern">
+                    <button type="submit"
+                            class="btn-save"
+                            th:text="${review != null} ? '수정 완료' : '저장'">저장</button>
+                    <a th:href="@{/doctors/{id}/reviews(id=${doctor.id})}" class="btn-cancel">취소</a>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
 </body>
+
 <script>
     // 모든 세부 항목 라디오 버튼에 이벤트 리스너 등록
     document.querySelectorAll('.detail-selection input[type="radio"]').forEach(radio => {
@@ -135,6 +217,12 @@
     }
 
     // 초기 실행
-    window.onload = calculateAverage;
+    window.onload = function() {
+      // 신규 작성일 때만(내용이 비어있을 때만) 초기 계산 실행
+      const content = document.querySelector('textarea[name="content"]').value;
+      if(!content) {
+          calculateAverage();
+      } 
+    };
 </script>
 </html>

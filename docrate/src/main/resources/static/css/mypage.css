@@ -18,7 +18,34 @@ a {
 button {
     font: inherit;
 }
+/* 관리자 전용 버튼 스타일 */
+.admin-manage-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #111111; /* 세련된 인디고 블루 */
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    margin-right: 12px;
+}
 
+.admin-manage-btn:hover {
+    background-color: #4338ca;
+}
+
+/* 헤더와 버튼 정렬을 위한 조정 */
+.section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-controls {
+    margin-left: auto; /* 배지를 오른쪽 끝으로 밀고 버튼을 그 왼쪽에 배치 */
+}
 .page-wrap {
     min-height: 100vh;
     padding: 28px 20px 40px;

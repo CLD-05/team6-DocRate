@@ -99,10 +99,10 @@ public class UserController {
                 refreshTokenCookieMaxAge
         ));
 
-        if (redirectUrl != null && !redirectUrl.isBlank() && !redirectUrl.contains("/login")) {
+        // 4. 로그인 성공 후 redirectUrl이 있으면 해당 페이지로, 없으면 메인 페이지로 이동
+        if (org.springframework.util.StringUtils.hasText(redirectUrl) && redirectUrl.startsWith("/")) {
             return "redirect:" + redirectUrl;
         }
-
         return "redirect:/";
     }
 
