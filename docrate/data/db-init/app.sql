@@ -204,3 +204,12 @@ CREATE TABLE doctor_requests (
     CONSTRAINT chk_doctor_requests_status CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED'))
 );
 
+INSERT INTO departments (id, name)
+VALUES 
+    (1, '정형외과'),
+    (2, '내과'),
+    (3, '피부과'),
+    (4, '소아과'),
+    (5, '신경과')
+ON DUPLICATE KEY UPDATE
+    name = VALUES(name);
