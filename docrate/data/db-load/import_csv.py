@@ -3,23 +3,13 @@ import pandas as pd
 import pymysql
 import re
 
-# docker 서팅
-# DB_HOST = os.getenv("DB_HOST")
-# DB_PORT = int(os.getenv("DB_PORT"))
-# DB_NAME = os.getenv("DB_NAME")
-# DB_USER = os.getenv("DB_USER")
-# DB_PASSWORD = os.getenv("DB_PASSWORD")
-#
-# CSV_PATH = os.getenv("CSV_PATH")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = int(os.getenv("DB_PORT"))
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
 
-# 로컬 세팅
-DB_HOST = "localhost"
-DB_PORT = 3306
-DB_NAME = "app"
-DB_USER = "root"
-DB_PASSWORD = ""
-
-CSV_PATH = os.getenv("CSV_PATH", "./건강_병원.csv")
+CSV_PATH = os.getenv("CSV_PATH")
 
 def normalize_text(x):
     if pd.isna(x):
