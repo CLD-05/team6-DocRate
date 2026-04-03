@@ -16,7 +16,7 @@
 
 			<div class="topbar-menu">
 			    <a th:if="${!isAuthenticated}"
-			       th:href="@{/login}"
+			       th:href="@{/login(redirectUrl=${currentUrl})}"
 			       class="top-link-btn">
 			        로그인
 			    </a>
@@ -28,7 +28,7 @@
 			            마이페이지
 			        </a>
 
-			        <form th:action="@{/logout}" method="post" class="logout-form" style="display:inline;">
+			        <form th:action="@{/logout(redirectUrl=${currentUrl})}" method="post" class="logout-form" style="display:inline;">
 			            <button type="submit" class="top-link-btn dark">
 			                로그아웃
 			            </button>

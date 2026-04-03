@@ -36,6 +36,9 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
             Pageable pageable
     );
 
+    @Query("SELECT DISTINCT h.category FROM Hospital h WHERE h.category IS NOT NULL ORDER BY h.category")
+    java.util.List<String> findDistinctCategories();
+
     // 카테고리로만 검색
     @Query("SELECT h FROM Hospital h WHERE LOWER(REPLACE(h.category, ' ', '')) = LOWER(REPLACE(:category, ' ', ''))")
     Page<Hospital> findActiveAndProcessedCategory(

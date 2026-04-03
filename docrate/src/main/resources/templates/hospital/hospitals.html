@@ -13,8 +13,20 @@
         <a href="/" class="logo">DOC RATE</a>
     </div>
     <nav class="header-right">
-        <a href="/mypage">마이페이지</a>
-        <a href="/logout">로그아웃</a>
+        <div th:if="${isLoggedIn}">
+            <span th:text="${nickname} + '님'">사용자님</span>
+            <a href="/mypage">마이페이지</a>
+            <form th:action="@{/logout(redirectUrl=${currentUrl})}" method="post" style="display:inline;">
+                <input type="hidden"
+                       th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}" />
+                <button type="submit">로그아웃</button>
+            </form>
+        </div>
+        <div th:if="${!isLoggedIn}">
+            <a th:href="@{/login(redirectUrl=${currentUrl})}">로그인</a>
+        </div>
     </nav>
 </header>
 
