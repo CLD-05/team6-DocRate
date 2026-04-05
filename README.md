@@ -208,7 +208,7 @@ DocRate는 **JWT 기반 인증 방식**을 사용합니다.
 - 의사 상세 페이지로 이동 가능
 - 병원에 의사가 없을 경우 추가 요청 기능 제공
 
-<img src="./docs/images/doctor-detail.png" width="700"/>
+<img src="./docs/images/hospital-detail.png" width="700"/>
 
 ---
 
