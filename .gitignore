@@ -2,7 +2,6 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=eclipse,windows,macos,maven,gradle,java,visualstudiocode
 
 # Database dump files
-*.sql
 *.dump
 *.tar
 *.sql.gz

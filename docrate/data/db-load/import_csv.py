@@ -1,7 +1,10 @@
+# load data (hospitals and departments)
+
 import os
 import pandas as pd
 import pymysql
 import re
+
 
 DB_HOST = os.getenv("DB_HOST")
 DB_PORT = int(os.getenv("DB_PORT"))
@@ -9,24 +12,93 @@ DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 
-CSV_PATH = os.getenv("CSV_PATH")
+CSV_PATH_DEPARTMENTS = os.getenv("CSV_PATH_DEPARTMENTS", "./departments.csv")
+CSV_PATH_HOSPITALS = os.getenv("CSV_PATH_HOSPITALS", "./건강_병원.csv")
+
+def get_connection():
+    return pymysql.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME,
+        port=DB_PORT,
+        charset="utf8mb4",
+        autocommit=False
+    )
+
 
 def normalize_text(x):
     if pd.isna(x):
         return None
 
     s = str(x).strip()
-
     s = s.replace("\r", " ").replace("\n", " ").replace("\t", " ")
-
     s = re.sub(r"\s+", " ", s)
-
     s = s.strip()
 
     return s if s else None
 
-def preprocess(csv_path):
-    df = pd.read_csv(csv_path, encoding="cp949", encoding_errors="ignore")
+
+# =========================
+# departments 처리
+# =========================
+def preprocess_departments(csv_path):
+    df = pd.read_csv(csv_path, encoding="utf-8")
+
+    df = df[["id", "name"]].copy()
+
+    df["id"] = pd.to_numeric(df["id"], errors="coerce")
+    df["name"] = df["name"].astype(str).str.strip()
+
+    df = df.dropna(subset=["id", "name"])
+    df = df[df["name"] != ""]
+
+    df["id"] = df["id"].astype(int)
+    df["name"] = df["name"].str.slice(0, 50)
+
+    df = df.drop_duplicates(subset=["id"], keep="last")
+
+    return df
+
+
+def load_departments_to_db(df):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SET NAMES utf8mb4")
+
+    sql = """
+    INSERT INTO departments (id, name)
+    VALUES (%s, %s)
+    ON DUPLICATE KEY UPDATE
+        name = VALUES(name)
+    """
+
+    data = [
+        (
+            int(row["id"]),
+            row["name"]
+        )
+        for _, row in df.iterrows()
+    ]
+
+    try:
+        cursor.executemany(sql, data)
+        conn.commit()
+        print(f"departments 적재 완료: {len(data)}건")
+    except Exception as e:
+        conn.rollback()
+        print("departments 적재 실패:", e)
+        raise
+    finally:
+        cursor.close()
+        conn.close()
+
+
+# =========================
+# hospitals 처리 (기존 로직 유지)
+# =========================
+def preprocess_hospitals(csv_path):
+    df = pd.read_csv(csv_path, encoding="utf-8")
 
     # 컬럼명 변경
     df = df.rename(columns={
@@ -71,6 +143,7 @@ def preprocess(csv_path):
     def clean_phone(x):
         if pd.isna(x):
             return None
+
         s = str(x).strip()
         if s.endswith(".0"):
             s = s[:-2]
@@ -138,17 +211,8 @@ def preprocess(csv_path):
     return df
 
 
-def load_to_db_dml(df):
-    conn = pymysql.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        database=DB_NAME,
-        port=DB_PORT,
-        charset="utf8mb4",
-        autocommit=False
-    )
-
+def load_hospitals_to_db(df):
+    conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("SET NAMES utf8mb4")
 
@@ -156,9 +220,9 @@ def load_to_db_dml(df):
     INSERT INTO hospitals (name, address, phone, category, status)
     VALUES (%s, %s, %s, %s, %s)
     ON DUPLICATE KEY UPDATE
-    phone = VALUES(phone),
-    category = VALUES(category),
-    status = VALUES(status)
+        phone = VALUES(phone),
+        category = VALUES(category),
+        status = VALUES(status)
     """
 
     data = [
@@ -175,10 +239,10 @@ def load_to_db_dml(df):
     try:
         cursor.executemany(sql, data)
         conn.commit()
-        print(f"적재 완료: {len(data)}건")
+        print(f"hospitals 적재 완료: {len(data)}건")
     except Exception as e:
         conn.rollback()
-        print("DB 적재 실패:", e)
+        print("hospitals 적재 실패:", e)
         raise
     finally:
         cursor.close()
@@ -186,10 +250,14 @@ def load_to_db_dml(df):
 
 
 if __name__ == "__main__":
-    df = preprocess(CSV_PATH)
+    df_departments = preprocess_departments(CSV_PATH_DEPARTMENTS)
+    print("departments 전처리 결과 샘플:")
+    print(df_departments.head())
+    print(f"\ndepartments 전처리 후 데이터 개수: {len(df_departments)}")
+    load_departments_to_db(df_departments)
 
-    print("전처리 결과 샘플:")
-    print(df.head())
-    print(f"\n전처리 후 데이터 개수: {len(df)}")
-
-    load_to_db_dml(df)
+    df_hospitals = preprocess_hospitals(CSV_PATH_HOSPITALS)
+    print("\nhospitals 전처리 결과 샘플:")
+    print(df_hospitals.head())
+    print(f"\nhospitals 전처리 후 데이터 개수: {len(df_hospitals)}")
+    load_hospitals_to_db(df_hospitals)

@@ -1,0 +1,14 @@
+target
+build
+.gradle
+.idea
+.vscode
+.git
+.gitattributes
+.gitignore
+Dockerfile
+README.md
+*.iml
+*.log
+.env
+src/test
