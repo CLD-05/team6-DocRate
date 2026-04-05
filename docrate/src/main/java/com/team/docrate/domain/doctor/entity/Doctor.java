@@ -42,8 +42,7 @@ public class Doctor extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DoctorStatus status;
-    
-    
+
 
     public static Doctor from(DoctorRequest doctorRequest) {
         return Doctor.builder()
