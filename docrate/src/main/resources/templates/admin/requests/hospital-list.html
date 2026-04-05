@@ -94,28 +94,58 @@
     }
 
     async function handleRequest(id, action) {
-        const actionKor = action === 'approve' ? '승인' : '반려';
-        if (!confirm(`정말 이 요청을 ${actionKor}하시겠습니까?`)) return;
-
-        try {
-            // CSRF 관련 headers 제거 및 URL 호출
-            const response = await fetch(`/api/admin/hospital-requests/${id}/${action}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.ok) {
-                alert(`${actionKor} 처리가 완료되었습니다.`);
-                location.reload(); 
-            } else {
-                // 실패 시 서버에서 보내주는 메시지가 있다면 확인하기 위해 status 추가
-                alert(`처리 실패하였습니다. (상태코드: ${response.status})`);
+        if (action === 'reject') {
+            const reason = prompt("반려 사유를 입력하세요:");
+            if (!reason || !reason.trim()) {
+                alert("반려 사유를 입력해야 합니다.");
+                return;
             }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('서버 통신 오류가 발생했습니다.');
+
+            try {
+                const response = await fetch(`/api/admin/hospital-requests/${id}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        reason: reason.trim()
+                    })
+                });
+
+                if (response.ok) {
+                    alert("반려 완료");
+                    location.reload();
+                } else {
+                    const errorText = await response.text();
+                    alert(`반려 실패: ${errorText || "처리 중 오류가 발생했습니다."}`);
+                }
+            } catch (error) {
+                console.error(error);
+                alert("서버 통신 오류가 발생했습니다.");
+            }
+
+            return;
+        }
+
+        if (action === 'approve') {
+            if (!confirm("정말 이 요청을 승인하시겠습니까?")) return;
+
+            try {
+                const response = await fetch(`/api/admin/hospital-requests/${id}/approve`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    alert("승인 완료");
+                    location.reload();
+                } else {
+                    const errorText = await response.text();
+                    alert(`승인 실패: ${errorText || "처리 중 오류가 발생했습니다."}`);
+                }
+            } catch (error) {
+                console.error(error);
+                alert("서버 통신 오류가 발생했습니다.");
+            }
         }
     }
 </script>

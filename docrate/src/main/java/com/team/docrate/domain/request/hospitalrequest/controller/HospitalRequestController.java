@@ -4,6 +4,9 @@ import com.team.docrate.domain.hospital.repository.HospitalRepository;
 import com.team.docrate.domain.request.hospitalrequest.dto.HospitalRequestDto;
 import com.team.docrate.domain.request.hospitalrequest.service.HospitalRequestService;
 import lombok.RequiredArgsConstructor;
+
+import java.security.Principal;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,16 +24,21 @@ public class HospitalRequestController {
     // 1. 병원 등록 요청 폼 띄우기
     @GetMapping("/new")
     public String newForm(Model model) {
-        model.addAttribute("categoryList", hospitalRepository.findDistinctCategories());
         return "hospital/requestForm";
     }
 
     // 2. 병원 등록 요청 처리
     @PostMapping
-    public String create(@ModelAttribute HospitalRequestDto requestDto) {
-        // [참고] 아직 로그인 유저 연동 전이라면, DB에 있는 유저 ID 1번 등을 임시로 사용해야 할 수도 있습니다.
-        // hospitalRequestService.saveRequest(requestDto, loginUser);
-        hospitalRequestService.saveRequest(requestDto, null); 
+    public String create(
+            @ModelAttribute HospitalRequestDto requestDto,
+            Principal principal) {
+
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        hospitalRequestService.saveRequest(requestDto, principal.getName());
+
         return "redirect:/hospitals";
     }
 }

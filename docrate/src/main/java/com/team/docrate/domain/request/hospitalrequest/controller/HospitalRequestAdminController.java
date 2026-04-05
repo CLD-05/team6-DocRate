@@ -6,9 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.team.docrate.domain.request.doctorrequest.controller.DoctorRequestAdminController.RejectRequestDto;
 import com.team.docrate.domain.request.hospitalrequest.dto.HospitalRequestResponseDto;
 import com.team.docrate.domain.request.hospitalrequest.service.HospitalRequestService;
 
@@ -41,10 +43,17 @@ public class HospitalRequestAdminController {
 
     // 3. 반려 (기본 사유 포함 가능하도록 확장)
     @PostMapping("/{id}/reject")
-    public ResponseEntity<String> reject(@PathVariable("id") Long id) {
+    public ResponseEntity<String> reject(
+            @PathVariable("id") Long id,
+            @RequestBody(required = false) RejectRequestDto rejectRequestDto
+    ) {
         try {
-            // 사유를 고정값으로 보내거나, 필요한 경우 DTO를 추가하세요.
-            hospitalRequestService.rejectRequest(id, "관리자 반려"); 
+            String reason = (rejectRequestDto != null && rejectRequestDto.getReason() != null
+                    && !rejectRequestDto.getReason().trim().isEmpty())
+                    ? rejectRequestDto.getReason().trim()
+                    : "관리자 반려";
+
+            hospitalRequestService.rejectRequest(id, reason);
             return ResponseEntity.ok("반려 완료");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

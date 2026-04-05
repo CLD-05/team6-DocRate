@@ -152,8 +152,8 @@ public class ReviewController {
         User loginUser = userService.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("로그인 정보가 유효하지 않습니다."));
 
-        reviewService.deleteReview(reviewId, loginUser.getId());
+        Long doctorId = reviewService.deleteReviewAndReturnDoctorId(reviewId, loginUser.getId());
 
-        return "redirect:/mypage";
+        return "redirect:/doctors/" + doctorId + "/reviews";
     }
 }

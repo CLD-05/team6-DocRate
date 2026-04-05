@@ -10,6 +10,7 @@ import lombok.Getter;
 public class MyReviewListItemDto {
 
     private Long reviewId;
+    private Long doctorId;
     private String doctorName;
     private String hospitalName;
     private BigDecimal rating;

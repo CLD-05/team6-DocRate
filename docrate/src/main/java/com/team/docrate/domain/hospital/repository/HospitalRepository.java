@@ -46,4 +46,6 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
             @Param("category") String category,
             Pageable pageable
     );
+    
+    boolean existsByNameAndAddress(String name, String address);
 }

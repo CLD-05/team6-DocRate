@@ -35,9 +35,16 @@
 
                 <div class="form-group">
                     <label class="form-label">카테고리</label>
-                    <select name="category" class="form-input" required>
+                    <select name="category" class="form-select" required>
                         <option value="" disabled selected>카테고리를 선택하세요</option>
-                        <option th:each="cat : ${categoryList}" th:value="${cat}" th:text="${cat}"></option>
+                        <option value="병원">병원</option>
+                        <option value="종합병원">종합병원</option>
+                        <option value="정신병원">정신병원</option>
+                        <option value="치과병원">치과병원</option>
+                        <option value="한방병원">한방병원</option>
+                        <option value="요양병원(노인병원)">요양병원(노인병원)</option>
+                        <option value="요양병원(일반요양병원)">요양병원(일반요양병원)</option>
+                        <option value="요양병원(장애인의료재활시설)">요양병원(장애인의료재활시설)</option>
                     </select>
                 </div>
 

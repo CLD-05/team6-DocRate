@@ -54,6 +54,6 @@ public class DoctorRequestController {
             return "request/doctor-form";
         }
 
-        return "redirect:/mypage";
+        return "redirect:/doctors";
     }
 }

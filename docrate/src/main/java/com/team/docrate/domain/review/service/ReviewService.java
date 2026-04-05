@@ -18,6 +18,7 @@ import com.team.docrate.domain.review.dto.ReviewCreateRequest;
 import com.team.docrate.domain.review.entity.Review;
 import com.team.docrate.domain.review.repository.ReviewRepository;
 import com.team.docrate.domain.user.entity.User;
+import com.team.docrate.domain.user.enumtype.UserRole;
 import com.team.docrate.domain.user.repository.UserRepository;
 import com.team.docrate.global.exception.BusinessException;
 
@@ -42,6 +43,10 @@ public class ReviewService {
                 .orElseThrow(() -> new BusinessException("의사를 찾을 수 없습니다."));
     }
     
+    private double round(double value) {
+        return Math.round(value * 10) / 10.0;
+    }
+    
     public ReviewSummaryDto getDoctorReviewSummary(Long doctorId) {
         List<Review> reviews = reviewRepository.findAllByDoctorId(doctorId);
 
@@ -49,30 +54,40 @@ public class ReviewService {
             return new ReviewSummaryDto(0.0, 0.0, 0.0, 0.0, 0.0, 0L);
         }
 
-        double averageRating = reviews.stream()
-        		.mapToDouble(r -> r.getRating().doubleValue())
-                .average()
-                .orElse(0.0);
+        double averageRating = round(
+                reviews.stream()
+                        .mapToDouble(r -> r.getRating().doubleValue())
+                        .average()
+                        .orElse(0.0)
+        );
 
-        double kindnessRating = reviews.stream()
-                .mapToDouble(r -> r.getBedsideManner().doubleValue())
-                .average()
-                .orElse(0.0);
+        double kindnessRating = round(
+                reviews.stream()
+                        .mapToDouble(r -> r.getBedsideManner().doubleValue())
+                        .average()
+                        .orElse(0.0)
+        );
 
-        double explanationRating = reviews.stream()
-                .mapToDouble(r -> r.getExplanation().doubleValue())
-                .average()
-                .orElse(0.0);
+        double explanationRating = round(
+                reviews.stream()
+                        .mapToDouble(r -> r.getExplanation().doubleValue())
+                        .average()
+                        .orElse(0.0)
+        );
 
-        double waitingRating = reviews.stream()
-                .mapToDouble(r -> r.getWaitTime().doubleValue())
-                .average()
-                .orElse(0.0);
+        double waitingRating = round(
+                reviews.stream()
+                        .mapToDouble(r -> r.getWaitTime().doubleValue())
+                        .average()
+                        .orElse(0.0)
+        );
 
-        double revisitRating = reviews.stream()
-                .mapToDouble(r -> r.getRevisitIntention() ? 5.0 : 0.0)
-                .average()
-                .orElse(0.0);
+        double revisitRating = round(
+                reviews.stream()
+                        .mapToDouble(r -> r.getRevisitIntention() ? 5.0 : 0.0)
+                        .average()
+                        .orElse(0.0)
+        );
 
         return new ReviewSummaryDto(
                 averageRating,
@@ -171,10 +186,25 @@ public class ReviewService {
     
     // 리뷰 삭제
     @Transactional
-    public void deleteReview(Long reviewId, Long userId) {
-        Review review = reviewRepository.findByIdAndUserId(reviewId, userId)
-                .orElseThrow(() -> new BusinessException("리뷰를 삭제할 권한이 없거나 존재하지 않습니다."));
-                
+    public Long deleteReviewAndReturnDoctorId(Long reviewId, Long userId) {
+
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new BusinessException("리뷰가 존재하지 않습니다."));
+
+        // 🔥 권한 체크
+        if (!review.getUser().getId().equals(userId)) {
+
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new BusinessException("사용자 없음"));
+
+            if (user.getRole() != UserRole.ADMIN) {
+                throw new BusinessException("삭제 권한이 없습니다.");
+            }
+        }
+
+        Long doctorId = review.getDoctor().getId();
         reviewRepository.delete(review);
+
+        return doctorId;
     }
 }

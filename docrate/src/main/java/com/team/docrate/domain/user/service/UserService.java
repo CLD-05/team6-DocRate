@@ -212,6 +212,7 @@ public class UserService {
 
         return MyReviewListItemDto.builder()
                 .reviewId(review.getId())
+                .doctorId(review.getDoctor().getId()) 
                 .doctorName(review.getDoctor().getName())
                 .hospitalName(review.getDoctor().getHospital().getName())
                 .rating(review.getRating())

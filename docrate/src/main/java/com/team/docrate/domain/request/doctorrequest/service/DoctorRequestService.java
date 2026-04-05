@@ -82,6 +82,20 @@ public class DoctorRequestService {
         DoctorRequest doctorRequest = doctorRequestRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("의사 요청을 찾을 수 없습니다."));
 
+        if (doctorRequest.getStatus() != DoctorRequestStatus.PENDING) {
+            throw new IllegalStateException("이미 처리된 요청입니다.");
+        }
+
+        boolean exists = doctorRepository.existsByHospitalAndDepartmentAndName(
+                doctorRequest.getHospital(),
+                doctorRequest.getDepartment(),
+                doctorRequest.getName()
+        );
+
+        if (exists) {
+            throw new IllegalStateException("이미 동일한 의사가 등록되어 있습니다.");
+        }
+
         Doctor doctor = Doctor.builder()
                 .hospital(doctorRequest.getHospital())
                 .department(doctorRequest.getDepartment())

@@ -20,7 +20,6 @@ public class ReviewResponse {
     private Integer explanation;
     private Integer waitTime;
     private Boolean revisitIntention;
-    
     private String content;
     private LocalDateTime createdAt;
     

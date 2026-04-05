@@ -75,7 +75,9 @@
                     <div class="review-text">
                         <p th:text="${review.content}">정말 친절하게 설명해주셨어요.</p>
                         
-                        <div th:if="${loginUser != null && review.user.id == loginUser.id}" class="review-actions" style="margin-top: 10px; text-align: right;">
+                        <div th:if="${loginUser != null && (review.user.id == loginUser.id || loginUser.role.name() == 'ADMIN')}"
+     						class="review-actions"
+     						style="margin-top: 10px; text-align: right;">
         
         				<a th:href="@{/reviews/{id}/edit(id=${review.id})}" 
            					style="font-size: 0.85rem; color: #007bff; text-decoration: none; margin-right: 10px;">[수정]</a>

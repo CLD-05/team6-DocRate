@@ -76,18 +76,20 @@
                     </div>
 
                     <div class="summary-list" th:if="${recentReviews != null and !#lists.isEmpty(recentReviews)}">
-                        <article class="summary-item" th:each="review : ${recentReviews}">
-                            <div class="summary-main">
-                                <p class="summary-title" th:text="${review.doctorName}">김의사</p>
-                                <p class="summary-sub">
-                                    <span th:text="${review.hospitalName}">OO병원</span>
-                                    <span class="dot">•</span>
-                                    <span th:text="'평점 ' + ${review.rating}">평점 4.5</span>
-                                </p>
-                            </div>
-                            
-                        </article>
-                    </div>
+					    <article th:each="review : ${recentReviews}"
+					             class="summary-item clickable-card"
+					             th:onclick="|location.href='@{/doctors/{id}/reviews(id=${review.doctorId})}'|">
+					
+					        <div class="summary-main">
+					            <p class="summary-title" th:text="${review.doctorName}">김의사</p>
+					            <p class="summary-sub">
+					                <span th:text="${review.hospitalName}">OO병원</span>
+					                <span class="dot">•</span>
+					                <span th:text="'평점 ' + ${review.rating}">평점 4.5</span>
+					            </p>
+					        </div>
+					    </article>
+					</div>
 
                     <div class="empty-box" th:if="${recentReviews == null or #lists.isEmpty(recentReviews)}">
                         아직 작성한 리뷰가 없습니다.

@@ -16,26 +16,29 @@
         </header>
 
         <main class="content">
-            <div class="review-list" th:if="${reviewList != null and !#lists.isEmpty(reviewList)}">
-                <article class="review-card" th:each="review : ${reviewList}">
-                    <div class="card-head">
-                        <div>
-                            <h2 class="doctor-name" th:text="${review.doctorName}">김의사</h2>
-                            <p class="hospital-name" th:text="${review.hospitalName}">OO병원</p>
-                        </div>
-                        <span class="rating-badge" th:text="${review.rating}">4.5</span>
-                    </div>
-
-                    <p class="review-preview" th:text="${review.contentPreview}">
-                        내가 작성한 리뷰 미리보기입니다.
-                    </p>
-
-                    <div class="card-foot">
-                        <span class="created-at" th:text="${review.createdAt}">2026-04-02 14:00</span>
-                        
-                    </div>
-                </article>
-            </div>
+		    <div class="review-list" th:if="${reviewList != null and !#lists.isEmpty(reviewList)}">
+			    <article class="review-card clickable-card"
+			             th:each="review : ${reviewList}"
+			             th:onclick="|location.href='@{/doctors/{id}/reviews(id=${review.doctorId})}'|">
+			
+			        <div class="card-head">
+			            <div>
+			                <h2 class="doctor-name" th:text="${review.doctorName}">김의사</h2>
+			                <p class="hospital-name" th:text="${review.hospitalName}">OO병원</p>
+			            </div>
+			            <span class="rating-badge" th:text="${review.rating}">4.5</span>
+			        </div>
+			
+			        <p class="review-preview" th:text="${review.contentPreview}">
+			            내가 작성한 리뷰 미리보기입니다.
+			        </p>
+			
+			        <div class="card-foot">
+			            <span class="created-at" th:text="${review.createdAt}">2026-04-02 14:00</span>
+			        </div>
+			
+			    </article>
+			</div>
 
             <div class="empty-box" th:if="${reviewList == null or #lists.isEmpty(reviewList)}">
                 아직 작성한 리뷰가 없습니다.
